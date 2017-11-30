@@ -1,0 +1,91 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+## Chapter 1 Course
+
+### Exercise 1 Polarity scoring
+
+```{r}
+library(magrittr)
+library(qdap)
+person <- c("Nick", "Jonathan", "Martijn","Nicole","Nick","Jonathan","Martijn","Nicole")
+text <- c("DataCamp courses are the best","I like talking to students","Other online data science curricula are boring.",
+          "What is for lunch?", "DataCamp has lots of great content!", "Students are passionate and are excited to learn",
+          "Other data science curriculum is hard to learn and difficult to understand",
+          "I think the food here is good.")
+text_df <- data.frame(person, text)
+
+# Examine the text data
+text_df
+
+# Calc overall polarity score
+text_df %$% polarity(text)
+
+# Calc polarity score by person
+datacamp_conversation <- text_df %$% polarity(text, person)
+
+# Counts table from datacamp_conversation
+counts(datacamp_conversation)
+
+# Plot the conversation polarity
+plot(datacamp_conversation)
+```
+### Tm refresher
+
+```{r}
+library(tm)
+clean_corpus <- function(corpus){
+  corpus <- tm_map(corpus, content_transformer(replace_abbreviation))
+  corpus <- tm_map(corpus, removePunctuation)
+  corpus <- tm_map(corpus, removeNumbers)
+  corpus <- tm_map(corpus, removeWords, c(stopwords("en"), "coffee"))
+  corpus <- tm_map(corpus, content_transformer(tolower))
+  corpus <- tm_map(corpus, stripWhitespace)
+  return(corpus)
+}
+
+
+tm_define <- c("Text mining is the process of distilling actionable insights from text.", 
+               "Sentiment analysis represents the set of tools to extract an author's feelings towards a subject.")
+
+# clean_corpus(), tm_define are pre-defined
+clean_corpus
+tm_define
+
+# Create a VectorSource
+tm_vector <- VectorSource(tm_define)
+
+# Apply VCorpus
+tm_corpus <- VCorpus(tm_vector)
+
+# Examine the first document's contents
+content(tm_corpus[[1]])
+
+# Clean the text
+tm_clean <- clean_corpus(tm_corpus)
+
+# Reexamine the contents of the first doc
+content(tm_clean[[1]])
+```
+
+### Another refresher
+
+```{r}
+# clean_text is pre-defined it's a corpora from 1000 tweets about coffee *from bag of words course
+clean_text
+
+# Create tf_dtm
+tf_dtm <- DocumentTermMatrix(clean_text)
+
+# Create tf_dtm_m
+tf_dtm_m <- as.matrix(tf_dtm)
+
+# Dimensions of DTM matrix
+dim(tf_dtm_m)
+
+# Subset part of tf_dtm_m for comparison
+tf_dtm_m[16:20,2975:2985]
+```
+
