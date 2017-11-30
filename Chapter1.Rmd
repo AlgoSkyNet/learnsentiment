@@ -89,3 +89,54 @@ dim(tf_dtm_m)
 tf_dtm_m[16:20,2975:2985]
 ```
 
+### Zipf's Law
+
+```{r}
+#install.packages("metricsgraphics")
+library(metricsgraphics)
+
+# Examine sb_words
+head(sb_words)
+
+# Create expectations
+sb_words$expectations <- sb_words %$% 
+  {freq / rank}
+
+# Create metrics plot
+sb_plot <- mjs_plot(sb_words, x = rank, y = freq, show_rollover_text = FALSE)
+
+# Add 1st line
+sb_plot <- mjs_line(sb_plot)
+
+# Add 2nd line
+sb_plot <- mjs_add_line(sb_plot, expectations)
+
+# Add legend
+sb_plot <- mjs_add_legend(sb_plot, legend = c("Frequency", "Expectation"))
+
+# Display plot
+sb_plot
+
+```
+### Polarity on actual text
+
+```{r}
+# Example statements
+positive <- "DataCamp courses are good for learning"
+
+# Calculate polarity of both statements
+(pos_score <-polarity(positive))
+
+# Get counts
+(pos_counts <- counts(pos_score))
+  
+# Number of positive words
+n_good <- length(pos_counts$pos.words[[1]])
+  
+# Total number of words
+n_words <- pos_counts$wc
+  
+# Verify polarity score
+n_good / sqrt(n_words)
+```
+
