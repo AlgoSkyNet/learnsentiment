@@ -1,0 +1,188 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+## Chapter 2 Course Sentiment Analysis in R
+
+In the second chapter you will explore 3 subjectivity lexicons from tidytext. Then you will do an inner join to score some text.
+
+
+Plutchik’s Wheel of Emotion
+
+
+
+### DTM vs tidytext matrix
+
+```{r}
+library(tidytext)
+
+# As matrix
+ag_dtm_m <- as.matrix(ag_dtm)
+
+# Examine line 2206 and columns 245:250
+ag_dtm_m[2206, 245:250]
+```
+
+> ag_dtm_m[2206, 245:250]
+       bleed       bleeds        blent        bless blessãd     blessing 
+           0            0            0            1            0            0
+
+```{r}
+# Tidy up the DTM
+ag_tidy <- tidy(ag_dtm)
+
+# Examine tidy with a word you saw
+ag_tidy[831:835, ]
+```
+
+> ag_tidy[831:835, ]
+# A tibble: 5 x 3
+  document     term count
+     <chr>    <chr> <dbl>
+1      234   bleeds     1
+2      234 sleepeth     1
+3      235    comes     1
+4      235     will     1
+5      235   wisdom     1
+
+
+### Examine the sentiments data frame
+
+Examine the sentiments data frame
+
+So far you have used a single lexicon. Now we will transition to using three, each measuring sentiment in different ways.
+
+The tidytext package contains a data frame called sentiments. The data frame contains over 23000 terms from three different subjectivity lexicons with corresponding information. Here are some example rows from the sentiments data frame.
+
+|Word|Sentiment	Lexicon	Score
+|abhorrent|	NA|	AFINN|	-3
+|cool	NA	AFINN	1
+|congenial	positive	Bing	NA
+|enemy	negative	Bing	NA
+|ungrateful	anger	NRC	NA
+|sectarian	anger	NRC	NA
+
+```{r}
+install.packages("Rcpp")
+#install.packages("tidytext")
+library(tidytext)
+# Subset to AFINN
+
+afinn_lex <- get_sentiments("afinn")
+
+# Count AFINN scores
+afinn_lex %>% 
+  count(score)
+```
+
+> afinn_lex %>% 
+    count(score)
+# A tibble: 11 x 2
+   score     n
+   <int> <int>
+ 1    -5    16
+ 2    -4    43
+ 3    -3   264
+ 4    -2   965
+ 5    -1   309
+ 6     0     1
+ 7     1   208
+ 8     2   448
+ 9     3   172
+10     4    45
+11     5     5
+
+
+```{r}
+# Subset to nrc
+nrc_lex <- get_sentiments("nrc")
+
+# Print nrc_lex
+nrc_lex
+```
+
+> nrc_lex
+# A tibble: 13,901 x 2
+          word sentiment
+         <chr>     <chr>
+ 1      abacus     trust
+ 2     abandon      fear
+ 3     abandon  negative
+ 4     abandon   sadness
+ 5   abandoned     anger
+ 6   abandoned      fear
+ 7   abandoned  negative
+ 8   abandoned   sadness
+ 9 abandonment     anger
+10 abandonment      fear
+# ... with 13,891 more rows
+
+```{r}
+
+# Make the nrc counts object
+nrc_counts <- nrc_lex %>% 
+  count(sentiment)
+        
+# Barplot
+ggplot(nrc_counts, aes(x = sentiment, y = n))+
+  geom_bar(stat = "identity") +
+  theme_gdocs()
+```
+
+### simple example on polarity
+
+```{r}
+# Qdap polarity
+polarity(ag_txt)
+```
+
+> polarity(ag_txt)
+Warning message: 
+  Some rows contain double punctuation.  Suggested use of `sentSplit` function.
+  all total.sentences total.words ave.polarity sd.polarity stan.mean.polarity
+1 all             100       15155       -2.783          NA                 NA
+
+```{r}
+# Get Bing lexicon
+bing <- get_sentiments("bing")
+
+# Join text to lexicon
+ag_bing_words <- inner_join(ag_tidy, bing, by = c("term" = "word"))
+
+# Examine
+ag_bing_words
+```
+
+> ag_bing_words
+# A tibble: 483 x 4
+   document       term count sentiment
+      <chr>      <chr> <dbl>     <chr>
+ 1        1  abundance     1  positive
+ 2        1    acclaim     1  positive
+ 3        1       ache     2  negative
+ 4        1     aching     3  negative
+ 5        1 affliction     1  negative
+ 6        1    affront     1  negative
+ 7        1     afraid     2  negative
+ 8        1     aghast     1  negative
+ 9        1      agony     5  negative
+10        1      amply     1  positive
+# ... with 473 more rows
+
+```{r}
+
+
+# Get counts by sentiment
+ag_bing_words %>%
+  count(sentiment)
+```
+
+> ag_bing_words %>%
+    count(sentiment)
+# A tibble: 2 x 2
+  sentiment     n
+      <chr> <int>
+1  negative   321
+2  positive   162
+

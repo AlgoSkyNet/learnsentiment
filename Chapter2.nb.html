@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("Chapter1.Rmd");
+  window.initializeSourceEmbed("Chapter2.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,371 +172,32 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<div id="chapter-1-course" class="section level2">
-<h2>Chapter 1 Course</h2>
-<p>In the first chapter, you will learn how to apply qdap’s sentiment function called polarity() .</p>
-<div id="exercise-1-polarity-scoring" class="section level3">
-<h3>Exercise 1 Polarity scoring</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShtYWdyaXR0cilcbmxpYnJhcnkocWRhcClcbnBlcnNvbiA8LSBjKFwiTmlja1wiLCBcIkpvbmF0aGFuXCIsIFwiTWFydGlqblwiLFwiTmljb2xlXCIsXCJOaWNrXCIsXCJKb25hdGhhblwiLFwiTWFydGlqblwiLFwiTmljb2xlXCIpXG50ZXh0IDwtIGMoXCJEYXRhQ2FtcCBjb3Vyc2VzIGFyZSB0aGUgYmVzdFwiLFwiSSBsaWtlIHRhbGtpbmcgdG8gc3R1ZGVudHNcIixcIk90aGVyIG9ubGluZSBkYXRhIHNjaWVuY2UgY3VycmljdWxhIGFyZSBib3JpbmcuXCIsXG4gICAgICAgICAgXCJXaGF0IGlzIGZvciBsdW5jaD9cIiwgXCJEYXRhQ2FtcCBoYXMgbG90cyBvZiBncmVhdCBjb250ZW50IVwiLCBcIlN0dWRlbnRzIGFyZSBwYXNzaW9uYXRlIGFuZCBhcmUgZXhjaXRlZCB0byBsZWFyblwiLFxuICAgICAgICAgIFwiT3RoZXIgZGF0YSBzY2llbmNlIGN1cnJpY3VsdW0gaXMgaGFyZCB0byBsZWFybiBhbmQgZGlmZmljdWx0IHRvIHVuZGVyc3RhbmRcIixcbiAgICAgICAgICBcIkkgdGhpbmsgdGhlIGZvb2QgaGVyZSBpcyBnb29kLlwiKVxudGV4dF9kZiA8LSBkYXRhLmZyYW1lKHBlcnNvbiwgdGV4dClcblxuIyBFeGFtaW5lIHRoZSB0ZXh0IGRhdGFcbnRleHRfZGZcblxuIyBDYWxjIG92ZXJhbGwgcG9sYXJpdHkgc2NvcmVcbnRleHRfZGYgJSQlIHBvbGFyaXR5KHRleHQpXG5cbiMgQ2FsYyBwb2xhcml0eSBzY29yZSBieSBwZXJzb25cbmRhdGFjYW1wX2NvbnZlcnNhdGlvbiA8LSB0ZXh0X2RmICUkJSBwb2xhcml0eSh0ZXh0LCBwZXJzb24pXG5cbiMgQ291bnRzIHRhYmxlIGZyb20gZGF0YWNhbXBfY29udmVyc2F0aW9uXG5jb3VudHMoZGF0YWNhbXBfY29udmVyc2F0aW9uKVxuXG4jIFBsb3QgdGhlIGNvbnZlcnNhdGlvbiBwb2xhcml0eVxucGxvdChkYXRhY2FtcF9jb252ZXJzYXRpb24pXG5gYGAifQ== -->
-<pre class="r"><code>library(magrittr)
-library(qdap)
-person &lt;- c(&quot;Nick&quot;, &quot;Jonathan&quot;, &quot;Martijn&quot;,&quot;Nicole&quot;,&quot;Nick&quot;,&quot;Jonathan&quot;,&quot;Martijn&quot;,&quot;Nicole&quot;)
-text &lt;- c(&quot;DataCamp courses are the best&quot;,&quot;I like talking to students&quot;,&quot;Other online data science curricula are boring.&quot;,
-          &quot;What is for lunch?&quot;, &quot;DataCamp has lots of great content!&quot;, &quot;Students are passionate and are excited to learn&quot;,
-          &quot;Other data science curriculum is hard to learn and difficult to understand&quot;,
-          &quot;I think the food here is good.&quot;)
-text_df &lt;- data.frame(person, text)
-
-# Examine the text data
-text_df
-
-# Calc overall polarity score
-text_df %$% polarity(text)
-
-# Calc polarity score by person
-datacamp_conversation &lt;- text_df %$% polarity(text, person)
-
-# Counts table from datacamp_conversation
-counts(datacamp_conversation)
-
-# Plot the conversation polarity
-plot(datacamp_conversation)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="tm-refresher" class="section level3">
-<h3>Tm refresher</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0bSlcbmNsZWFuX2NvcnB1cyA8LSBmdW5jdGlvbihjb3JwdXMpe1xuICBjb3JwdXMgPC0gdG1fbWFwKGNvcnB1cywgY29udGVudF90cmFuc2Zvcm1lcihyZXBsYWNlX2FiYnJldmlhdGlvbikpXG4gIGNvcnB1cyA8LSB0bV9tYXAoY29ycHVzLCByZW1vdmVQdW5jdHVhdGlvbilcbiAgY29ycHVzIDwtIHRtX21hcChjb3JwdXMsIHJlbW92ZU51bWJlcnMpXG4gIGNvcnB1cyA8LSB0bV9tYXAoY29ycHVzLCByZW1vdmVXb3JkcywgYyhzdG9wd29yZHMoXCJlblwiKSwgXCJjb2ZmZWVcIikpXG4gIGNvcnB1cyA8LSB0bV9tYXAoY29ycHVzLCBjb250ZW50X3RyYW5zZm9ybWVyKHRvbG93ZXIpKVxuICBjb3JwdXMgPC0gdG1fbWFwKGNvcnB1cywgc3RyaXBXaGl0ZXNwYWNlKVxuICByZXR1cm4oY29ycHVzKVxufVxuXG5cbnRtX2RlZmluZSA8LSBjKFwiVGV4dCBtaW5pbmcgaXMgdGhlIHByb2Nlc3Mgb2YgZGlzdGlsbGluZyBhY3Rpb25hYmxlIGluc2lnaHRzIGZyb20gdGV4dC5cIiwgXG4gICAgICAgICAgICAgICBcIlNlbnRpbWVudCBhbmFseXNpcyByZXByZXNlbnRzIHRoZSBzZXQgb2YgdG9vbHMgdG8gZXh0cmFjdCBhbiBhdXRob3IncyBmZWVsaW5ncyB0b3dhcmRzIGEgc3ViamVjdC5cIilcblxuIyBjbGVhbl9jb3JwdXMoKSwgdG1fZGVmaW5lIGFyZSBwcmUtZGVmaW5lZFxuY2xlYW5fY29ycHVzXG50bV9kZWZpbmVcblxuIyBDcmVhdGUgYSBWZWN0b3JTb3VyY2VcbnRtX3ZlY3RvciA8LSBWZWN0b3JTb3VyY2UodG1fZGVmaW5lKVxuXG4jIEFwcGx5IFZDb3JwdXNcbnRtX2NvcnB1cyA8LSBWQ29ycHVzKHRtX3ZlY3RvcilcblxuIyBFeGFtaW5lIHRoZSBmaXJzdCBkb2N1bWVudCdzIGNvbnRlbnRzXG5jb250ZW50KHRtX2NvcnB1c1tbMV1dKVxuXG4jIENsZWFuIHRoZSB0ZXh0XG50bV9jbGVhbiA8LSBjbGVhbl9jb3JwdXModG1fY29ycHVzKVxuXG4jIFJlZXhhbWluZSB0aGUgY29udGVudHMgb2YgdGhlIGZpcnN0IGRvY1xuY29udGVudCh0bV9jbGVhbltbMV1dKVxuYGBgIn0= -->
-<pre class="r"><code>library(tm)
-clean_corpus &lt;- function(corpus){
-  corpus &lt;- tm_map(corpus, content_transformer(replace_abbreviation))
-  corpus &lt;- tm_map(corpus, removePunctuation)
-  corpus &lt;- tm_map(corpus, removeNumbers)
-  corpus &lt;- tm_map(corpus, removeWords, c(stopwords(&quot;en&quot;), &quot;coffee&quot;))
-  corpus &lt;- tm_map(corpus, content_transformer(tolower))
-  corpus &lt;- tm_map(corpus, stripWhitespace)
-  return(corpus)
-}
-
-
-tm_define &lt;- c(&quot;Text mining is the process of distilling actionable insights from text.&quot;, 
-               &quot;Sentiment analysis represents the set of tools to extract an author's feelings towards a subject.&quot;)
-
-# clean_corpus(), tm_define are pre-defined
-clean_corpus
-tm_define
-
-# Create a VectorSource
-tm_vector &lt;- VectorSource(tm_define)
-
-# Apply VCorpus
-tm_corpus &lt;- VCorpus(tm_vector)
-
-# Examine the first document's contents
-content(tm_corpus[[1]])
-
-# Clean the text
-tm_clean &lt;- clean_corpus(tm_corpus)
-
-# Reexamine the contents of the first doc
-content(tm_clean[[1]])</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="another-refresher" class="section level3">
-<h3>Another refresher</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBjbGVhbl90ZXh0IGlzIHByZS1kZWZpbmVkIGl0J3MgYSBjb3Jwb3JhIGZyb20gMTAwMCB0d2VldHMgYWJvdXQgY29mZmVlICpmcm9tIGJhZyBvZiB3b3JkcyBjb3Vyc2VcbmNsZWFuX3RleHRcblxuIyBDcmVhdGUgdGZfZHRtXG50Zl9kdG0gPC0gRG9jdW1lbnRUZXJtTWF0cml4KGNsZWFuX3RleHQpXG5cbiMgQ3JlYXRlIHRmX2R0bV9tXG50Zl9kdG1fbSA8LSBhcy5tYXRyaXgodGZfZHRtKVxuXG4jIERpbWVuc2lvbnMgb2YgRFRNIG1hdHJpeFxuZGltKHRmX2R0bV9tKVxuXG4jIFN1YnNldCBwYXJ0IG9mIHRmX2R0bV9tIGZvciBjb21wYXJpc29uXG50Zl9kdG1fbVsxNjoyMCwyOTc1OjI5ODVdXG5gYGAifQ== -->
-<pre class="r"><code># clean_text is pre-defined it's a corpora from 1000 tweets about coffee *from bag of words course
-clean_text
-
-# Create tf_dtm
-tf_dtm &lt;- DocumentTermMatrix(clean_text)
-
-# Create tf_dtm_m
-tf_dtm_m &lt;- as.matrix(tf_dtm)
-
-# Dimensions of DTM matrix
-dim(tf_dtm_m)
-
-# Subset part of tf_dtm_m for comparison
-tf_dtm_m[16:20,2975:2985]</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="zipfs-law" class="section level3">
-<h3>Zipf’s Law</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2luc3RhbGwucGFja2FnZXMoXCJtZXRyaWNzZ3JhcGhpY3NcIilcbmxpYnJhcnkobWV0cmljc2dyYXBoaWNzKVxuXG4jIEV4YW1pbmUgc2Jfd29yZHNcbmhlYWQoc2Jfd29yZHMpXG5cbiMgQ3JlYXRlIGV4cGVjdGF0aW9uc1xuc2Jfd29yZHMkZXhwZWN0YXRpb25zIDwtIHNiX3dvcmRzICUkJSBcbiAge2ZyZXEgLyByYW5rfVxuXG4jIENyZWF0ZSBtZXRyaWNzIHBsb3RcbnNiX3Bsb3QgPC0gbWpzX3Bsb3Qoc2Jfd29yZHMsIHggPSByYW5rLCB5ID0gZnJlcSwgc2hvd19yb2xsb3Zlcl90ZXh0ID0gRkFMU0UpXG5cbiMgQWRkIDFzdCBsaW5lXG5zYl9wbG90IDwtIG1qc19saW5lKHNiX3Bsb3QpXG5cbiMgQWRkIDJuZCBsaW5lXG5zYl9wbG90IDwtIG1qc19hZGRfbGluZShzYl9wbG90LCBleHBlY3RhdGlvbnMpXG5cbiMgQWRkIGxlZ2VuZFxuc2JfcGxvdCA8LSBtanNfYWRkX2xlZ2VuZChzYl9wbG90LCBsZWdlbmQgPSBjKFwiRnJlcXVlbmN5XCIsIFwiRXhwZWN0YXRpb25cIikpXG5cbiMgRGlzcGxheSBwbG90XG5zYl9wbG90XG5cbmBgYCJ9 -->
-<pre class="r"><code>#install.packages(&quot;metricsgraphics&quot;)
-library(metricsgraphics)
-
-# Examine sb_words
-head(sb_words)
-
-# Create expectations
-sb_words$expectations &lt;- sb_words %$% 
-  {freq / rank}
-
-# Create metrics plot
-sb_plot &lt;- mjs_plot(sb_words, x = rank, y = freq, show_rollover_text = FALSE)
-
-# Add 1st line
-sb_plot &lt;- mjs_line(sb_plot)
-
-# Add 2nd line
-sb_plot &lt;- mjs_add_line(sb_plot, expectations)
-
-# Add legend
-sb_plot &lt;- mjs_add_legend(sb_plot, legend = c(&quot;Frequency&quot;, &quot;Expectation&quot;))
-
-# Display plot
-sb_plot
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="polarity-on-actual-text" class="section level3">
-<h3>Polarity on actual text</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFeGFtcGxlIHN0YXRlbWVudHNcbnBvc2l0aXZlIDwtIFwiRGF0YUNhbXAgY291cnNlcyBhcmUgZ29vZCBmb3IgbGVhcm5pbmdcIlxuXG4jIENhbGN1bGF0ZSBwb2xhcml0eSBvZiBib3RoIHN0YXRlbWVudHNcbihwb3Nfc2NvcmUgPC1wb2xhcml0eShwb3NpdGl2ZSkpXG5cbiMgR2V0IGNvdW50c1xuKHBvc19jb3VudHMgPC0gY291bnRzKHBvc19zY29yZSkpXG4gIFxuIyBOdW1iZXIgb2YgcG9zaXRpdmUgd29yZHNcbm5fZ29vZCA8LSBsZW5ndGgocG9zX2NvdW50cyRwb3Mud29yZHNbWzFdXSlcbiAgXG4jIFRvdGFsIG51bWJlciBvZiB3b3Jkc1xubl93b3JkcyA8LSBwb3NfY291bnRzJHdjXG4gIFxuIyBWZXJpZnkgcG9sYXJpdHkgc2NvcmVcbm5fZ29vZCAvIHNxcnQobl93b3JkcylcbmBgYCJ9 -->
-<pre class="r"><code># Example statements
-positive &lt;- &quot;DataCamp courses are good for learning&quot;
-
-# Calculate polarity of both statements
-(pos_score &lt;-polarity(positive))
-
-# Get counts
-(pos_counts &lt;- counts(pos_score))
-  
-# Number of positive words
-n_good &lt;- length(pos_counts$pos.words[[1]])
-  
-# Total number of words
-n_words &lt;- pos_counts$wc
-  
-# Verify polarity score
-n_good / sqrt(n_words)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="happy-songs" class="section level3">
-<h3>Happy Songs!</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFeGFtaW5lIGNvbnZlcnNhdGlvblxuY29udmVyc2F0aW9uXG5gYGAifQ== -->
-<pre class="r"><code># Examine conversation
-conversation</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>conversation student text 1 Martijn This restaurant is never bad 2 Nick The lunch was very good 3 Nicole It was awful I got food poisoning and was extremely ill</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBQb2xhcml0eSAtIEFsbFxucG9sYXJpdHkoY29udmVyc2F0aW9uJHRleHQpXG5gYGAifQ== -->
-<pre class="r"><code># Polarity - All
-polarity(conversation$text)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>polarity(conversation$text) all total.sentences total.words ave.polarity sd.polarity stan.mean.polarity 1 all 3 21 0.317 0.565 0.561</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBQb2xhcml0eSAtIEdyb3VwZWRcbnN0dWRlbnRfcG9sIDwtIGNvbnZlcnNhdGlvbiAlJCVcbiAgcG9sYXJpdHkodGV4dCwgc3R1ZGVudClcblxuIyBTdHVkZW50IHJlc3VsdHNcbnNjb3JlcyhzdHVkZW50X3BvbClcbmBgYCJ9 -->
-<pre class="r"><code># Polarity - Grouped
-student_pol &lt;- conversation %$%
-  polarity(text, student)
-
-# Student results
-scores(student_pol)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>scores(student_pol) student total.sentences total.words ave.polarity sd.polarity stan.mean.polarity 1 Martijn 1 5 0.447 NA NA 2 Nick 1 5 0.805 NA NA 3 Nicole 1 11 -0.302 NA NA</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBTZW50ZW5jZSBieSBzZW50ZW5jZVxuY291bnRzKHN0dWRlbnRfcG9sKVxuYGBgIn0= -->
-<pre class="r"><code># Sentence by sentence
-counts(student_pol)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>counts(student_pol) student wc polarity pos.words neg.words text.var 1 Martijn 5 0.447 - bad This restaurant is never bad 2 Nick 5 0.805 good - The lunch was very good 3 Nicole 11 -0.302 - awful It was awful I got food poisoning and was extremely ill</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBxZGFwIHBsb3RcbnBsb3Qoc3R1ZGVudF9wb2wpXG5gYGAifQ== -->
-<pre class="r"><code># qdap plot
-plot(student_pol)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="lol-this-song-is-wicked-good-adjusting-lexicons" class="section level3">
-<h3>LOL, this song is wicked good (adjusting lexicons)</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFeGFtaW5lIHRoZSBrZXkucG9sXG5rZXkucG9sXG5gYGAifQ== -->
-<pre class="r"><code># Examine the key.pol
-key.pol</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>key.pol x y 1: a plus 1 2: abnormal -1 3: abolish -1 4: abominable -1 5: abominably -1 —<br />
-6775: zealously -1 6776: zenith 1 6777: zest 1 6778: zippy 1 6779: zombie -1</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBOZWdhdG9yc1xubmVnYXRpb24ud29yZHNcbmBgYCJ9 -->
-<pre class="r"><code># Negators
-negation.words</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>negation.words [1] “ain’t” “aren’t” “can’t” “couldn’t” “didn’t” “doesn’t”<br />
-[7] “don’t” “hasn’t” “isn’t” “mightn’t” “mustn’t” “neither”<br />
-[13] “never” “no” “nobody” “nor” “not” “shan’t”<br />
-[19] “shouldn’t” “wasn’t” “weren’t” “won’t” “wouldn’t”</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBBbXBsaWZpZXJzXG5hbXBsaWZpY2F0aW9uLndvcmRzXG5gYGAifQ== -->
-<pre class="r"><code># Amplifiers
-amplification.words</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>amplification.words [1] “acute” “acutely” “certain” “certainly”<br />
-[5] “colossal” “colossally” “deep” “deeply”<br />
-[9] “definite” “definitely” “enormous” “enormously”<br />
-[13] “extreme” “extremely” “great” “greatly”<br />
-[17] “heavily” “heavy” “high” “highly”<br />
-[21] “huge” “hugely” “immense” “immensely”<br />
-[25] “incalculable” “incalculably” “massive” “massively”<br />
-[29] “more” “particular” “particularly” “purpose”<br />
-[33] “purposely” “quite” “real” “really”<br />
-[37] “serious” “seriously” “severe” “severely”<br />
-[41] “significant” “significantly” “sure” “surely”<br />
-[45] “true” “truly” “vast” “vastly”<br />
-[49] “very”</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBEZS1hbXBsaWZpZXJzXG5kZWFtcGxpZmljYXRpb24ud29yZHNcbmBgYCJ9 -->
-<pre class="r"><code># De-amplifiers
-deamplification.words</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>deamplification.words [1] “barely” “faintly” “few” “hardly” “little”<br />
-[6] “only” “rarely” “seldom” “slightly” “sparesly”<br />
-[11] “sporadically” “very few” “very little”</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFeGFtaW5lXG50ZXh0XG5gYGAifQ== -->
-<pre class="r"><code># Examine
-text</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<h1 id="examine">Examine</h1>
-<p>text speaker 1 beyonce 2 jay_z words 1 I know I dont understand Just how your love can do what no one else can 2 They cant figure him out they like hey, is he insane</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFeHBsaWNpdCBwb2xhcml0eSBwYXJhbWV0ZXJzXG5wb2xhcml0eShcbiAgdGV4dC52YXIgICAgICAgPSB0ZXh0JHdvcmRzLFxuICBncm91cGluZy52YXIgICA9IHRleHQkc3BlYWtlcixcbiAgcG9sYXJpdHkuZnJhbWUgPSBrZXkucG9sLFxuICBuZWdhdG9ycyAgICAgICA9IG5lZ2F0aW9uLndvcmRzLFxuICBhbXBsaWZpZXJzICAgICA9IGFtcGxpZmljYXRpb24ud29yZHMsXG4gIGRlYW1wbGlmaWVycyAgID0gZGVhbXBsaWZpY2F0aW9uLndvcmRzIFxuKVxuYGBgIn0= -->
-<pre class="r"><code># Explicit polarity parameters
-polarity(
-  text.var       = text$words,
-  grouping.var   = text$speaker,
-  polarity.frame = key.pol,
-  negators       = negation.words,
-  amplifiers     = amplification.words,
-  deamplifiers   = deamplification.words 
-)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>speaker total.sentences total.words ave.polarity sd.polarity stan.mean.polarity 1 beyonce 1 16 0.25 NA NA 2 jay_z 1 11 0.00 NA NA &gt;</p>
-</div>
-<div id="stressed-out" class="section level3">
-<h3>Stressed out!</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3RyZXNzZWRfb3V0IDwtIFwiSSB3aXNoIEkgZm91bmQgc29tZSBiZXR0ZXIgc291bmRzIG5vIG9uZXMgZXZlciBoZWFyZFxcbkkgd2lzaCBJIGhhZCBhIGJldHRlciB2b2ljZSB0aGF0IHNhbmcgc29tZSBiZXR0ZXIgd29yZHNcXG5JIHdpc2ggSSBmb3VuZCBzb21lIGNob3JkcyBpbiBhbiBvcmRlciB0aGF0IGlzIG5ld1xcbkkgd2lzaCBJIGRpZG50IGhhdmUgdG8gcmh5bWUgZXZlcnkgdGltZSBJIHNhbmdcXG5JIHdhcyB0b2xkIHdoZW4gSSBnZXQgb2xkZXIgYWxsIG15IGZlYXJzIHdvdWxkIHNocmlua1xcbkJ1dCBub3cgSW0gaW5zZWN1cmUgYW5kIEkgY2FyZSB3aGF0IHBlb3BsZSB0aGlua1xcbk15IG5hbWVzIEJsdXJyeWZhY2UgYW5kIEkgY2FyZSB3aGF0IHlvdSB0aGlua1xcbk15IG5hbWVzIEJsdXJyeWZhY2UgYW5kIEkgY2FyZSB3aGF0IHlvdSB0aGlua1xcbldpc2ggd2UgY291bGQgdHVybiBiYWNrIHRpbWUsIHRvIHRoZSBnb29kIG9sZCBkYXlzXFxuV2hlbiBvdXIgbW9tbWEgc2FuZyB1cyB0byBzbGVlcCBidXQgbm93IHdlcmUgc3RyZXNzZWQgb3V0XFxuV2lzaCB3ZSBjb3VsZCB0dXJuIGJhY2sgdGltZSB0byB0aGUgZ29vZCBvbGQgZGF5c1xcbldoZW4gb3VyIG1vbW1hIHNhbmcgdXMgdG8gc2xlZXAgYnV0IG5vdyB3ZXJlIHN0cmVzc2VkIG91dFxcbldlcmUgc3RyZXNzZWQgb3V0XFxuU29tZXRpbWVzIGEgY2VydGFpbiBzbWVsbCB3aWxsIHRha2UgbWUgYmFjayB0byB3aGVuIEkgd2FzIHlvdW5nXFxuSG93IGNvbWUgSW0gbmV2ZXIgYWJsZSB0byBpZGVudGlmeSB3aGVyZSBpdHMgY29taW5nIGZyb21cXG5JZCBtYWtlIGEgY2FuZGxlIG91dCBvZiBpdCBpZiBJIGV2ZXIgZm91bmQgaXRcXG5UcnkgdG8gc2VsbCBpdCBuZXZlciBzZWxsIG91dCBvZiBpdCBJZCBwcm9iYWJseSBvbmx5IHNlbGwgb25lXFxuSXRkIGJlIHRvIG15IGJyb3RoZXIsIGNhdXNlIHdlIGhhdmUgdGhlIHNhbWUgbm9zZVxcblNhbWUgY2xvdGhlcyBob21lZ3Jvd24gYSBzdG9uZXMgdGhyb3cgZnJvbSBhIGNyZWVrIHdlIHVzZWQgdG8gcm9hbVxcbkJ1dCBpdCB3b3VsZCByZW1pbmQgdXMgb2Ygd2hlbiBub3RoaW5nIHJlYWxseSBtYXR0ZXJlZFxcbk91dCBvZiBzdHVkZW50IGxvYW5zIGFuZCB0cmVlLWhvdXNlIGhvbWVzIHdlIGFsbCB3b3VsZCB0YWtlIHRoZSBsYXR0ZXJcXG5NeSBuYW1lcyBCbHVycnlmYWNlIGFuZCBJIGNhcmUgd2hhdCB5b3UgdGhpbmtcXG5NeSBuYW1lcyBCbHVycnlmYWNlIGFuZCBJIGNhcmUgd2hhdCB5b3UgdGhpbmtcXG5XaXNoIHdlIGNvdWxkIHR1cm4gYmFjayB0aW1lLCB0byB0aGUgZ29vZCBvbGQgZGF5c1xcbldoZW4gb3VyIG1vbW1hIHNhbmcgdXMgdG8gc2xlZXAgYnV0IG5vdyB3ZXJlIHN0cmVzc2VkIG91dFxcbldpc2ggd2UgY291bGQgdHVybiBiYWNrIHRpbWUsIHRvIHRoZSBnb29kIG9sZCBkYXlzXFxuV2hlbiBvdXIgbW9tbWEgc2FuZyB1cyB0byBzbGVlcCBidXQgbm93IHdlcmUgc3RyZXNzZWQgb3V0XFxuV2UgdXNlZCB0byBwbGF5IHByZXRlbmQsIGdpdmUgZWFjaCBvdGhlciBkaWZmZXJlbnQgbmFtZXNcXG5XZSB3b3VsZCBidWlsZCBhIHJvY2tldCBzaGlwIGFuZCB0aGVuIHdlZCBmbHkgaXQgZmFyIGF3YXlcXG5Vc2VkIHRvIGRyZWFtIG9mIG91dGVyIHNwYWNlIGJ1dCBub3cgdGhleXJlIGxhdWdoaW5nIGF0IG91ciBmYWNlICNcXG5TYXlpbmcsIFdha2UgdXAgeW91IG5lZWQgdG8gbWFrZSBtb25leVxcblllYWhcXG5XZSB1c2VkIHRvIHBsYXkgcHJldGVuZCBnaXZlIGVhY2ggb3RoZXIgZGlmZmVyZW50IG5hbWVzXFxuV2Ugd291bGQgYnVpbGQgYSByb2NrZXQgc2hpcCBhbmQgdGhlbiB3ZWQgZmx5IGl0IGZhciBhd2F5XFxuVXNlZCB0byBkcmVhbSBvZiBvdXRlciBzcGFjZSBidXQgbm93IHRoZXlyZSBsYXVnaGluZyBhdCBvdXIgZmFjZVxcblNheWluZywgV2FrZSB1cCwgeW91IG5lZWQgdG8gbWFrZSBtb25leVxcblllYWhcXG5XaXNoIHdlIGNvdWxkIHR1cm4gYmFjayB0aW1lLCB0byB0aGUgZ29vZCBvbGQgZGF5c1xcbldoZW4gb3VyIG1vbW1hIHNhbmcgdXMgdG8gc2xlZXAgYnV0IG5vdyB3ZXJlIHN0cmVzc2VkIG91dFxcbldpc2ggd2UgY291bGQgdHVybiBiYWNrIHRpbWUsIHRvIHRoZSBnb29kIG9sZCBkYXlzXFxuV2hlbiBvdXIgbW9tbWEgc2FuZyB1cyB0byBzbGVlcCBidXQgbm93IHdlcmUgc3RyZXNzZWQgb3V0XFxuVXNlZCB0byBwbGF5IHByZXRlbmQsIHVzZWQgdG8gcGxheSBwcmV0ZW5kIGJ1bm55XFxuV2UgdXNlZCB0byBwbGF5IHByZXRlbmQgd2FrZSB1cCwgeW91IG5lZWQgdGhlIG1vbmV5XFxuVXNlZCB0byBwbGF5IHByZXRlbmQgdXNlZCB0byBwbGF5IHByZXRlbmQgYnVubnlcXG5XZSB1c2VkIHRvIHBsYXkgcHJldGVuZCwgd2FrZSB1cCwgeW91IG5lZWQgdGhlIG1vbmV5XFxuV2UgdXNlZCB0byBwbGF5IHByZXRlbmQgZ2l2ZSBlYWNoIG90aGVyIGRpZmZlcmVudCBuYW1lc1xcbldlIHdvdWxkIGJ1aWxkIGEgcm9ja2V0IHNoaXAgYW5kIHRoZW4gd2VkIGZseSBpdCBmYXIgYXdheVxcblVzZWQgdG8gZHJlYW0gb2Ygb3V0ZXIgc3BhY2UgYnV0IG5vdyB0aGV5cmUgbGF1Z2hpbmcgYXQgb3VyIGZhY2VcXG5TYXlpbmcsIFdha2UgdXAsIHlvdSBuZWVkIHRvIG1ha2UgbW9uZXlcXG5ZZWFoXCJcbmBgYCJ9 -->
-<pre class="r"><code>stressed_out &lt;- &quot;I wish I found some better sounds no ones ever heard\nI wish I had a better voice that sang some better words\nI wish I found some chords in an order that is new\nI wish I didnt have to rhyme every time I sang\nI was told when I get older all my fears would shrink\nBut now Im insecure and I care what people think\nMy names Blurryface and I care what you think\nMy names Blurryface and I care what you think\nWish we could turn back time, to the good old days\nWhen our momma sang us to sleep but now were stressed out\nWish we could turn back time to the good old days\nWhen our momma sang us to sleep but now were stressed out\nWere stressed out\nSometimes a certain smell will take me back to when I was young\nHow come Im never able to identify where its coming from\nId make a candle out of it if I ever found it\nTry to sell it never sell out of it Id probably only sell one\nItd be to my brother, cause we have the same nose\nSame clothes homegrown a stones throw from a creek we used to roam\nBut it would remind us of when nothing really mattered\nOut of student loans and tree-house homes we all would take the latter\nMy names Blurryface and I care what you think\nMy names Blurryface and I care what you think\nWish we could turn back time, to the good old days\nWhen our momma sang us to sleep but now were stressed out\nWish we could turn back time, to the good old days\nWhen our momma sang us to sleep but now were stressed out\nWe used to play pretend, give each other different names\nWe would build a rocket ship and then wed fly it far away\nUsed to dream of outer space but now theyre laughing at our face #\nSaying, Wake up you need to make money\nYeah\nWe used to play pretend give each other different names\nWe would build a rocket ship and then wed fly it far away\nUsed to dream of outer space but now theyre laughing at our face\nSaying, Wake up, you need to make money\nYeah\nWish we could turn back time, to the good old days\nWhen our momma sang us to sleep but now were stressed out\nWish we could turn back time, to the good old days\nWhen our momma sang us to sleep but now were stressed out\nUsed to play pretend, used to play pretend bunny\nWe used to play pretend wake up, you need the money\nUsed to play pretend used to play pretend bunny\nWe used to play pretend, wake up, you need the money\nWe used to play pretend give each other different names\nWe would build a rocket ship and then wed fly it far away\nUsed to dream of outer space but now theyre laughing at our face\nSaying, Wake up, you need to make money\nYeah&quot;</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShxZGFwKVxucG9sYXJpdHkoc3RyZXNzZWRfb3V0KVxuYGBgIn0= -->
-<pre class="r"><code>library(qdap)
-polarity(stressed_out)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShxZGFwRGljdGlvbmFyaWVzKVxuIyBDaGVjayB0aGUgc3ViamVjdGl2aXR5IGxleGljb25cbmtleS5wb2xbZ3JlcChcInN0cmVzc1wiLCB4KV1cbmBgYCJ9 -->
-<pre class="r"><code>library(qdapDictionaries)
-# Check the subjectivity lexicon
-key.pol[grep(&quot;stress&quot;, x)]</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBOZXcgbGV4aWNvblxuY3VzdG9tX3BvbCA8LSBzZW50aW1lbnRfZnJhbWUocG9zaXRpdmUud29yZHMsIGMobmVnYXRpdmUud29yZHMsIFwic3RyZXNzZWRcIiwgXCJ0dXJuIGJhY2tcIikpXG5cbiMgQ29tcGFyZSBuZXcgc2NvcmVcbnBvbGFyaXR5KHN0cmVzc2VkX291dCwgcG9sYXJpdHkuZnJhbWUgPSBjdXN0b21fcG9sKVxuYGBgIn0= -->
-<pre class="r"><code># New lexicon
-custom_pol &lt;- sentiment_frame(positive.words, c(negative.words, &quot;stressed&quot;, &quot;turn back&quot;))
-
-# Compare new score
-polarity(stressed_out, polarity.frame = custom_pol)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>polarity(stressed_out, polarity.frame = custom_pol) all total.sentences total.words ave.polarity sd.polarity stan.mean.polarity 1 all 1 518 -0.826 NA NA</p>
-</blockquote>
-</div>
+<div id="chapter-2-course-sentiment-analysis-in-r" class="section level2">
+<h2>Chapter 2 Course Sentiment Analysis in R</h2>
+<p>In the second chapter you will explore 3 subjectivity lexicons from tidytext. Then you will do an inner join to score some text.</p>
+<p>Plutchik’s Wheel of Emotion</p>
 <div id="dtm-vs-tidytext-matrix" class="section level3">
 <h3>DTM vs tidytext matrix</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBBcyBtYXRyaXhcbmFnX2R0bV9tIDwtIGFzLm1hdHJpeChhZ19kdG0pXG5cbiMgRXhhbWluZSBsaW5lIDIyMDYgYW5kIGNvbHVtbnMgMjQ1OjI1MFxuYWdfZHRtX21bMjIwNiwgMjQ1OjI1MF1cblxuIyBUaWR5IHVwIHRoZSBEVE1cbmFnX3RpZHkgPC0gdGlkeShhZ19kdG0pXG5cbiMgRXhhbWluZSB0aWR5IHdpdGggYSB3b3JkIHlvdSBzYXdcbmFnX3RpZHlbODMxOjgzNSwgXVxuYGBgIn0= -->
-<pre class="r"><code># As matrix
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dGV4dClcblxuIyBBcyBtYXRyaXhcbmFnX2R0bV9tIDwtIGFzLm1hdHJpeChhZ19kdG0pXG5cbiMgRXhhbWluZSBsaW5lIDIyMDYgYW5kIGNvbHVtbnMgMjQ1OjI1MFxuYWdfZHRtX21bMjIwNiwgMjQ1OjI1MF1cbmBgYCJ9 -->
+<pre class="r"><code>library(tidytext)
+
+# As matrix
 ag_dtm_m &lt;- as.matrix(ag_dtm)
 
 # Examine line 2206 and columns 245:250
-ag_dtm_m[2206, 245:250]
-
-# Tidy up the DTM
+ag_dtm_m[2206, 245:250]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<blockquote>
+<p>ag_dtm_m[2206, 245:250] bleed bleeds blent bless blessãd blessing 0 0 0 1 0 0</p>
+</blockquote>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBUaWR5IHVwIHRoZSBEVE1cbmFnX3RpZHkgPC0gdGlkeShhZ19kdG0pXG5cbiMgRXhhbWluZSB0aWR5IHdpdGggYSB3b3JkIHlvdSBzYXdcbmFnX3RpZHlbODMxOjgzNSwgXVxuYGBgIn0= -->
+<pre class="r"><code># Tidy up the DTM
 ag_tidy &lt;- tidy(ag_dtm)
 
 # Examine tidy with a word you saw
@@ -544,25 +205,48 @@ ag_tidy[831:835, ]</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<blockquote>
+<p>ag_tidy[831:835, ] # A tibble: 5 x 3 document term count <chr> <chr> <dbl> 1 234 bleeds 1 2 234 sleepeth 1 3 235 comes 1 4 235 will 1 5 235 wisdom 1</p>
+</blockquote>
 </div>
 <div id="examine-the-sentiments-data-frame" class="section level3">
 <h3>Examine the sentiments data frame</h3>
+<p>Examine the sentiments data frame</p>
+<p>So far you have used a single lexicon. Now we will transition to using three, each measuring sentiment in different ways.</p>
+<p>The tidytext package contains a data frame called sentiments. The data frame contains over 23000 terms from three different subjectivity lexicons with corresponding information. Here are some example rows from the sentiments data frame.</p>
+<p>|Word|Sentiment Lexicon Score |abhorrent| NA| AFINN| -3 |cool NA AFINN 1 |congenial positive Bing NA |enemy negative Bing NA |ungrateful anger NRC NA |sectarian anger NRC NA</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBTdWJzZXQgdG8gQUZJTk5cbmFmaW5uX2xleCA8LSBnZXRfc2VudGltZW50cyhcImFmaW5uXCIpXG5cbiMgQ291bnQgQUZJTk4gc2NvcmVzXG5hZmlubl9sZXggJT4lIFxuICBjb3VudChzY29yZSlcbiAgXG4jIFN1YnNldCB0byBucmNcbm5yY19sZXggPC0gZ2V0X3NlbnRpbWVudHMoXCJucmNcIilcblxuIyBQcmludCBucmNfbGV4XG5ucmNfbGV4XG5cbiMgTWFrZSB0aGUgbnJjIGNvdW50cyBvYmplY3Rcbm5yY19jb3VudHMgPC0gbnJjX2xleCAlPiUgXG4gIGNvdW50KHNlbnRpbWVudClcbiAgICAgICAgXG4jIEJhcnBsb3RcbmdncGxvdChucmNfY291bnRzLCBhZXMoeCA9IHNlbnRpbWVudCwgeSA9IG4pKStcbiAgZ2VvbV9iYXIoc3RhdCA9IFwiaWRlbnRpdHlcIikgK1xuICB0aGVtZV9nZG9jcygpXG5gYGAifQ== -->
-<pre class="r"><code># Subset to AFINN
-afinn_lex &lt;- get_sentiments(&quot;afinn&quot;)
-
-# Count AFINN scores
-afinn_lex %&gt;% 
-  count(score)
-  
-# Subset to nrc
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5zdGFsbC5wYWNrYWdlcyhcIlJjcHBcIilcblxuYGBgIn0= -->
+<pre class="r"><code>install.packages(&quot;Rcpp&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gaW5zdGFsbC5wYWNrYWdlcyA6IFVwZGF0aW5nIGxvYWRlZCBwYWNrYWdlc1xuIn0= -->
+<pre><code>Error in install.packages : Updating loaded packages</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<blockquote>
+<p>afinn_lex %&gt;% count(score) # A tibble: 11 x 2 score n <int> <int> 1 -5 16 2 -4 43 3 -3 264 4 -2 965 5 -1 309 6 0 1 7 1 208 8 2 448 9 3 172 10 4 45 11 5 5</p>
+</blockquote>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBTdWJzZXQgdG8gbnJjXG5ucmNfbGV4IDwtIGdldF9zZW50aW1lbnRzKFwibnJjXCIpXG5cbiMgUHJpbnQgbnJjX2xleFxubnJjX2xleFxuYGBgIn0= -->
+<pre class="r"><code># Subset to nrc
 nrc_lex &lt;- get_sentiments(&quot;nrc&quot;)
 
 # Print nrc_lex
-nrc_lex
-
+nrc_lex</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<blockquote>
+<p>nrc_lex # A tibble: 13,901 x 2 word sentiment <chr> <chr> 1 abacus trust 2 abandon fear 3 abandon negative 4 abandon sadness 5 abandoned anger 6 abandoned fear 7 abandoned negative 8 abandoned sadness 9 abandonment anger 10 abandonment fear # … with 13,891 more rows</p>
+</blockquote>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIE1ha2UgdGhlIG5yYyBjb3VudHMgb2JqZWN0XG5ucmNfY291bnRzIDwtIG5yY19sZXggJT4lIFxuICBjb3VudChzZW50aW1lbnQpXG4gICAgICAgIFxuIyBCYXJwbG90XG5nZ3Bsb3QobnJjX2NvdW50cywgYWVzKHggPSBzZW50aW1lbnQsIHkgPSBuKSkrXG4gIGdlb21fYmFyKHN0YXQgPSBcImlkZW50aXR5XCIpICtcbiAgdGhlbWVfZ2RvY3MoKVxuYGBgIn0= -->
+<pre class="r"><code>
 # Make the nrc counts object
 nrc_counts &lt;- nrc_lex %&gt;% 
   count(sentiment)
@@ -623,7 +307,7 @@ ag_bing_words %&gt;%
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIyBDaGFwdGVyIDEgQ291cnNlDQoNCkluIHRoZSBmaXJzdCBjaGFwdGVyLCB5b3Ugd2lsbCBsZWFybiBob3cgdG8gYXBwbHkgcWRhcCdzIHNlbnRpbWVudCBmdW5jdGlvbiBjYWxsZWQgcG9sYXJpdHkoKSAuDQoNCiMjIyBFeGVyY2lzZSAxIFBvbGFyaXR5IHNjb3JpbmcNCg0KYGBge3J9DQpsaWJyYXJ5KG1hZ3JpdHRyKQ0KbGlicmFyeShxZGFwKQ0KcGVyc29uIDwtIGMoIk5pY2siLCAiSm9uYXRoYW4iLCAiTWFydGlqbiIsIk5pY29sZSIsIk5pY2siLCJKb25hdGhhbiIsIk1hcnRpam4iLCJOaWNvbGUiKQ0KdGV4dCA8LSBjKCJEYXRhQ2FtcCBjb3Vyc2VzIGFyZSB0aGUgYmVzdCIsIkkgbGlrZSB0YWxraW5nIHRvIHN0dWRlbnRzIiwiT3RoZXIgb25saW5lIGRhdGEgc2NpZW5jZSBjdXJyaWN1bGEgYXJlIGJvcmluZy4iLA0KICAgICAgICAgICJXaGF0IGlzIGZvciBsdW5jaD8iLCAiRGF0YUNhbXAgaGFzIGxvdHMgb2YgZ3JlYXQgY29udGVudCEiLCAiU3R1ZGVudHMgYXJlIHBhc3Npb25hdGUgYW5kIGFyZSBleGNpdGVkIHRvIGxlYXJuIiwNCiAgICAgICAgICAiT3RoZXIgZGF0YSBzY2llbmNlIGN1cnJpY3VsdW0gaXMgaGFyZCB0byBsZWFybiBhbmQgZGlmZmljdWx0IHRvIHVuZGVyc3RhbmQiLA0KICAgICAgICAgICJJIHRoaW5rIHRoZSBmb29kIGhlcmUgaXMgZ29vZC4iKQ0KdGV4dF9kZiA8LSBkYXRhLmZyYW1lKHBlcnNvbiwgdGV4dCkNCg0KIyBFeGFtaW5lIHRoZSB0ZXh0IGRhdGENCnRleHRfZGYNCg0KIyBDYWxjIG92ZXJhbGwgcG9sYXJpdHkgc2NvcmUNCnRleHRfZGYgJSQlIHBvbGFyaXR5KHRleHQpDQoNCiMgQ2FsYyBwb2xhcml0eSBzY29yZSBieSBwZXJzb24NCmRhdGFjYW1wX2NvbnZlcnNhdGlvbiA8LSB0ZXh0X2RmICUkJSBwb2xhcml0eSh0ZXh0LCBwZXJzb24pDQoNCiMgQ291bnRzIHRhYmxlIGZyb20gZGF0YWNhbXBfY29udmVyc2F0aW9uDQpjb3VudHMoZGF0YWNhbXBfY29udmVyc2F0aW9uKQ0KDQojIFBsb3QgdGhlIGNvbnZlcnNhdGlvbiBwb2xhcml0eQ0KcGxvdChkYXRhY2FtcF9jb252ZXJzYXRpb24pDQpgYGANCiMjIyBUbSByZWZyZXNoZXINCg0KYGBge3J9DQpsaWJyYXJ5KHRtKQ0KY2xlYW5fY29ycHVzIDwtIGZ1bmN0aW9uKGNvcnB1cyl7DQogIGNvcnB1cyA8LSB0bV9tYXAoY29ycHVzLCBjb250ZW50X3RyYW5zZm9ybWVyKHJlcGxhY2VfYWJicmV2aWF0aW9uKSkNCiAgY29ycHVzIDwtIHRtX21hcChjb3JwdXMsIHJlbW92ZVB1bmN0dWF0aW9uKQ0KICBjb3JwdXMgPC0gdG1fbWFwKGNvcnB1cywgcmVtb3ZlTnVtYmVycykNCiAgY29ycHVzIDwtIHRtX21hcChjb3JwdXMsIHJlbW92ZVdvcmRzLCBjKHN0b3B3b3JkcygiZW4iKSwgImNvZmZlZSIpKQ0KICBjb3JwdXMgPC0gdG1fbWFwKGNvcnB1cywgY29udGVudF90cmFuc2Zvcm1lcih0b2xvd2VyKSkNCiAgY29ycHVzIDwtIHRtX21hcChjb3JwdXMsIHN0cmlwV2hpdGVzcGFjZSkNCiAgcmV0dXJuKGNvcnB1cykNCn0NCg0KDQp0bV9kZWZpbmUgPC0gYygiVGV4dCBtaW5pbmcgaXMgdGhlIHByb2Nlc3Mgb2YgZGlzdGlsbGluZyBhY3Rpb25hYmxlIGluc2lnaHRzIGZyb20gdGV4dC4iLCANCiAgICAgICAgICAgICAgICJTZW50aW1lbnQgYW5hbHlzaXMgcmVwcmVzZW50cyB0aGUgc2V0IG9mIHRvb2xzIHRvIGV4dHJhY3QgYW4gYXV0aG9yJ3MgZmVlbGluZ3MgdG93YXJkcyBhIHN1YmplY3QuIikNCg0KIyBjbGVhbl9jb3JwdXMoKSwgdG1fZGVmaW5lIGFyZSBwcmUtZGVmaW5lZA0KY2xlYW5fY29ycHVzDQp0bV9kZWZpbmUNCg0KIyBDcmVhdGUgYSBWZWN0b3JTb3VyY2UNCnRtX3ZlY3RvciA8LSBWZWN0b3JTb3VyY2UodG1fZGVmaW5lKQ0KDQojIEFwcGx5IFZDb3JwdXMNCnRtX2NvcnB1cyA8LSBWQ29ycHVzKHRtX3ZlY3RvcikNCg0KIyBFeGFtaW5lIHRoZSBmaXJzdCBkb2N1bWVudCdzIGNvbnRlbnRzDQpjb250ZW50KHRtX2NvcnB1c1tbMV1dKQ0KDQojIENsZWFuIHRoZSB0ZXh0DQp0bV9jbGVhbiA8LSBjbGVhbl9jb3JwdXModG1fY29ycHVzKQ0KDQojIFJlZXhhbWluZSB0aGUgY29udGVudHMgb2YgdGhlIGZpcnN0IGRvYw0KY29udGVudCh0bV9jbGVhbltbMV1dKQ0KYGBgDQoNCiMjIyBBbm90aGVyIHJlZnJlc2hlcg0KDQpgYGB7cn0NCiMgY2xlYW5fdGV4dCBpcyBwcmUtZGVmaW5lZCBpdCdzIGEgY29ycG9yYSBmcm9tIDEwMDAgdHdlZXRzIGFib3V0IGNvZmZlZSAqZnJvbSBiYWcgb2Ygd29yZHMgY291cnNlDQpjbGVhbl90ZXh0DQoNCiMgQ3JlYXRlIHRmX2R0bQ0KdGZfZHRtIDwtIERvY3VtZW50VGVybU1hdHJpeChjbGVhbl90ZXh0KQ0KDQojIENyZWF0ZSB0Zl9kdG1fbQ0KdGZfZHRtX20gPC0gYXMubWF0cml4KHRmX2R0bSkNCg0KIyBEaW1lbnNpb25zIG9mIERUTSBtYXRyaXgNCmRpbSh0Zl9kdG1fbSkNCg0KIyBTdWJzZXQgcGFydCBvZiB0Zl9kdG1fbSBmb3IgY29tcGFyaXNvbg0KdGZfZHRtX21bMTY6MjAsMjk3NToyOTg1XQ0KYGBgDQoNCiMjIyBaaXBmJ3MgTGF3DQoNCmBgYHtyfQ0KI2luc3RhbGwucGFja2FnZXMoIm1ldHJpY3NncmFwaGljcyIpDQpsaWJyYXJ5KG1ldHJpY3NncmFwaGljcykNCg0KIyBFeGFtaW5lIHNiX3dvcmRzDQpoZWFkKHNiX3dvcmRzKQ0KDQojIENyZWF0ZSBleHBlY3RhdGlvbnMNCnNiX3dvcmRzJGV4cGVjdGF0aW9ucyA8LSBzYl93b3JkcyAlJCUgDQogIHtmcmVxIC8gcmFua30NCg0KIyBDcmVhdGUgbWV0cmljcyBwbG90DQpzYl9wbG90IDwtIG1qc19wbG90KHNiX3dvcmRzLCB4ID0gcmFuaywgeSA9IGZyZXEsIHNob3dfcm9sbG92ZXJfdGV4dCA9IEZBTFNFKQ0KDQojIEFkZCAxc3QgbGluZQ0Kc2JfcGxvdCA8LSBtanNfbGluZShzYl9wbG90KQ0KDQojIEFkZCAybmQgbGluZQ0Kc2JfcGxvdCA8LSBtanNfYWRkX2xpbmUoc2JfcGxvdCwgZXhwZWN0YXRpb25zKQ0KDQojIEFkZCBsZWdlbmQNCnNiX3Bsb3QgPC0gbWpzX2FkZF9sZWdlbmQoc2JfcGxvdCwgbGVnZW5kID0gYygiRnJlcXVlbmN5IiwgIkV4cGVjdGF0aW9uIikpDQoNCiMgRGlzcGxheSBwbG90DQpzYl9wbG90DQoNCmBgYA0KIyMjIFBvbGFyaXR5IG9uIGFjdHVhbCB0ZXh0DQoNCmBgYHtyfQ0KIyBFeGFtcGxlIHN0YXRlbWVudHMNCnBvc2l0aXZlIDwtICJEYXRhQ2FtcCBjb3Vyc2VzIGFyZSBnb29kIGZvciBsZWFybmluZyINCg0KIyBDYWxjdWxhdGUgcG9sYXJpdHkgb2YgYm90aCBzdGF0ZW1lbnRzDQoocG9zX3Njb3JlIDwtcG9sYXJpdHkocG9zaXRpdmUpKQ0KDQojIEdldCBjb3VudHMNCihwb3NfY291bnRzIDwtIGNvdW50cyhwb3Nfc2NvcmUpKQ0KICANCiMgTnVtYmVyIG9mIHBvc2l0aXZlIHdvcmRzDQpuX2dvb2QgPC0gbGVuZ3RoKHBvc19jb3VudHMkcG9zLndvcmRzW1sxXV0pDQogIA0KIyBUb3RhbCBudW1iZXIgb2Ygd29yZHMNCm5fd29yZHMgPC0gcG9zX2NvdW50cyR3Yw0KICANCiMgVmVyaWZ5IHBvbGFyaXR5IHNjb3JlDQpuX2dvb2QgLyBzcXJ0KG5fd29yZHMpDQpgYGANCg0KDQojIyMgSGFwcHkgU29uZ3MhDQoNCmBgYHtyfQ0KIyBFeGFtaW5lIGNvbnZlcnNhdGlvbg0KY29udmVyc2F0aW9uDQpgYGANCj4gY29udmVyc2F0aW9uDQogIHN0dWRlbnQgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdGV4dA0KMSBNYXJ0aWpuICAgICAgICAgICAgICAgICAgICAgICAgICAgIFRoaXMgcmVzdGF1cmFudCBpcyBuZXZlciBiYWQNCjIgICAgTmljayAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFRoZSBsdW5jaCB3YXMgdmVyeSBnb29kDQozICBOaWNvbGUgSXQgd2FzIGF3ZnVsIEkgZ290IGZvb2QgcG9pc29uaW5nIGFuZCB3YXMgZXh0cmVtZWx5IGlsbA0KDQpgYGB7cn0NCiMgUG9sYXJpdHkgLSBBbGwNCnBvbGFyaXR5KGNvbnZlcnNhdGlvbiR0ZXh0KQ0KYGBgDQoNCj4gcG9sYXJpdHkoY29udmVyc2F0aW9uJHRleHQpDQogIGFsbCB0b3RhbC5zZW50ZW5jZXMgdG90YWwud29yZHMgYXZlLnBvbGFyaXR5IHNkLnBvbGFyaXR5IHN0YW4ubWVhbi5wb2xhcml0eQ0KMSBhbGwgICAgICAgICAgICAgICAzICAgICAgICAgIDIxICAgICAgICAwLjMxNyAgICAgICAwLjU2NSAgICAgICAgICAgICAgMC41NjENCg0KYGBge3J9DQojIFBvbGFyaXR5IC0gR3JvdXBlZA0Kc3R1ZGVudF9wb2wgPC0gY29udmVyc2F0aW9uICUkJQ0KICBwb2xhcml0eSh0ZXh0LCBzdHVkZW50KQ0KDQojIFN0dWRlbnQgcmVzdWx0cw0Kc2NvcmVzKHN0dWRlbnRfcG9sKQ0KYGBgDQoNCj4gc2NvcmVzKHN0dWRlbnRfcG9sKQ0KICBzdHVkZW50IHRvdGFsLnNlbnRlbmNlcyB0b3RhbC53b3JkcyBhdmUucG9sYXJpdHkgc2QucG9sYXJpdHkgc3Rhbi5tZWFuLnBvbGFyaXR5DQoxIE1hcnRpam4gICAgICAgICAgICAgICAxICAgICAgICAgICA1ICAgICAgICAwLjQ0NyAgICAgICAgICBOQSAgICAgICAgICAgICAgICAgTkENCjIgICAgTmljayAgICAgICAgICAgICAgIDEgICAgICAgICAgIDUgICAgICAgIDAuODA1ICAgICAgICAgIE5BICAgICAgICAgICAgICAgICBOQQ0KMyAgTmljb2xlICAgICAgICAgICAgICAgMSAgICAgICAgICAxMSAgICAgICAtMC4zMDIgICAgICAgICAgTkEgICAgICAgICAgICAgICAgIE5BDQoNCmBgYHtyfQ0KIyBTZW50ZW5jZSBieSBzZW50ZW5jZQ0KY291bnRzKHN0dWRlbnRfcG9sKQ0KYGBgDQoNCj4gY291bnRzKHN0dWRlbnRfcG9sKQ0KICBzdHVkZW50IHdjIHBvbGFyaXR5IHBvcy53b3JkcyBuZWcud29yZHMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0ZXh0LnZhcg0KMSBNYXJ0aWpuICA1ICAgIDAuNDQ3ICAgICAgICAgLSAgICAgICBiYWQgICAgICAgICAgICAgICAgICAgICAgICAgICAgVGhpcyByZXN0YXVyYW50IGlzIG5ldmVyIGJhZA0KMiAgICBOaWNrICA1ICAgIDAuODA1ICAgICAgZ29vZCAgICAgICAgIC0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBUaGUgbHVuY2ggd2FzIHZlcnkgZ29vZA0KMyAgTmljb2xlIDExICAgLTAuMzAyICAgICAgICAgLSAgICAgYXdmdWwgSXQgd2FzIGF3ZnVsIEkgZ290IGZvb2QgcG9pc29uaW5nIGFuZCB3YXMgZXh0cmVtZWx5IGlsbA0KDQpgYGB7cn0NCiMgcWRhcCBwbG90DQpwbG90KHN0dWRlbnRfcG9sKQ0KYGBgDQoNCg0KIyMjIExPTCwgdGhpcyBzb25nIGlzIHdpY2tlZCBnb29kIChhZGp1c3RpbmcgbGV4aWNvbnMpDQoNCiANCmBgYHtyfQ0KIyBFeGFtaW5lIHRoZSBrZXkucG9sDQprZXkucG9sDQpgYGANCg0KPiBrZXkucG9sDQogICAgICAgICAgICAgICB4ICB5DQogICAxOiAgICAgYSBwbHVzICAxDQogICAyOiAgIGFibm9ybWFsIC0xDQogICAzOiAgICBhYm9saXNoIC0xDQogICA0OiBhYm9taW5hYmxlIC0xDQogICA1OiBhYm9taW5hYmx5IC0xDQogIC0tLSAgICAgICAgICAgICAgDQo2Nzc1OiAgemVhbG91c2x5IC0xDQo2Nzc2OiAgICAgemVuaXRoICAxDQo2Nzc3OiAgICAgICB6ZXN0ICAxDQo2Nzc4OiAgICAgIHppcHB5ICAxDQo2Nzc5OiAgICAgem9tYmllIC0xDQoNCmBgYHtyfQ0KIyBOZWdhdG9ycw0KbmVnYXRpb24ud29yZHMNCmBgYA0KDQo+IG5lZ2F0aW9uLndvcmRzDQogWzFdICJhaW4ndCIgICAgICJhcmVuJ3QiICAgICJjYW4ndCIgICAgICJjb3VsZG4ndCIgICJkaWRuJ3QiICAgICJkb2Vzbid0IiAgDQogWzddICJkb24ndCIgICAgICJoYXNuJ3QiICAgICJpc24ndCIgICAgICJtaWdodG4ndCIgICJtdXN0bid0IiAgICJuZWl0aGVyIiAgDQpbMTNdICJuZXZlciIgICAgICJubyIgICAgICAgICJub2JvZHkiICAgICJub3IiICAgICAgICJub3QiICAgICAgICJzaGFuJ3QiICAgDQpbMTldICJzaG91bGRuJ3QiICJ3YXNuJ3QiICAgICJ3ZXJlbid0IiAgICJ3b24ndCIgICAgICJ3b3VsZG4ndCINCg0KDQpgYGB7cn0NCiMgQW1wbGlmaWVycw0KYW1wbGlmaWNhdGlvbi53b3Jkcw0KYGBgDQoNCj4gYW1wbGlmaWNhdGlvbi53b3Jkcw0KIFsxXSAiYWN1dGUiICAgICAgICAgImFjdXRlbHkiICAgICAgICJjZXJ0YWluIiAgICAgICAiY2VydGFpbmx5IiAgICANCiBbNV0gImNvbG9zc2FsIiAgICAgICJjb2xvc3NhbGx5IiAgICAiZGVlcCIgICAgICAgICAgImRlZXBseSIgICAgICAgDQogWzldICJkZWZpbml0ZSIgICAgICAiZGVmaW5pdGVseSIgICAgImVub3Jtb3VzIiAgICAgICJlbm9ybW91c2x5IiAgIA0KWzEzXSAiZXh0cmVtZSIgICAgICAgImV4dHJlbWVseSIgICAgICJncmVhdCIgICAgICAgICAiZ3JlYXRseSIgICAgICANClsxN10gImhlYXZpbHkiICAgICAgICJoZWF2eSIgICAgICAgICAiaGlnaCIgICAgICAgICAgImhpZ2hseSIgICAgICAgDQpbMjFdICJodWdlIiAgICAgICAgICAiaHVnZWx5IiAgICAgICAgImltbWVuc2UiICAgICAgICJpbW1lbnNlbHkiICAgIA0KWzI1XSAiaW5jYWxjdWxhYmxlIiAgImluY2FsY3VsYWJseSIgICJtYXNzaXZlIiAgICAgICAibWFzc2l2ZWx5IiAgICANClsyOV0gIm1vcmUiICAgICAgICAgICJwYXJ0aWN1bGFyIiAgICAicGFydGljdWxhcmx5IiAgInB1cnBvc2UiICAgICAgDQpbMzNdICJwdXJwb3NlbHkiICAgICAicXVpdGUiICAgICAgICAgInJlYWwiICAgICAgICAgICJyZWFsbHkiICAgICAgIA0KWzM3XSAic2VyaW91cyIgICAgICAgInNlcmlvdXNseSIgICAgICJzZXZlcmUiICAgICAgICAic2V2ZXJlbHkiICAgICANCls0MV0gInNpZ25pZmljYW50IiAgICJzaWduaWZpY2FudGx5IiAic3VyZSIgICAgICAgICAgInN1cmVseSIgICAgICAgDQpbNDVdICJ0cnVlIiAgICAgICAgICAidHJ1bHkiICAgICAgICAgInZhc3QiICAgICAgICAgICJ2YXN0bHkiICAgICAgIA0KWzQ5XSAidmVyeSINCg0KDQpgYGB7cn0NCiMgRGUtYW1wbGlmaWVycw0KZGVhbXBsaWZpY2F0aW9uLndvcmRzDQpgYGANCg0KPiBkZWFtcGxpZmljYXRpb24ud29yZHMNCiBbMV0gImJhcmVseSIgICAgICAgImZhaW50bHkiICAgICAgImZldyIgICAgICAgICAgImhhcmRseSIgICAgICAgImxpdHRsZSIgICAgICANCiBbNl0gIm9ubHkiICAgICAgICAgInJhcmVseSIgICAgICAgInNlbGRvbSIgICAgICAgInNsaWdodGx5IiAgICAgInNwYXJlc2x5IiAgICANClsxMV0gInNwb3JhZGljYWxseSIgInZlcnkgZmV3IiAgICAgInZlcnkgbGl0dGxlIg0KDQpgYGB7cn0NCiMgRXhhbWluZQ0KdGV4dA0KYGBgDQoNCj4gIyBFeGFtaW5lDQo+IHRleHQNCiAgc3BlYWtlcg0KMSBiZXlvbmNlDQoyICAgamF5X3oNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgd29yZHMNCjEgSSBrbm93IEkgZG9udCB1bmRlcnN0YW5kIEp1c3QgaG93IHlvdXIgbG92ZSBjYW4gZG8gd2hhdCBubyBvbmUgZWxzZSBjYW4NCjIgICAgICAgICAgICAgICAgICAgIFRoZXkgY2FudCBmaWd1cmUgaGltIG91dCB0aGV5IGxpa2UgaGV5LCBpcyBoZSBpbnNhbmUNCg0KDQpgYGB7cn0NCiMgRXhwbGljaXQgcG9sYXJpdHkgcGFyYW1ldGVycw0KcG9sYXJpdHkoDQogIHRleHQudmFyICAgICAgID0gdGV4dCR3b3JkcywNCiAgZ3JvdXBpbmcudmFyICAgPSB0ZXh0JHNwZWFrZXIsDQogIHBvbGFyaXR5LmZyYW1lID0ga2V5LnBvbCwNCiAgbmVnYXRvcnMgICAgICAgPSBuZWdhdGlvbi53b3JkcywNCiAgYW1wbGlmaWVycyAgICAgPSBhbXBsaWZpY2F0aW9uLndvcmRzLA0KICBkZWFtcGxpZmllcnMgICA9IGRlYW1wbGlmaWNhdGlvbi53b3JkcyANCikNCmBgYA0KDQogIHNwZWFrZXIgdG90YWwuc2VudGVuY2VzIHRvdGFsLndvcmRzIGF2ZS5wb2xhcml0eSBzZC5wb2xhcml0eSBzdGFuLm1lYW4ucG9sYXJpdHkNCjEgYmV5b25jZSAgICAgICAgICAgICAgIDEgICAgICAgICAgMTYgICAgICAgICAwLjI1ICAgICAgICAgIE5BICAgICAgICAgICAgICAgICBOQQ0KMiAgIGpheV96ICAgICAgICAgICAgICAgMSAgICAgICAgICAxMSAgICAgICAgIDAuMDAgICAgICAgICAgTkEgICAgICAgICAgICAgICAgIE5BDQo+IA0KDQojIyMgU3RyZXNzZWQgb3V0IQ0KDQpgYGB7cn0NCnN0cmVzc2VkX291dCA8LSAiSSB3aXNoIEkgZm91bmQgc29tZSBiZXR0ZXIgc291bmRzIG5vIG9uZXMgZXZlciBoZWFyZFxuSSB3aXNoIEkgaGFkIGEgYmV0dGVyIHZvaWNlIHRoYXQgc2FuZyBzb21lIGJldHRlciB3b3Jkc1xuSSB3aXNoIEkgZm91bmQgc29tZSBjaG9yZHMgaW4gYW4gb3JkZXIgdGhhdCBpcyBuZXdcbkkgd2lzaCBJIGRpZG50IGhhdmUgdG8gcmh5bWUgZXZlcnkgdGltZSBJIHNhbmdcbkkgd2FzIHRvbGQgd2hlbiBJIGdldCBvbGRlciBhbGwgbXkgZmVhcnMgd291bGQgc2hyaW5rXG5CdXQgbm93IEltIGluc2VjdXJlIGFuZCBJIGNhcmUgd2hhdCBwZW9wbGUgdGhpbmtcbk15IG5hbWVzIEJsdXJyeWZhY2UgYW5kIEkgY2FyZSB3aGF0IHlvdSB0aGlua1xuTXkgbmFtZXMgQmx1cnJ5ZmFjZSBhbmQgSSBjYXJlIHdoYXQgeW91IHRoaW5rXG5XaXNoIHdlIGNvdWxkIHR1cm4gYmFjayB0aW1lLCB0byB0aGUgZ29vZCBvbGQgZGF5c1xuV2hlbiBvdXIgbW9tbWEgc2FuZyB1cyB0byBzbGVlcCBidXQgbm93IHdlcmUgc3RyZXNzZWQgb3V0XG5XaXNoIHdlIGNvdWxkIHR1cm4gYmFjayB0aW1lIHRvIHRoZSBnb29kIG9sZCBkYXlzXG5XaGVuIG91ciBtb21tYSBzYW5nIHVzIHRvIHNsZWVwIGJ1dCBub3cgd2VyZSBzdHJlc3NlZCBvdXRcbldlcmUgc3RyZXNzZWQgb3V0XG5Tb21ldGltZXMgYSBjZXJ0YWluIHNtZWxsIHdpbGwgdGFrZSBtZSBiYWNrIHRvIHdoZW4gSSB3YXMgeW91bmdcbkhvdyBjb21lIEltIG5ldmVyIGFibGUgdG8gaWRlbnRpZnkgd2hlcmUgaXRzIGNvbWluZyBmcm9tXG5JZCBtYWtlIGEgY2FuZGxlIG91dCBvZiBpdCBpZiBJIGV2ZXIgZm91bmQgaXRcblRyeSB0byBzZWxsIGl0IG5ldmVyIHNlbGwgb3V0IG9mIGl0IElkIHByb2JhYmx5IG9ubHkgc2VsbCBvbmVcbkl0ZCBiZSB0byBteSBicm90aGVyLCBjYXVzZSB3ZSBoYXZlIHRoZSBzYW1lIG5vc2VcblNhbWUgY2xvdGhlcyBob21lZ3Jvd24gYSBzdG9uZXMgdGhyb3cgZnJvbSBhIGNyZWVrIHdlIHVzZWQgdG8gcm9hbVxuQnV0IGl0IHdvdWxkIHJlbWluZCB1cyBvZiB3aGVuIG5vdGhpbmcgcmVhbGx5IG1hdHRlcmVkXG5PdXQgb2Ygc3R1ZGVudCBsb2FucyBhbmQgdHJlZS1ob3VzZSBob21lcyB3ZSBhbGwgd291bGQgdGFrZSB0aGUgbGF0dGVyXG5NeSBuYW1lcyBCbHVycnlmYWNlIGFuZCBJIGNhcmUgd2hhdCB5b3UgdGhpbmtcbk15IG5hbWVzIEJsdXJyeWZhY2UgYW5kIEkgY2FyZSB3aGF0IHlvdSB0aGlua1xuV2lzaCB3ZSBjb3VsZCB0dXJuIGJhY2sgdGltZSwgdG8gdGhlIGdvb2Qgb2xkIGRheXNcbldoZW4gb3VyIG1vbW1hIHNhbmcgdXMgdG8gc2xlZXAgYnV0IG5vdyB3ZXJlIHN0cmVzc2VkIG91dFxuV2lzaCB3ZSBjb3VsZCB0dXJuIGJhY2sgdGltZSwgdG8gdGhlIGdvb2Qgb2xkIGRheXNcbldoZW4gb3VyIG1vbW1hIHNhbmcgdXMgdG8gc2xlZXAgYnV0IG5vdyB3ZXJlIHN0cmVzc2VkIG91dFxuV2UgdXNlZCB0byBwbGF5IHByZXRlbmQsIGdpdmUgZWFjaCBvdGhlciBkaWZmZXJlbnQgbmFtZXNcbldlIHdvdWxkIGJ1aWxkIGEgcm9ja2V0IHNoaXAgYW5kIHRoZW4gd2VkIGZseSBpdCBmYXIgYXdheVxuVXNlZCB0byBkcmVhbSBvZiBvdXRlciBzcGFjZSBidXQgbm93IHRoZXlyZSBsYXVnaGluZyBhdCBvdXIgZmFjZSAjXG5TYXlpbmcsIFdha2UgdXAgeW91IG5lZWQgdG8gbWFrZSBtb25leVxuWWVhaFxuV2UgdXNlZCB0byBwbGF5IHByZXRlbmQgZ2l2ZSBlYWNoIG90aGVyIGRpZmZlcmVudCBuYW1lc1xuV2Ugd291bGQgYnVpbGQgYSByb2NrZXQgc2hpcCBhbmQgdGhlbiB3ZWQgZmx5IGl0IGZhciBhd2F5XG5Vc2VkIHRvIGRyZWFtIG9mIG91dGVyIHNwYWNlIGJ1dCBub3cgdGhleXJlIGxhdWdoaW5nIGF0IG91ciBmYWNlXG5TYXlpbmcsIFdha2UgdXAsIHlvdSBuZWVkIHRvIG1ha2UgbW9uZXlcblllYWhcbldpc2ggd2UgY291bGQgdHVybiBiYWNrIHRpbWUsIHRvIHRoZSBnb29kIG9sZCBkYXlzXG5XaGVuIG91ciBtb21tYSBzYW5nIHVzIHRvIHNsZWVwIGJ1dCBub3cgd2VyZSBzdHJlc3NlZCBvdXRcbldpc2ggd2UgY291bGQgdHVybiBiYWNrIHRpbWUsIHRvIHRoZSBnb29kIG9sZCBkYXlzXG5XaGVuIG91ciBtb21tYSBzYW5nIHVzIHRvIHNsZWVwIGJ1dCBub3cgd2VyZSBzdHJlc3NlZCBvdXRcblVzZWQgdG8gcGxheSBwcmV0ZW5kLCB1c2VkIHRvIHBsYXkgcHJldGVuZCBidW5ueVxuV2UgdXNlZCB0byBwbGF5IHByZXRlbmQgd2FrZSB1cCwgeW91IG5lZWQgdGhlIG1vbmV5XG5Vc2VkIHRvIHBsYXkgcHJldGVuZCB1c2VkIHRvIHBsYXkgcHJldGVuZCBidW5ueVxuV2UgdXNlZCB0byBwbGF5IHByZXRlbmQsIHdha2UgdXAsIHlvdSBuZWVkIHRoZSBtb25leVxuV2UgdXNlZCB0byBwbGF5IHByZXRlbmQgZ2l2ZSBlYWNoIG90aGVyIGRpZmZlcmVudCBuYW1lc1xuV2Ugd291bGQgYnVpbGQgYSByb2NrZXQgc2hpcCBhbmQgdGhlbiB3ZWQgZmx5IGl0IGZhciBhd2F5XG5Vc2VkIHRvIGRyZWFtIG9mIG91dGVyIHNwYWNlIGJ1dCBub3cgdGhleXJlIGxhdWdoaW5nIGF0IG91ciBmYWNlXG5TYXlpbmcsIFdha2UgdXAsIHlvdSBuZWVkIHRvIG1ha2UgbW9uZXlcblllYWgiDQpgYGANCg0KYGBge3J9DQpsaWJyYXJ5KHFkYXApDQpwb2xhcml0eShzdHJlc3NlZF9vdXQpDQpgYGANCg0KYGBge3J9DQpsaWJyYXJ5KHFkYXBEaWN0aW9uYXJpZXMpDQojIENoZWNrIHRoZSBzdWJqZWN0aXZpdHkgbGV4aWNvbg0Ka2V5LnBvbFtncmVwKCJzdHJlc3MiLCB4KV0NCmBgYA0KDQoNCg0KYGBge3J9DQojIE5ldyBsZXhpY29uDQpjdXN0b21fcG9sIDwtIHNlbnRpbWVudF9mcmFtZShwb3NpdGl2ZS53b3JkcywgYyhuZWdhdGl2ZS53b3JkcywgInN0cmVzc2VkIiwgInR1cm4gYmFjayIpKQ0KDQojIENvbXBhcmUgbmV3IHNjb3JlDQpwb2xhcml0eShzdHJlc3NlZF9vdXQsIHBvbGFyaXR5LmZyYW1lID0gY3VzdG9tX3BvbCkNCmBgYA0KDQo+IHBvbGFyaXR5KHN0cmVzc2VkX291dCwgcG9sYXJpdHkuZnJhbWUgPSBjdXN0b21fcG9sKQ0KICBhbGwgdG90YWwuc2VudGVuY2VzIHRvdGFsLndvcmRzIGF2ZS5wb2xhcml0eSBzZC5wb2xhcml0eSBzdGFuLm1lYW4ucG9sYXJpdHkNCjEgYWxsICAgICAgICAgICAgICAgMSAgICAgICAgIDUxOCAgICAgICAtMC44MjYgICAgICAgICAgTkEgICAgICAgICAgICAgICAgIE5BDQoNCg0KIyMjIERUTSB2cyB0aWR5dGV4dCBtYXRyaXgNCg0KYGBge3J9DQojIEFzIG1hdHJpeA0KYWdfZHRtX20gPC0gYXMubWF0cml4KGFnX2R0bSkNCg0KIyBFeGFtaW5lIGxpbmUgMjIwNiBhbmQgY29sdW1ucyAyNDU6MjUwDQphZ19kdG1fbVsyMjA2LCAyNDU6MjUwXQ0KDQojIFRpZHkgdXAgdGhlIERUTQ0KYWdfdGlkeSA8LSB0aWR5KGFnX2R0bSkNCg0KIyBFeGFtaW5lIHRpZHkgd2l0aCBhIHdvcmQgeW91IHNhdw0KYWdfdGlkeVs4MzE6ODM1LCBdDQpgYGANCg0KDQojIyMgRXhhbWluZSB0aGUgc2VudGltZW50cyBkYXRhIGZyYW1lDQoNCmBgYHtyfQ0KIyBTdWJzZXQgdG8gQUZJTk4NCmFmaW5uX2xleCA8LSBnZXRfc2VudGltZW50cygiYWZpbm4iKQ0KDQojIENvdW50IEFGSU5OIHNjb3Jlcw0KYWZpbm5fbGV4ICU+JSANCiAgY291bnQoc2NvcmUpDQogIA0KIyBTdWJzZXQgdG8gbnJjDQpucmNfbGV4IDwtIGdldF9zZW50aW1lbnRzKCJucmMiKQ0KDQojIFByaW50IG5yY19sZXgNCm5yY19sZXgNCg0KIyBNYWtlIHRoZSBucmMgY291bnRzIG9iamVjdA0KbnJjX2NvdW50cyA8LSBucmNfbGV4ICU+JSANCiAgY291bnQoc2VudGltZW50KQ0KICAgICAgICANCiMgQmFycGxvdA0KZ2dwbG90KG5yY19jb3VudHMsIGFlcyh4ID0gc2VudGltZW50LCB5ID0gbikpKw0KICBnZW9tX2JhcihzdGF0ID0gImlkZW50aXR5IikgKw0KICB0aGVtZV9nZG9jcygpDQpgYGANCg0KIyMjIHNpbXBsZSBleGFtcGxlIG9uIHBvbGFyaXR5DQoNCmBgYHtyfQ0KIyBRZGFwIHBvbGFyaXR5DQpwb2xhcml0eShhZ190eHQpDQpgYGANCg0KPiBwb2xhcml0eShhZ190eHQpDQpXYXJuaW5nIG1lc3NhZ2U6IA0KICBTb21lIHJvd3MgY29udGFpbiBkb3VibGUgcHVuY3R1YXRpb24uICBTdWdnZXN0ZWQgdXNlIG9mIGBzZW50U3BsaXRgIGZ1bmN0aW9uLg0KICBhbGwgdG90YWwuc2VudGVuY2VzIHRvdGFsLndvcmRzIGF2ZS5wb2xhcml0eSBzZC5wb2xhcml0eSBzdGFuLm1lYW4ucG9sYXJpdHkNCjEgYWxsICAgICAgICAgICAgIDEwMCAgICAgICAxNTE1NSAgICAgICAtMi43ODMgICAgICAgICAgTkEgICAgICAgICAgICAgICAgIE5BDQoNCmBgYHtyfQ0KIyBHZXQgQmluZyBsZXhpY29uDQpiaW5nIDwtIGdldF9zZW50aW1lbnRzKCJiaW5nIikNCg0KIyBKb2luIHRleHQgdG8gbGV4aWNvbg0KYWdfYmluZ193b3JkcyA8LSBpbm5lcl9qb2luKGFnX3RpZHksIGJpbmcsIGJ5ID0gYygidGVybSIgPSAid29yZCIpKQ0KDQojIEV4YW1pbmUNCmFnX2Jpbmdfd29yZHMNCmBgYA0KDQo+IGFnX2Jpbmdfd29yZHMNCiMgQSB0aWJibGU6IDQ4MyB4IDQNCiAgIGRvY3VtZW50ICAgICAgIHRlcm0gY291bnQgc2VudGltZW50DQogICAgICA8Y2hyPiAgICAgIDxjaHI+IDxkYmw+ICAgICA8Y2hyPg0KIDEgICAgICAgIDEgIGFidW5kYW5jZSAgICAgMSAgcG9zaXRpdmUNCiAyICAgICAgICAxICAgIGFjY2xhaW0gICAgIDEgIHBvc2l0aXZlDQogMyAgICAgICAgMSAgICAgICBhY2hlICAgICAyICBuZWdhdGl2ZQ0KIDQgICAgICAgIDEgICAgIGFjaGluZyAgICAgMyAgbmVnYXRpdmUNCiA1ICAgICAgICAxIGFmZmxpY3Rpb24gICAgIDEgIG5lZ2F0aXZlDQogNiAgICAgICAgMSAgICBhZmZyb250ICAgICAxICBuZWdhdGl2ZQ0KIDcgICAgICAgIDEgICAgIGFmcmFpZCAgICAgMiAgbmVnYXRpdmUNCiA4ICAgICAgICAxICAgICBhZ2hhc3QgICAgIDEgIG5lZ2F0aXZlDQogOSAgICAgICAgMSAgICAgIGFnb255ICAgICA1ICBuZWdhdGl2ZQ0KMTAgICAgICAgIDEgICAgICBhbXBseSAgICAgMSAgcG9zaXRpdmUNCiMgLi4uIHdpdGggNDczIG1vcmUgcm93cw0KDQpgYGB7cn0NCg0KDQojIEdldCBjb3VudHMgYnkgc2VudGltZW50DQphZ19iaW5nX3dvcmRzICU+JQ0KICBjb3VudChzZW50aW1lbnQpDQpgYGANCg0KPiBhZ19iaW5nX3dvcmRzICU+JQ0KICAgIGNvdW50KHNlbnRpbWVudCkNCiMgQSB0aWJibGU6IDIgeCAyDQogIHNlbnRpbWVudCAgICAgbg0KICAgICAgPGNocj4gPGludD4NCjEgIG5lZ2F0aXZlICAgMzIxDQoyICBwb3NpdGl2ZSAgIDE2Mg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIyBDaGFwdGVyIDIgQ291cnNlIFNlbnRpbWVudCBBbmFseXNpcyBpbiBSDQoNCkluIHRoZSBzZWNvbmQgY2hhcHRlciB5b3Ugd2lsbCBleHBsb3JlIDMgc3ViamVjdGl2aXR5IGxleGljb25zIGZyb20gdGlkeXRleHQuIFRoZW4geW91IHdpbGwgZG8gYW4gaW5uZXIgam9pbiB0byBzY29yZSBzb21lIHRleHQuDQoNCg0KUGx1dGNoaWvigJlzIFdoZWVsIG9mIEVtb3Rpb24NCg0KDQoNCiMjIyBEVE0gdnMgdGlkeXRleHQgbWF0cml4DQoNCmBgYHtyfQ0KbGlicmFyeSh0aWR5dGV4dCkNCg0KIyBBcyBtYXRyaXgNCmFnX2R0bV9tIDwtIGFzLm1hdHJpeChhZ19kdG0pDQoNCiMgRXhhbWluZSBsaW5lIDIyMDYgYW5kIGNvbHVtbnMgMjQ1OjI1MA0KYWdfZHRtX21bMjIwNiwgMjQ1OjI1MF0NCmBgYA0KDQo+IGFnX2R0bV9tWzIyMDYsIDI0NToyNTBdDQogICAgICAgYmxlZWQgICAgICAgYmxlZWRzICAgICAgICBibGVudCAgICAgICAgYmxlc3MgYmxlc3PDo2QgICAgIGJsZXNzaW5nIA0KICAgICAgICAgICAwICAgICAgICAgICAgMCAgICAgICAgICAgIDAgICAgICAgICAgICAxICAgICAgICAgICAgMCAgICAgICAgICAgIDANCg0KYGBge3J9DQojIFRpZHkgdXAgdGhlIERUTQ0KYWdfdGlkeSA8LSB0aWR5KGFnX2R0bSkNCg0KIyBFeGFtaW5lIHRpZHkgd2l0aCBhIHdvcmQgeW91IHNhdw0KYWdfdGlkeVs4MzE6ODM1LCBdDQpgYGANCg0KPiBhZ190aWR5WzgzMTo4MzUsIF0NCiMgQSB0aWJibGU6IDUgeCAzDQogIGRvY3VtZW50ICAgICB0ZXJtIGNvdW50DQogICAgIDxjaHI+ICAgIDxjaHI+IDxkYmw+DQoxICAgICAgMjM0ICAgYmxlZWRzICAgICAxDQoyICAgICAgMjM0IHNsZWVwZXRoICAgICAxDQozICAgICAgMjM1ICAgIGNvbWVzICAgICAxDQo0ICAgICAgMjM1ICAgICB3aWxsICAgICAxDQo1ICAgICAgMjM1ICAgd2lzZG9tICAgICAxDQoNCg0KIyMjIEV4YW1pbmUgdGhlIHNlbnRpbWVudHMgZGF0YSBmcmFtZQ0KDQpFeGFtaW5lIHRoZSBzZW50aW1lbnRzIGRhdGEgZnJhbWUNCg0KU28gZmFyIHlvdSBoYXZlIHVzZWQgYSBzaW5nbGUgbGV4aWNvbi4gTm93IHdlIHdpbGwgdHJhbnNpdGlvbiB0byB1c2luZyB0aHJlZSwgZWFjaCBtZWFzdXJpbmcgc2VudGltZW50IGluIGRpZmZlcmVudCB3YXlzLg0KDQpUaGUgdGlkeXRleHQgcGFja2FnZSBjb250YWlucyBhIGRhdGEgZnJhbWUgY2FsbGVkIHNlbnRpbWVudHMuIFRoZSBkYXRhIGZyYW1lIGNvbnRhaW5zIG92ZXIgMjMwMDAgdGVybXMgZnJvbSB0aHJlZSBkaWZmZXJlbnQgc3ViamVjdGl2aXR5IGxleGljb25zIHdpdGggY29ycmVzcG9uZGluZyBpbmZvcm1hdGlvbi4gSGVyZSBhcmUgc29tZSBleGFtcGxlIHJvd3MgZnJvbSB0aGUgc2VudGltZW50cyBkYXRhIGZyYW1lLg0KDQp8V29yZHxTZW50aW1lbnQJTGV4aWNvbglTY29yZQ0KfGFiaG9ycmVudHwJTkF8CUFGSU5OfAktMw0KfGNvb2wJTkEJQUZJTk4JMQ0KfGNvbmdlbmlhbAlwb3NpdGl2ZQlCaW5nCU5BDQp8ZW5lbXkJbmVnYXRpdmUJQmluZwlOQQ0KfHVuZ3JhdGVmdWwJYW5nZXIJTlJDCU5BDQp8c2VjdGFyaWFuCWFuZ2VyCU5SQwlOQQ0KDQpgYGB7cn0NCmluc3RhbGwucGFja2FnZXMoIlJjcHAiKQ0KI2luc3RhbGwucGFja2FnZXMoInRpZHl0ZXh0IikNCmxpYnJhcnkodGlkeXRleHQpDQojIFN1YnNldCB0byBBRklOTg0KDQphZmlubl9sZXggPC0gZ2V0X3NlbnRpbWVudHMoImFmaW5uIikNCg0KIyBDb3VudCBBRklOTiBzY29yZXMNCmFmaW5uX2xleCAlPiUgDQogIGNvdW50KHNjb3JlKQ0KYGBgDQoNCj4gYWZpbm5fbGV4ICU+JSANCiAgICBjb3VudChzY29yZSkNCiMgQSB0aWJibGU6IDExIHggMg0KICAgc2NvcmUgICAgIG4NCiAgIDxpbnQ+IDxpbnQ+DQogMSAgICAtNSAgICAxNg0KIDIgICAgLTQgICAgNDMNCiAzICAgIC0zICAgMjY0DQogNCAgICAtMiAgIDk2NQ0KIDUgICAgLTEgICAzMDkNCiA2ICAgICAwICAgICAxDQogNyAgICAgMSAgIDIwOA0KIDggICAgIDIgICA0NDgNCiA5ICAgICAzICAgMTcyDQoxMCAgICAgNCAgICA0NQ0KMTEgICAgIDUgICAgIDUNCg0KDQpgYGB7cn0NCiMgU3Vic2V0IHRvIG5yYw0KbnJjX2xleCA8LSBnZXRfc2VudGltZW50cygibnJjIikNCg0KIyBQcmludCBucmNfbGV4DQpucmNfbGV4DQpgYGANCg0KPiBucmNfbGV4DQojIEEgdGliYmxlOiAxMyw5MDEgeCAyDQogICAgICAgICAgd29yZCBzZW50aW1lbnQNCiAgICAgICAgIDxjaHI+ICAgICA8Y2hyPg0KIDEgICAgICBhYmFjdXMgICAgIHRydXN0DQogMiAgICAgYWJhbmRvbiAgICAgIGZlYXINCiAzICAgICBhYmFuZG9uICBuZWdhdGl2ZQ0KIDQgICAgIGFiYW5kb24gICBzYWRuZXNzDQogNSAgIGFiYW5kb25lZCAgICAgYW5nZXINCiA2ICAgYWJhbmRvbmVkICAgICAgZmVhcg0KIDcgICBhYmFuZG9uZWQgIG5lZ2F0aXZlDQogOCAgIGFiYW5kb25lZCAgIHNhZG5lc3MNCiA5IGFiYW5kb25tZW50ICAgICBhbmdlcg0KMTAgYWJhbmRvbm1lbnQgICAgICBmZWFyDQojIC4uLiB3aXRoIDEzLDg5MSBtb3JlIHJvd3MNCg0KYGBge3J9DQoNCiMgTWFrZSB0aGUgbnJjIGNvdW50cyBvYmplY3QNCm5yY19jb3VudHMgPC0gbnJjX2xleCAlPiUgDQogIGNvdW50KHNlbnRpbWVudCkNCiAgICAgICAgDQojIEJhcnBsb3QNCmdncGxvdChucmNfY291bnRzLCBhZXMoeCA9IHNlbnRpbWVudCwgeSA9IG4pKSsNCiAgZ2VvbV9iYXIoc3RhdCA9ICJpZGVudGl0eSIpICsNCiAgdGhlbWVfZ2RvY3MoKQ0KYGBgDQoNCiMjIyBzaW1wbGUgZXhhbXBsZSBvbiBwb2xhcml0eQ0KDQpgYGB7cn0NCiMgUWRhcCBwb2xhcml0eQ0KcG9sYXJpdHkoYWdfdHh0KQ0KYGBgDQoNCj4gcG9sYXJpdHkoYWdfdHh0KQ0KV2FybmluZyBtZXNzYWdlOiANCiAgU29tZSByb3dzIGNvbnRhaW4gZG91YmxlIHB1bmN0dWF0aW9uLiAgU3VnZ2VzdGVkIHVzZSBvZiBgc2VudFNwbGl0YCBmdW5jdGlvbi4NCiAgYWxsIHRvdGFsLnNlbnRlbmNlcyB0b3RhbC53b3JkcyBhdmUucG9sYXJpdHkgc2QucG9sYXJpdHkgc3Rhbi5tZWFuLnBvbGFyaXR5DQoxIGFsbCAgICAgICAgICAgICAxMDAgICAgICAgMTUxNTUgICAgICAgLTIuNzgzICAgICAgICAgIE5BICAgICAgICAgICAgICAgICBOQQ0KDQpgYGB7cn0NCiMgR2V0IEJpbmcgbGV4aWNvbg0KYmluZyA8LSBnZXRfc2VudGltZW50cygiYmluZyIpDQoNCiMgSm9pbiB0ZXh0IHRvIGxleGljb24NCmFnX2Jpbmdfd29yZHMgPC0gaW5uZXJfam9pbihhZ190aWR5LCBiaW5nLCBieSA9IGMoInRlcm0iID0gIndvcmQiKSkNCg0KIyBFeGFtaW5lDQphZ19iaW5nX3dvcmRzDQpgYGANCg0KPiBhZ19iaW5nX3dvcmRzDQojIEEgdGliYmxlOiA0ODMgeCA0DQogICBkb2N1bWVudCAgICAgICB0ZXJtIGNvdW50IHNlbnRpbWVudA0KICAgICAgPGNocj4gICAgICA8Y2hyPiA8ZGJsPiAgICAgPGNocj4NCiAxICAgICAgICAxICBhYnVuZGFuY2UgICAgIDEgIHBvc2l0aXZlDQogMiAgICAgICAgMSAgICBhY2NsYWltICAgICAxICBwb3NpdGl2ZQ0KIDMgICAgICAgIDEgICAgICAgYWNoZSAgICAgMiAgbmVnYXRpdmUNCiA0ICAgICAgICAxICAgICBhY2hpbmcgICAgIDMgIG5lZ2F0aXZlDQogNSAgICAgICAgMSBhZmZsaWN0aW9uICAgICAxICBuZWdhdGl2ZQ0KIDYgICAgICAgIDEgICAgYWZmcm9udCAgICAgMSAgbmVnYXRpdmUNCiA3ICAgICAgICAxICAgICBhZnJhaWQgICAgIDIgIG5lZ2F0aXZlDQogOCAgICAgICAgMSAgICAgYWdoYXN0ICAgICAxICBuZWdhdGl2ZQ0KIDkgICAgICAgIDEgICAgICBhZ29ueSAgICAgNSAgbmVnYXRpdmUNCjEwICAgICAgICAxICAgICAgYW1wbHkgICAgIDEgIHBvc2l0aXZlDQojIC4uLiB3aXRoIDQ3MyBtb3JlIHJvd3MNCg0KYGBge3J9DQoNCg0KIyBHZXQgY291bnRzIGJ5IHNlbnRpbWVudA0KYWdfYmluZ193b3JkcyAlPiUNCiAgY291bnQoc2VudGltZW50KQ0KYGBgDQoNCj4gYWdfYmluZ193b3JkcyAlPiUNCiAgICBjb3VudChzZW50aW1lbnQpDQojIEEgdGliYmxlOiAyIHggMg0KICBzZW50aW1lbnQgICAgIG4NCiAgICAgIDxjaHI+IDxpbnQ+DQoxICBuZWdhdGl2ZSAgIDMyMQ0KMiAgcG9zaXRpdmUgICAxNjINCg0K</div>
 
 
 
