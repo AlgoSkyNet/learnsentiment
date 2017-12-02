@@ -132,6 +132,25 @@ ggplot(nrc_counts, aes(x = sentiment, y = n))+
 
 ### simple example on polarity
 
+Bing tidy polarity: Simple example
+
+The Bing lexicon labels words as positive or negative. The next three exercises let you interact with this specific lexicon. Instead of using filter() to extract a lexicon this exercise uses get_sentiments() which accepts a string such as "afinn", "bing", "nrc", or "loughran".
+
+Now that you understand the basics of an inner join, let's apply this to the "Bing" lexicon. Keep in mind the inner_join() function comes from dplyr and the sentiments object is from tidytext.
+
+The inner join workflow:
+
+Obtain the correct lexicon using either filter() or get_sentiments().
+Pass the lexicon and the tidy text data to inner_join().
+In order for inner_join() to work there must be a shared column name. If there are no shared column names, declare them with an additional parameter, by equal to c with column names like below.
+
+```{r}
+object <- x %>% 
+    inner_join(y, by = c("column_from_x" = "column_from_y"))
+```
+
+#### Perform some aggregation and analysis on the table intersection.
+
 ```{r}
 # Qdap polarity
 polarity(ag_txt)
@@ -186,3 +205,228 @@ ag_bing_words %>%
 1  negative   321
 2  positive   162
 
+
+### Bing tidy polarity: Count & spread the white whale
+
+In this exercise you will apply another inner_join() using the "bing" lexicon.
+
+Then you will manipulate the results with both count() from dplyr and spread() from tidyr to learn about the text.
+
+The spread() function spreads a key-value pair across multiple columns. In this case key is the sentiment and the values are the frequency of positive or negative terms for each line. Using spread() changes the data so that each row now has positive and negative values, even if it is 0.
+
+```{r}
+# Inner join
+moby_lex_words <- inner_join(m_dick_tidy, bing, by = c("term" = "word"))
+
+moby_lex_words <- moby_lex_words %>%
+  # Set index to numeric document
+  mutate(index = as.numeric(document))
+
+moby_count <- moby_lex_words %>%
+  # Count by sentiment, index
+  count(sentiment, index)
+
+# Examine the counts
+moby_count
+```
+
+> moby_count
+# A tibble: 10,609 x 3
+   sentiment index     n
+       <chr> <dbl> <int>
+ 1  negative     9     1
+ 2  negative    11     1
+ 3  negative    22     1
+ 4  negative    41     1
+ 5  negative    42     2
+ 6  negative    44     1
+ 7  negative    56     1
+ 8  negative    64     1
+ 9  negative    66     1
+10  negative    68     1
+# ... with 10,599 more rows
+
+```{r}
+moby_spread <- moby_count %>%
+  # Spread sentiments
+  spread(sentiment, n, fill = 0)
+
+# Review the spread data
+moby_spread
+```
+
+> moby_spread
+# A tibble: 9,234 x 3
+   index negative positive
+ * <dbl>    <dbl>    <dbl>
+ 1     5        0        1
+ 2     9        1        0
+ 3    11        1        0
+ 4    13        0        1
+ 5    17        0        1
+ 6    19        0        1
+ 7    22        1        0
+ 8    24        0        1
+ 9    25        0        1
+10    31        0        2
+# ... with 9,224 more rows
+
+
+### Bing tidy polarity: Call me Ishmael (with ggplot2)!
+
+The last Bing lexicon exercise! We started with this lexicon since its similar to the results in Chapter 1. In this exercise you will use the pipe operator (%>%) to create a timeline of the sentiment in Moby Dick. In the end you will also create a simple visual following the code structure below. The next chapter goes into more depth for visuals.
+
+```{r}
+ggplot(spread_data, aes(index_column, polarity_column)) +
+  geom_smooth()
+```
+
+Your R session has moby as your text and bing as your lexicon. After this exercise you should know Is Moby Dick a happy or sad book?
+
+Inner join moby to the bing lexicon.
+Call inner_join() to join the tibbles.
+Join by the term column in the text and the word column in the lexicon.
+Count by sentiment and index.
+Reshape so that each sentiment has its own column.
+Call spread().
+The key column (to split into multiple columns) is sentiment.
+The value column (containing the counts) is n.
+Also specify fill = 0 to fill out missing values with a zero.
+Use mutate() to add the polarity column. Define it as the difference between the positive and negative columns.
+Lastly, create a sentiment time series with ggplot().
+Pass in moby_polarity to the data argument.
+Then specify the x and y aesthetics, calling aes() and passing index and polarity without quotes.
+Add a smoothed sentiment curve with geom_smooth().
+
+
+```{r}
+moby_polarity <- moby %>%
+  # Inner join to lexicon
+  inner_join(bing, by = c("term" = "word")) %>%
+  # Count the sentiment scores
+  count(sentiment, index) %>% 
+  # Spread the sentiment into positive and negative columns
+  spread(sentiment, n, fill = 0) %>%
+  # Add polarity column
+  mutate(polarity = positive - negative)
+
+# Plot polarity vs. index
+ggplot(moby_polarity, aes(index, polarity)) + 
+  # Add a smooth trend curve
+  geom_smooth()
+```
+
+[resulting plot]("download.png")
+
+Call me pleased with your work! Does Moby Dick have a happy ending?
+
+
+### AFINN: I'm your Huckleberry
+
+Now we transition to the AFINN lexicon. The AFINN lexicon has numeric values from 5 to -5, not just positive or negative. Unlike the Bing lexicon's sentiment, the AFINN lexicon's sentiment score column is called score.
+
+As before, you apply inner_join() then count(). Next, to sum the scores of each line, we use dplyr's group_by() and summarize() functions. The group_by() function takes an existing data frame and converts it into a grouped data frame where operations are performed "by group". Then, the summarize() function lets you calculate a value for each group in your data frame using a function that aggregates data, like sum() or mean(). So, in our case we can do something like
+
+data_frame %>% 
+    group_by(book_line) %>% 
+    summarize(total_score = sum(book_line))
+In the tidy version of Huckleberry Finn, line 9703 contains words "best", "ever", "fun", "life" and "spirit". "best" and "fun" have AFINN scores of 3 and 4 respectively. After aggregating, line 9703 will have a total score of 7.
+
+In the tidyverse, filter() is preferred to subset() because it combines the functionality of subset() with simpler syntax. Here is an example that filter()s data_frame where some value in column1 is equal to 24. Notice the column name is not in quotes.
+
+filter(data_frame, column1 == 24)
+
+The afinn object contains the AFINN lexicon. The huck object is a tidy version of Mark Twain's Adventures of Huckleberry Finn for analysis.
+
+Line 5400 is All the loafers looked glad; I reckoned they was used to having fun out of Boggs. Stopwords and punctuation have already been removed in the dataset.
+
+inner_join() huck to the afinn lexicon.
+Remember huck is already piped into the function so just add the lexicon.
+Join by the term column in the text and the word column in the lexicon.
+Use count() with score and line to tally/count observations by group.
+Assign the result to huck_afinn.
+Get the total sentiment score by line forwarding huck_afinn to group_by() and passing line without quotes.
+Create huck_afinn_agg using summarize(), setting total_score equal to the sum() of score.
+Use filter() on huck_afinn_agg and line == 5400 to review a single line.
+To create a sentiment timeline ggplot(), pass in huck_afinn_agg to the data argument.
+Then specify the x and y within aes() as line and total_score without quotes.
+Add a layer with geom_smooth().
+
+```{r}
+# See abbreviated line 5400
+huck %>% filter(line == 5400)
+
+# What are the scores of the sentiment words?
+afinn %>% filter(word %in% c("fun", "glad"))
+
+huck_afinn <- huck %>% 
+  # Inner Join to AFINN lexicon
+  inner_join(afinn, by = c("term" = "word")) %>%
+  # Count by score and line
+  count(score, line)
+
+huck_afinn_agg <- huck_afinn %>% 
+  # Group by line
+  group_by(line) %>%
+  # Sum scores by line
+  summarize(total_score = sum(score))
+```
+
+[resulting plot]("download (1).png")
+
+Wow, you're a tidytext wizard! Huckleberry Finn has a not-quite-a-happy-ending.
+
+### The wonderful wizard of NRC
+
+Last but not least, you get to work with the NRC lexicon which labels words across multiple emotional states. Remember Plutchik's wheel of emotion? The NRC lexicon tags words according to Plutchik's 8 emotions plus positive/negative.
+
+In this exercise there is a new operator, %in%, which matches a vector to another. In the code below %in% will return FALSE, FALSE, TRUE. This is because within some_vec, 1 and 2 are not found within some_other_vector but 3 is found and returns TRUE. The %in% is useful to find matches.
+
+some_vec <- c(1, 2, 3)
+some_other_vector <- c(3, "a", "b")
+some_vec %in% some_other_vector
+Another new operator is !. For logical conditions, adding ! will inverse the result. In the above example, the FALSE, FALSE, TRUE will become TRUE, TRUE, FALSE. Using it in concert with %in% will inverse the response and is good for removing items that are matched.
+
+!some_vec %in% some_other_vector
+INSTRUCTIONS
+100XP
+INSTRUCTIONS
+100XP
+We've created oz which is the tidy version of The Wizard of Oz along with nrc containing the "NRC" lexicon with renamed columns.
+
+Inner join oz to the nrc lexicon.
+Call inner_join() to join the tibbles.
+Join by the term column in the text and the word column in the lexicon.
+Assign the result to oz_nrc.
+Filter to only Pluchik's emotions and drop the positive or negative words in the lexicon.
+Use filter() to keep rows where the sentiment is not "positive" or "negative".
+Group by sentiment.
+Call group_by(), passing sentiment without quotes.
+Get the total count of each sentiment.
+Call summarize(), setting total_count equal to the sum() of count.
+Assign the result to oz_plutchik.
+Lastly, create a bar plot with ggplot().
+Pass in oz_plutchik to the data argument.
+Then specify the x and y aesthetics, calling aes() and passing sentiment and total_count without quotes.
+Add a column geom with geom_col(). (This is the same as geom_bar(), but doesn't summarize the data, since you've done that already.)
+
+```{r}
+# Join text and lexicon
+oz_nrc <- inner_join(oz, nrc, by = c("term" = "word"))
+
+# DataFrame of tally
+oz_plutchik <- oz_nrc %>% 
+  # Only consider Plutchik sentiments
+  filter(!sentiment %in% c("positive", "negative")) %>%
+  # Group by sentiment
+  group_by(sentiment) %>% 
+  # Get total count by sentiment
+  summarize(total_count = sum(count))
+
+# Plot the counts
+ggplot(oz_plutchik, aes(x = sentiment, y = total_count)) +
+  # Add a column geom
+  geom_col()
+```
+
+[resulting plot]("download (2).png")

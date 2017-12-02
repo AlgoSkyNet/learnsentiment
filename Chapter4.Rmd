@@ -1,0 +1,20 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+## Chapter 3 Visualization
+
+Is your property a good rental? What do people look for in a good rental?
+
+
+
+[resulted plot]("download (11).png")
+
+
+
+
+
+
+
+

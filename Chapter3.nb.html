@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("Chapter2.Rmd");
+  window.initializeSourceEmbed("Chapter3.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,304 +172,372 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<div id="chapter-2-course-sentiment-analysis-in-r" class="section level2">
-<h2>Chapter 2 Course Sentiment Analysis in R</h2>
-<p>In the second chapter you will explore 3 subjectivity lexicons from tidytext. Then you will do an inner join to score some text.</p>
-<p>Plutchik’s Wheel of Emotion</p>
-<div id="dtm-vs-tidytext-matrix" class="section level3">
-<h3>DTM vs tidytext matrix</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dGV4dClcblxuIyBBcyBtYXRyaXhcbmFnX2R0bV9tIDwtIGFzLm1hdHJpeChhZ19kdG0pXG5cbiMgRXhhbWluZSBsaW5lIDIyMDYgYW5kIGNvbHVtbnMgMjQ1OjI1MFxuYWdfZHRtX21bMjIwNiwgMjQ1OjI1MF1cbmBgYCJ9 -->
-<pre class="r"><code>library(tidytext)
-
-# As matrix
-ag_dtm_m &lt;- as.matrix(ag_dtm)
-
-# Examine line 2206 and columns 245:250
-ag_dtm_m[2206, 245:250]</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>ag_dtm_m[2206, 245:250] bleed bleeds blent bless blessãd blessing 0 0 0 1 0 0</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBUaWR5IHVwIHRoZSBEVE1cbmFnX3RpZHkgPC0gdGlkeShhZ19kdG0pXG5cbiMgRXhhbWluZSB0aWR5IHdpdGggYSB3b3JkIHlvdSBzYXdcbmFnX3RpZHlbODMxOjgzNSwgXVxuYGBgIn0= -->
-<pre class="r"><code># Tidy up the DTM
-ag_tidy &lt;- tidy(ag_dtm)
-
-# Examine tidy with a word you saw
-ag_tidy[831:835, ]</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>ag_tidy[831:835, ] # A tibble: 5 x 3 document term count <chr> <chr> <dbl> 1 234 bleeds 1 2 234 sleepeth 1 3 235 comes 1 4 235 will 1 5 235 wisdom 1</p>
-</blockquote>
+<div id="chapter-3-visualization" class="section level2">
+<h2>Chapter 3 Visualization</h2>
+<div id="real-insight" class="section level3">
+<h3>Real insight?</h3>
+<p>You are given a stack of 10 employee surveys and told to figure out the team’s sentiment. The two question survey has 1 question with a numeric scale (1-10) where employees answer how inspired they are at work and a second question for free form text.</p>
+<p>You are asked to perform a sentiment analysis on the free form text. Would performing sentiment analysis on the text be appropriate?</p>
+<p>ANSWER THE QUESTION 50XP Possible Answers Yes, the sentiment analysis confirms the employee ratings. press 1 –&gt; correct: No, the free form text will correlate with the ratings and with only 10 surveys the results may have selection and simultaneity bias.</p>
 </div>
-<div id="examine-the-sentiments-data-frame" class="section level3">
-<h3>Examine the sentiments data frame</h3>
-<p>Examine the sentiments data frame</p>
-<p>So far you have used a single lexicon. Now we will transition to using three, each measuring sentiment in different ways.</p>
-<p>The tidytext package contains a data frame called sentiments. The data frame contains over 23000 terms from three different subjectivity lexicons with corresponding information. Here are some example rows from the sentiments data frame.</p>
-<p>|Word|Sentiment Lexicon Score |abhorrent| NA| AFINN| -3 |cool NA AFINN 1 |congenial positive Bing NA |enemy negative Bing NA |ungrateful anger NRC NA |sectarian anger NRC NA</p>
+<div id="unhappy-ending-chronological-polarity" class="section level3">
+<h3>Unhappy ending? Chronological polarity</h3>
+<p>Sometimes you want to track sentiment over time. For example, during an ad campaign you could track brand sentiment to see the campaign’s effect. You saw a few examples of this at the end of the last chapter.</p>
+<p>In this exercise you’ll recap the workflow for exploring sentiment over time using the novel Moby Dick. One should expect that happy moments in the book would have more positive words than negative. Conversely dark moments and sad endings should use more negative language. You’ll also see some tricks to make your sentiment time series more visually appealling.</p>
+<p>Recall that the workflow is:</p>
+<p>Inner join the text to the lexicon by word. Count the sentiments by line. Reshape the data so each sentiment has its own column. (Depending upon the lexicon) Calculate the polarity as positive score minus negative score. Draw the polarity time series. INSTRUCTIONS 100XP INSTRUCTIONS 100XP This exercise should look familiar: it extends Bing tidy polarity: Call me Ishmael (with ggplot2)!.</p>
+<p>inner_join() the pre-loaded tidy version of Moby Dick, moby, to the bing lexicon. Join by the “term” column in the text and the “word” column in the lexicon. Count by sentiment and index. Reshape so that each sentiment has its own column using spread() with the column sentiment and the counts column called n. Also specify fill = 0 to fill out missing values with a zero. Using mutate() add two columns: polarity and line_number. Set polarity equal to the positive score minus the negative score. Set line_number equal to the row number using the row_number() function. Create a sentiment time series with ggplot(). Pass in moby_polarity to the data argument. Call aes() and pass in line_number and polarity without quotes. Add a smoothed curve with geom_smooth(). Add a red horizontal line at zero by calling geom_hline(), with parameters 0 and “red”. Add a title with ggtitle() set to “Moby Dick Chronological Polarity”.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5zdGFsbC5wYWNrYWdlcyhcIlJjcHBcIilcblxuYGBgIn0= -->
-<pre class="r"><code>install.packages(&quot;Rcpp&quot;)
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gaW5zdGFsbC5wYWNrYWdlcyA6IFVwZGF0aW5nIGxvYWRlZCBwYWNrYWdlc1xuIn0= -->
-<pre><code>Error in install.packages : Updating loaded packages</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>afinn_lex %&gt;% count(score) # A tibble: 11 x 2 score n <int> <int> 1 -5 16 2 -4 43 3 -3 264 4 -2 965 5 -1 309 6 0 1 7 1 208 8 2 448 9 3 172 10 4 45 11 5 5</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBTdWJzZXQgdG8gbnJjXG5ucmNfbGV4IDwtIGdldF9zZW50aW1lbnRzKFwibnJjXCIpXG5cbiMgUHJpbnQgbnJjX2xleFxubnJjX2xleFxuYGBgIn0= -->
-<pre class="r"><code># Subset to nrc
-nrc_lex &lt;- get_sentiments(&quot;nrc&quot;)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9ieV9wb2xhcml0eSA8LSBtb2J5ICU+JVxuICAjIElubmVyIGpvaW4gdG8gdGhlIGxleGljb25cbiAgaW5uZXJfam9pbihiaW5nLCBieSA9IGMoXCJ0ZXJtXCIgPSBcIndvcmRcIikpICU+JVxuICAjIENvdW50IGJ5IHNlbnRpbWVudCwgaW5kZXhcbiAgY291bnQoc2VudGltZW50LCBpbmRleCkgJT4lXG4gICMgU3ByZWFkIHNlbnRpbWVudHNcbiAgc3ByZWFkKHNlbnRpbWVudCwgbiwgZmlsbCA9IDApICU+JVxuICBtdXRhdGUoXG4gICAgIyBBZGQgcG9sYXJpdHkgZmllbGRcbiAgICBwb2xhcml0eSA9IHBvc2l0aXZlIC0gbmVnYXRpdmUsXG4gICAgIyBBZGQgbGluZSBudW1iZXIgZmllbGRcbiAgICBsaW5lX251bWJlciA9IHJvd19udW1iZXIoKVxuICApXG5cbiMgUGxvdFxuZ2dwbG90KG1vYnlfcG9sYXJpdHksIGFlcyhsaW5lX251bWJlciwgcG9sYXJpdHkpKSArIFxuICBnZW9tX3Ntb290aCgpICtcbiAgZ2VvbV9obGluZSh5aW50ZXJjZXB0ID0gMCwgY29sb3IgPSBcInJlZFwiKSArXG4gIGdndGl0bGUoXCJNb2J5IERpY2sgQ2hyb25vbG9naWNhbCBQb2xhcml0eVwiKSArXG4gIHRoZW1lX2dkb2NzKClcbmBgYCJ9 -->
+<pre class="r"><code>moby_polarity &lt;- moby %&gt;%
+  # Inner join to the lexicon
+  inner_join(bing, by = c(&quot;term&quot; = &quot;word&quot;)) %&gt;%
+  # Count by sentiment, index
+  count(sentiment, index) %&gt;%
+  # Spread sentiments
+  spread(sentiment, n, fill = 0) %&gt;%
+  mutate(
+    # Add polarity field
+    polarity = positive - negative,
+    # Add line number field
+    line_number = row_number()
+  )
 
-# Print nrc_lex
-nrc_lex</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>nrc_lex # A tibble: 13,901 x 2 word sentiment <chr> <chr> 1 abacus trust 2 abandon fear 3 abandon negative 4 abandon sadness 5 abandoned anger 6 abandoned fear 7 abandoned negative 8 abandoned sadness 9 abandonment anger 10 abandonment fear # … with 13,891 more rows</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIE1ha2UgdGhlIG5yYyBjb3VudHMgb2JqZWN0XG5ucmNfY291bnRzIDwtIG5yY19sZXggJT4lIFxuICBjb3VudChzZW50aW1lbnQpXG4gICAgICAgIFxuIyBCYXJwbG90XG5nZ3Bsb3QobnJjX2NvdW50cywgYWVzKHggPSBzZW50aW1lbnQsIHkgPSBuKSkrXG4gIGdlb21fYmFyKHN0YXQgPSBcImlkZW50aXR5XCIpICtcbiAgdGhlbWVfZ2RvY3MoKVxuYGBgIn0= -->
-<pre class="r"><code>
-# Make the nrc counts object
-nrc_counts &lt;- nrc_lex %&gt;% 
-  count(sentiment)
-        
-# Barplot
-ggplot(nrc_counts, aes(x = sentiment, y = n))+
-  geom_bar(stat = &quot;identity&quot;) +
+# Plot
+ggplot(moby_polarity, aes(line_number, polarity)) + 
+  geom_smooth() +
+  geom_hline(yintercept = 0, color = &quot;red&quot;) +
+  ggtitle(&quot;Moby Dick Chronological Polarity&quot;) +
   theme_gdocs()</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p><a href="%22download%20(3).png%22">resulted plot</a></p>
 </div>
-<div id="simple-example-on-polarity" class="section level3">
-<h3>simple example on polarity</h3>
-<p>Bing tidy polarity: Simple example</p>
-<p>The Bing lexicon labels words as positive or negative. The next three exercises let you interact with this specific lexicon. Instead of using filter() to extract a lexicon this exercise uses get_sentiments() which accepts a string such as “afinn”, “bing”, “nrc”, or “loughran”.</p>
-<p>Now that you understand the basics of an inner join, let’s apply this to the “Bing” lexicon. Keep in mind the inner_join() function comes from dplyr and the sentiments object is from tidytext.</p>
-<p>The inner join workflow:</p>
-<p>Obtain the correct lexicon using either filter() or get_sentiments(). Pass the lexicon and the tidy text data to inner_join(). In order for inner_join() to work there must be a shared column name. If there are no shared column names, declare them with an additional parameter, by equal to c with column names like below.</p>
+<div id="word-impact-frequency-analysis" class="section level3">
+<h3>Word impact, frequency analysis</h3>
+<p>One of the easiest ways to explore data is with a frequency analysis. Although not difficult, in sentiment analysis this simple method can be surprisingly illuminating. Specifically, you will build a barplot. In this exercise you are once again working with moby and bing to construct your visual.</p>
+<p>INSTRUCTIONS 100XP INSTRUCTIONS 100XP Create moby_tidy_sentiment. Use count() on moby_sents with term, sentiment, and wt = count. Pipe to spread() with sentiment, n, and fill = 0. Pipe to mutate(). Call the new variable polarity; calculated as positive - negative. Call moby_tidy_sentiment to review and compare it to the previous exercise. Create moby_tidy_small with filter() applied to moby_tidy_sentiment. The logical check should be abs(polarity) &gt;= 50. Using the abs() function returns any rows whose absolute polarity is greater than or equal to 50. mutate() a new vector pol with an ifelse() function checking if polarity &gt; 0 then declare the document “positive” else declare it “negative”. Using ggplot() pass in moby_tidy_pol, aes(reorder(term, polarity), polarity, fill = pol) which is the data, an X axis reordering terms by polarity, a Y axis represented by the polarity and a fill color defined by the pol designation. Add geom_bar() with stat = “identity”. In the last layer adjust the theme to theme(axis.text.x = element_text(angle = 90, vjust = -0.1)).</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxub2JqZWN0IDwtIHggJT4lIFxuICAgIGlubmVyX2pvaW4oeSwgYnkgPSBjKFwiY29sdW1uX2Zyb21feFwiID0gXCJjb2x1bW5fZnJvbV95XCIpKVxuYGBgIn0= -->
-<pre class="r"><code>object &lt;- x %&gt;% 
-    inner_join(y, by = c(&quot;column_from_x&quot; = &quot;column_from_y&quot;))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<div id="perform-some-aggregation-and-analysis-on-the-table-intersection." class="section level4">
-<h4>Perform some aggregation and analysis on the table intersection.</h4>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBRZGFwIHBvbGFyaXR5XG5wb2xhcml0eShhZ190eHQpXG5gYGAifQ== -->
-<pre class="r"><code># Qdap polarity
-polarity(ag_txt)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>polarity(ag_txt) Warning message: Some rows contain double punctuation. Suggested use of <code>sentSplit</code> function. all total.sentences total.words ave.polarity sd.polarity stan.mean.polarity 1 all 100 15155 -2.783 NA NA</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBHZXQgQmluZyBsZXhpY29uXG5iaW5nIDwtIGdldF9zZW50aW1lbnRzKFwiYmluZ1wiKVxuXG4jIEpvaW4gdGV4dCB0byBsZXhpY29uXG5hZ19iaW5nX3dvcmRzIDwtIGlubmVyX2pvaW4oYWdfdGlkeSwgYmluZywgYnkgPSBjKFwidGVybVwiID0gXCJ3b3JkXCIpKVxuXG4jIEV4YW1pbmVcbmFnX2Jpbmdfd29yZHNcbmBgYCJ9 -->
-<pre class="r"><code># Get Bing lexicon
-bing &lt;- get_sentiments(&quot;bing&quot;)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBJbm5lciBqb2luIHdpdGhvdXQgcmVuYW1lZCBjb2x1bW5zXG5tb2J5X3NlbnRzIDwtIGlubmVyX2pvaW4obW9ieSwgYmluZywgYnkgPSBjKFwidGVybVwiID0gXCJ3b3JkXCIpKVxuXG4jIFRpZHkgc2VudGltZW50IGNhbGN1bGF0aW9uXG5tb2J5X3RpZHlfc2VudGltZW50IDwtIG1vYnlfc2VudHMgJT4lIFxuICBjb3VudCh0ZXJtLCBzZW50aW1lbnQsIHd0ID0gY291bnQpICU+JVxuICBzcHJlYWQoc2VudGltZW50LCBuLCBmaWxsID0gMCkgJT4lXG4gIG11dGF0ZShwb2xhcml0eSA9IHBvc2l0aXZlIC0gbmVnYXRpdmUpXG5cbiMgUmV2aWV3XG5tb2J5X3RpZHlfc2VudGltZW50XG5cbiMgU3Vic2V0XG5tb2J5X3RpZHlfc21hbGwgPC0gbW9ieV90aWR5X3NlbnRpbWVudCAlPiUgXG4gIGZpbHRlcihhYnMocG9sYXJpdHkpID49IDUwKVxuXG4jIEFkZCBwb2xhcml0eVxubW9ieV90aWR5X3BvbCA8LSBtb2J5X3RpZHlfc21hbGwgJT4lIFxuICBtdXRhdGUoXG4gICAgcG9sID0gaWZlbHNlKHBvbGFyaXR5ID4gMCwgXCJwb3NpdGl2ZVwiLCBcIm5lZ2F0aXZlXCIpXG4gIClcblxuIyBQbG90XG5nZ3Bsb3QoXG4gIG1vYnlfdGlkeV9wb2wsIFxuICBhZXMocmVvcmRlcih0ZXJtLCBwb2xhcml0eSksIHBvbGFyaXR5LCBmaWxsID0gcG9sKVxuKSArXG4gIGdlb21fYmFyKHN0YXQgPSBcImlkZW50aXR5XCIpICsgXG4gIGdndGl0bGUoXCJNb2J5IERpY2s6IFNlbnRpbWVudCBXb3JkIEZyZXF1ZW5jeVwiKSArIFxuICB0aGVtZV9nZG9jcygpICtcbiAgdGhlbWUoYXhpcy50ZXh0LnggPSBlbGVtZW50X3RleHQoYW5nbGUgPSA5MCwgdmp1c3QgPSAtMC4xKSlcbmBgYCJ9 -->
+<pre class="r"><code># Inner join without renamed columns
+moby_sents &lt;- inner_join(moby, bing, by = c(&quot;term&quot; = &quot;word&quot;))
 
-# Join text to lexicon
-ag_bing_words &lt;- inner_join(ag_tidy, bing, by = c(&quot;term&quot; = &quot;word&quot;))
-
-# Examine
-ag_bing_words</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>ag_bing_words # A tibble: 483 x 4 document term count sentiment <chr> <chr> <dbl> <chr> 1 1 abundance 1 positive 2 1 acclaim 1 positive 3 1 ache 2 negative 4 1 aching 3 negative 5 1 affliction 1 negative 6 1 affront 1 negative 7 1 afraid 2 negative 8 1 aghast 1 negative 9 1 agony 5 negative 10 1 amply 1 positive # … with 473 more rows</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5cbiMgR2V0IGNvdW50cyBieSBzZW50aW1lbnRcbmFnX2Jpbmdfd29yZHMgJT4lXG4gIGNvdW50KHNlbnRpbWVudClcbmBgYCJ9 -->
-<pre class="r"><code>
-
-# Get counts by sentiment
-ag_bing_words %&gt;%
-  count(sentiment)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>ag_bing_words %&gt;% count(sentiment) # A tibble: 2 x 2 sentiment n <chr> <int> 1 negative 321 2 positive 162</p>
-</blockquote>
-</div>
-</div>
-<div id="bing-tidy-polarity-count-spread-the-white-whale" class="section level3">
-<h3>Bing tidy polarity: Count &amp; spread the white whale</h3>
-<p>In this exercise you will apply another inner_join() using the “bing” lexicon.</p>
-<p>Then you will manipulate the results with both count() from dplyr and spread() from tidyr to learn about the text.</p>
-<p>The spread() function spreads a key-value pair across multiple columns. In this case key is the sentiment and the values are the frequency of positive or negative terms for each line. Using spread() changes the data so that each row now has positive and negative values, even if it is 0.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBJbm5lciBqb2luXG5tb2J5X2xleF93b3JkcyA8LSBpbm5lcl9qb2luKG1fZGlja190aWR5LCBiaW5nLCBieSA9IGMoXCJ0ZXJtXCIgPSBcIndvcmRcIikpXG5cbm1vYnlfbGV4X3dvcmRzIDwtIG1vYnlfbGV4X3dvcmRzICU+JVxuICAjIFNldCBpbmRleCB0byBudW1lcmljIGRvY3VtZW50XG4gIG11dGF0ZShpbmRleCA9IGFzLm51bWVyaWMoZG9jdW1lbnQpKVxuXG5tb2J5X2NvdW50IDwtIG1vYnlfbGV4X3dvcmRzICU+JVxuICAjIENvdW50IGJ5IHNlbnRpbWVudCwgaW5kZXhcbiAgY291bnQoc2VudGltZW50LCBpbmRleClcblxuIyBFeGFtaW5lIHRoZSBjb3VudHNcbm1vYnlfY291bnRcbmBgYCJ9 -->
-<pre class="r"><code># Inner join
-moby_lex_words &lt;- inner_join(m_dick_tidy, bing, by = c(&quot;term&quot; = &quot;word&quot;))
-
-moby_lex_words &lt;- moby_lex_words %&gt;%
-  # Set index to numeric document
-  mutate(index = as.numeric(document))
-
-moby_count &lt;- moby_lex_words %&gt;%
-  # Count by sentiment, index
-  count(sentiment, index)
-
-# Examine the counts
-moby_count</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>moby_count # A tibble: 10,609 x 3 sentiment index n <chr> <dbl> <int> 1 negative 9 1 2 negative 11 1 3 negative 22 1 4 negative 41 1 5 negative 42 2 6 negative 44 1 7 negative 56 1 8 negative 64 1 9 negative 66 1 10 negative 68 1 # … with 10,599 more rows</p>
-</blockquote>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9ieV9zcHJlYWQgPC0gbW9ieV9jb3VudCAlPiVcbiAgIyBTcHJlYWQgc2VudGltZW50c1xuICBzcHJlYWQoc2VudGltZW50LCBuLCBmaWxsID0gMClcblxuIyBSZXZpZXcgdGhlIHNwcmVhZCBkYXRhXG5tb2J5X3NwcmVhZFxuYGBgIn0= -->
-<pre class="r"><code>moby_spread &lt;- moby_count %&gt;%
-  # Spread sentiments
-  spread(sentiment, n, fill = 0)
-
-# Review the spread data
-moby_spread</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<blockquote>
-<p>moby_spread # A tibble: 9,234 x 3 index negative positive * <dbl> <dbl> <dbl> 1 5 0 1 2 9 1 0 3 11 1 0 4 13 0 1 5 17 0 1 6 19 0 1 7 22 1 0 8 24 0 1 9 25 0 1 10 31 0 2 # … with 9,224 more rows</p>
-</blockquote>
-</div>
-<div id="bing-tidy-polarity-call-me-ishmael-with-ggplot2" class="section level3">
-<h3>Bing tidy polarity: Call me Ishmael (with ggplot2)!</h3>
-<p>The last Bing lexicon exercise! We started with this lexicon since its similar to the results in Chapter 1. In this exercise you will use the pipe operator (%&gt;%) to create a timeline of the sentiment in Moby Dick. In the end you will also create a simple visual following the code structure below. The next chapter goes into more depth for visuals.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KHNwcmVhZF9kYXRhLCBhZXMoaW5kZXhfY29sdW1uLCBwb2xhcml0eV9jb2x1bW4pKSArXG4gIGdlb21fc21vb3RoKClcbmBgYCJ9 -->
-<pre class="r"><code>ggplot(spread_data, aes(index_column, polarity_column)) +
-  geom_smooth()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Your R session has moby as your text and bing as your lexicon. After this exercise you should know Is Moby Dick a happy or sad book?</p>
-<p>Inner join moby to the bing lexicon. Call inner_join() to join the tibbles. Join by the term column in the text and the word column in the lexicon. Count by sentiment and index. Reshape so that each sentiment has its own column. Call spread(). The key column (to split into multiple columns) is sentiment. The value column (containing the counts) is n. Also specify fill = 0 to fill out missing values with a zero. Use mutate() to add the polarity column. Define it as the difference between the positive and negative columns. Lastly, create a sentiment time series with ggplot(). Pass in moby_polarity to the data argument. Then specify the x and y aesthetics, calling aes() and passing index and polarity without quotes. Add a smoothed sentiment curve with geom_smooth().</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9ieV9wb2xhcml0eSA8LSBtb2J5ICU+JVxuICAjIElubmVyIGpvaW4gdG8gbGV4aWNvblxuICBpbm5lcl9qb2luKGJpbmcsIGJ5ID0gYyhcInRlcm1cIiA9IFwid29yZFwiKSkgJT4lXG4gICMgQ291bnQgdGhlIHNlbnRpbWVudCBzY29yZXNcbiAgY291bnQoc2VudGltZW50LCBpbmRleCkgJT4lIFxuICAjIFNwcmVhZCB0aGUgc2VudGltZW50IGludG8gcG9zaXRpdmUgYW5kIG5lZ2F0aXZlIGNvbHVtbnNcbiAgc3ByZWFkKHNlbnRpbWVudCwgbiwgZmlsbCA9IDApICU+JVxuICAjIEFkZCBwb2xhcml0eSBjb2x1bW5cbiAgbXV0YXRlKHBvbGFyaXR5ID0gcG9zaXRpdmUgLSBuZWdhdGl2ZSlcblxuIyBQbG90IHBvbGFyaXR5IHZzLiBpbmRleFxuZ2dwbG90KG1vYnlfcG9sYXJpdHksIGFlcyhpbmRleCwgcG9sYXJpdHkpKSArIFxuICAjIEFkZCBhIHNtb290aCB0cmVuZCBjdXJ2ZVxuICBnZW9tX3Ntb290aCgpXG5gYGAifQ== -->
-<pre class="r"><code>moby_polarity &lt;- moby %&gt;%
-  # Inner join to lexicon
-  inner_join(bing, by = c(&quot;term&quot; = &quot;word&quot;)) %&gt;%
-  # Count the sentiment scores
-  count(sentiment, index) %&gt;% 
-  # Spread the sentiment into positive and negative columns
+# Tidy sentiment calculation
+moby_tidy_sentiment &lt;- moby_sents %&gt;% 
+  count(term, sentiment, wt = count) %&gt;%
   spread(sentiment, n, fill = 0) %&gt;%
-  # Add polarity column
   mutate(polarity = positive - negative)
 
-# Plot polarity vs. index
-ggplot(moby_polarity, aes(index, polarity)) + 
-  # Add a smooth trend curve
-  geom_smooth()</code></pre>
+# Review
+moby_tidy_sentiment
+
+# Subset
+moby_tidy_small &lt;- moby_tidy_sentiment %&gt;% 
+  filter(abs(polarity) &gt;= 50)
+
+# Add polarity
+moby_tidy_pol &lt;- moby_tidy_small %&gt;% 
+  mutate(
+    pol = ifelse(polarity &gt; 0, &quot;positive&quot;, &quot;negative&quot;)
+  )
+
+# Plot
+ggplot(
+  moby_tidy_pol, 
+  aes(reorder(term, polarity), polarity, fill = pol)
+) +
+  geom_bar(stat = &quot;identity&quot;) + 
+  ggtitle(&quot;Moby Dick: Sentiment Word Frequency&quot;) + 
+  theme_gdocs() +
+  theme(axis.text.x = element_text(angle = 90, vjust = -0.1))</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p><a href="%22download.png%22">resulting plot</a></p>
-<p>Call me pleased with your work! Does Moby Dick have a happy ending?</p>
+<p><a href="%22download%20(4).png%22">resulted plot</a></p>
 </div>
-<div id="afinn-im-your-huckleberry" class="section level3">
-<h3>AFINN: I’m your Huckleberry</h3>
-<p>Now we transition to the AFINN lexicon. The AFINN lexicon has numeric values from 5 to -5, not just positive or negative. Unlike the Bing lexicon’s sentiment, the AFINN lexicon’s sentiment score column is called score.</p>
-<p>As before, you apply inner_join() then count(). Next, to sum the scores of each line, we use dplyr’s group_by() and summarize() functions. The group_by() function takes an existing data frame and converts it into a grouped data frame where operations are performed “by group”. Then, the summarize() function lets you calculate a value for each group in your data frame using a function that aggregates data, like sum() or mean(). So, in our case we can do something like</p>
-<p>data_frame %&gt;% group_by(book_line) %&gt;% summarize(total_score = sum(book_line)) In the tidy version of Huckleberry Finn, line 9703 contains words “best”, “ever”, “fun”, “life” and “spirit”. “best” and “fun” have AFINN scores of 3 and 4 respectively. After aggregating, line 9703 will have a total score of 7.</p>
-<p>In the tidyverse, filter() is preferred to subset() because it combines the functionality of subset() with simpler syntax. Here is an example that filter()s data_frame where some value in column1 is equal to 24. Notice the column name is not in quotes.</p>
-<p>filter(data_frame, column1 == 24)</p>
-<p>The afinn object contains the AFINN lexicon. The huck object is a tidy version of Mark Twain’s Adventures of Huckleberry Finn for analysis.</p>
-<p>Line 5400 is All the loafers looked glad; I reckoned they was used to having fun out of Boggs. Stopwords and punctuation have already been removed in the dataset.</p>
-<p>inner_join() huck to the afinn lexicon. Remember huck is already piped into the function so just add the lexicon. Join by the term column in the text and the word column in the lexicon. Use count() with score and line to tally/count observations by group. Assign the result to huck_afinn. Get the total sentiment score by line forwarding huck_afinn to group_by() and passing line without quotes. Create huck_afinn_agg using summarize(), setting total_score equal to the sum() of score. Use filter() on huck_afinn_agg and line == 5400 to review a single line. To create a sentiment timeline ggplot(), pass in huck_afinn_agg to the data argument. Then specify the x and y within aes() as line and total_score without quotes. Add a layer with geom_smooth().</p>
+<div id="divide-conquer-using-polarity-for-a-comparison-cloud" class="section level3">
+<h3>Divide &amp; conquer: Using polarity for a comparison cloud</h3>
+<p>Now that you have seen how polarity can be used to divide a corpus, let’s do it! This code will walk you through dividing a corpus based on sentiment so you can peer into the informaton in subsets instead of holistically.</p>
+<p>Your R session has oz_pol which was created by applying polarity() to “The Wonderful Wizard of Oz.”</p>
+<p>For simplicity’s sake, we created a simple custom function called pol_subsections() which will divide the corpus by polarity score. First, the function accepts a data frame with each row being a sentence or document of the corpus. The data frame is subset anywhere the polarity values are greater than or less than 0. Finally, the positive and negative sentences, non-zero polarities, are pasted with parameter collapse so that the terms are grouped into a single corpus. Lastly, the two documents are concatenated into a single vector of two distinct documents.</p>
+<p>pol_subsections &lt;- function(df) { x.pos &lt;- subset(df<span class="math inline">\(text, df\)</span>polarity &gt; 0) x.neg &lt;- subset(df<span class="math inline">\(text, df\)</span>polarity &lt; 0) x.pos &lt;- paste(x.pos, collapse = &quot; “) x.neg &lt;- paste(x.neg, collapse =” “) all.terms &lt;- c(x.pos, x.neg) return(all.terms) } At this point you have omitted the neutral sentences and want to focus on organizing the remaining text. In this exercise we use the %&gt;% operator again to forward objects to functions. After some simple cleaning use comparison.cloud() to make the visual.</p>
+<p>INSTRUCTIONS 100XP INSTRUCTIONS 100XP Within select() declare the first column text as text.var which is the raw text. The second column polarity should refer to the polarity scores polarity. Piped column names don’t need $, you just use the column name without quotes. Now apply pol_subsections() to oz_df. Call the new object all_terms. To create all_corpus apply VectorSource() to all_terms and then %&gt;% to VCorpus(). Create a TDM, all_tdm, using TermDocumentMatrix() on all_corpus. Add in the parameters control = list(removePunctuation = TRUE, stopwords = stopwords(kind = “en”))). Then %&gt;% to as.matrix() and %&gt;% again to set_colnames(c(“positive”, “negative”)). Apply comparison.cloud() to all_tdm with parameters max.words = 50, and colors = c(“darkgreen”,“darkred”).</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBTZWUgYWJicmV2aWF0ZWQgbGluZSA1NDAwXG5odWNrICU+JSBmaWx0ZXIobGluZSA9PSA1NDAwKVxuXG4jIFdoYXQgYXJlIHRoZSBzY29yZXMgb2YgdGhlIHNlbnRpbWVudCB3b3Jkcz9cbmFmaW5uICU+JSBmaWx0ZXIod29yZCAlaW4lIGMoXCJmdW5cIiwgXCJnbGFkXCIpKVxuXG5odWNrX2FmaW5uIDwtIGh1Y2sgJT4lIFxuICAjIElubmVyIEpvaW4gdG8gQUZJTk4gbGV4aWNvblxuICBpbm5lcl9qb2luKGFmaW5uLCBieSA9IGMoXCJ0ZXJtXCIgPSBcIndvcmRcIikpICU+JVxuICAjIENvdW50IGJ5IHNjb3JlIGFuZCBsaW5lXG4gIGNvdW50KHNjb3JlLCBsaW5lKVxuXG5odWNrX2FmaW5uX2FnZyA8LSBodWNrX2FmaW5uICU+JSBcbiAgIyBHcm91cCBieSBsaW5lXG4gIGdyb3VwX2J5KGxpbmUpICU+JVxuICAjIFN1bSBzY29yZXMgYnkgbGluZVxuICBzdW1tYXJpemUodG90YWxfc2NvcmUgPSBzdW0oc2NvcmUpKVxuYGBgIn0= -->
-<pre class="r"><code># See abbreviated line 5400
-huck %&gt;% filter(line == 5400)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBBZGQgc2NvcmVzIHRvIGVhY2ggZG9jdW1lbnQgbGluZSBpbiBhIGRhdGEgZnJhbWVcbm96X2RmIDwtIG96X3BvbCRhbGwgJT4lXG4gIHNlbGVjdCh0ZXh0ID0gdGV4dC52YXIsIHBvbGFyaXR5ID0gcG9sYXJpdHkpXG5cbiMgQ3VzdG9tIGZ1bmN0aW9uXG5hbGxfdGVybXMgPC0gcG9sX3N1YnNlY3Rpb25zKG96X2RmKVxuXG4jIE1ha2UgYSBjb3JwdXNcbmFsbF9jb3JwdXMgPC0gYWxsX3Rlcm1zICU+JVxuICBWZWN0b3JTb3VyY2UoKSAlPiUgXG4gIFZDb3JwdXMoKVxuXG4jIEJhc2ljIFRETVxuYWxsX3RkbSA8LSBUZXJtRG9jdW1lbnRNYXRyaXgoXG4gIGFsbF9jb3JwdXMsXG4gIGNvbnRyb2wgPSBsaXN0KFxuICAgIHJlbW92ZVB1bmN0dWF0aW9uID0gVFJVRSxcbiAgICBzdG9wd29yZHMgPSBzdG9wd29yZHMoa2luZCA9IFwiZW5cIilcbiAgKVxuKSAlPiVcbiAgYXMubWF0cml4KCkgJT4lXG4gIHNldF9jb2xuYW1lcyhjKFwicG9zaXRpdmVcIiwgXCJuZWdhdGl2ZVwiKSlcblxuIyBNYWtlIGEgY29tcGFyaXNvbiBjbG91ZFxuY29tcGFyaXNvbi5jbG91ZChcbiAgYWxsX3RkbSxcbiAgbWF4LndvcmRzID0gNTAsXG4gIGNvbG9ycyA9IGMoXCJkYXJrZ3JlZW5cIiwgXCJkYXJrcmVkXCIpXG4pXG5gYGAifQ== -->
+<pre class="r"><code># Add scores to each document line in a data frame
+oz_df &lt;- oz_pol$all %&gt;%
+  select(text = text.var, polarity = polarity)
 
-# What are the scores of the sentiment words?
-afinn %&gt;% filter(word %in% c(&quot;fun&quot;, &quot;glad&quot;))
+# Custom function
+all_terms &lt;- pol_subsections(oz_df)
 
-huck_afinn &lt;- huck %&gt;% 
-  # Inner Join to AFINN lexicon
-  inner_join(afinn, by = c(&quot;term&quot; = &quot;word&quot;)) %&gt;%
-  # Count by score and line
-  count(score, line)
+# Make a corpus
+all_corpus &lt;- all_terms %&gt;%
+  VectorSource() %&gt;% 
+  VCorpus()
 
-huck_afinn_agg &lt;- huck_afinn %&gt;% 
-  # Group by line
-  group_by(line) %&gt;%
-  # Sum scores by line
-  summarize(total_score = sum(score))</code></pre>
+# Basic TDM
+all_tdm &lt;- TermDocumentMatrix(
+  all_corpus,
+  control = list(
+    removePunctuation = TRUE,
+    stopwords = stopwords(kind = &quot;en&quot;)
+  )
+) %&gt;%
+  as.matrix() %&gt;%
+  set_colnames(c(&quot;positive&quot;, &quot;negative&quot;))
+
+# Make a comparison cloud
+comparison.cloud(
+  all_tdm,
+  max.words = 50,
+  colors = c(&quot;darkgreen&quot;, &quot;darkred&quot;)
+)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p><a href="%22download%20(1).png%22">resulting plot</a></p>
-<p>Wow, you’re a tidytext wizard! Huckleberry Finn has a not-quite-a-happy-ending.</p>
+<p><a href="%22download%20(5).png%22">resulted wordcloud</a></p>
 </div>
-<div id="the-wonderful-wizard-of-nrc" class="section level3">
-<h3>The wonderful wizard of NRC</h3>
-<p>Last but not least, you get to work with the NRC lexicon which labels words across multiple emotional states. Remember Plutchik’s wheel of emotion? The NRC lexicon tags words according to Plutchik’s 8 emotions plus positive/negative.</p>
-<p>In this exercise there is a new operator, %in%, which matches a vector to another. In the code below %in% will return FALSE, FALSE, TRUE. This is because within some_vec, 1 and 2 are not found within some_other_vector but 3 is found and returns TRUE. The %in% is useful to find matches.</p>
-<p>some_vec &lt;- c(1, 2, 3) some_other_vector &lt;- c(3, “a”, “b”) some_vec %in% some_other_vector Another new operator is !. For logical conditions, adding ! will inverse the result. In the above example, the FALSE, FALSE, TRUE will become TRUE, TRUE, FALSE. Using it in concert with %in% will inverse the response and is good for removing items that are matched.</p>
-<p>!some_vec %in% some_other_vector INSTRUCTIONS 100XP INSTRUCTIONS 100XP We’ve created oz which is the tidy version of The Wizard of Oz along with nrc containing the “NRC” lexicon with renamed columns.</p>
-<p>Inner join oz to the nrc lexicon. Call inner_join() to join the tibbles. Join by the term column in the text and the word column in the lexicon. Assign the result to oz_nrc. Filter to only Pluchik’s emotions and drop the positive or negative words in the lexicon. Use filter() to keep rows where the sentiment is not “positive” or “negative”. Group by sentiment. Call group_by(), passing sentiment without quotes. Get the total count of each sentiment. Call summarize(), setting total_count equal to the sum() of count. Assign the result to oz_plutchik. Lastly, create a bar plot with ggplot(). Pass in oz_plutchik to the data argument. Then specify the x and y aesthetics, calling aes() and passing sentiment and total_count without quotes. Add a column geom with geom_col(). (This is the same as geom_bar(), but doesn’t summarize the data, since you’ve done that already.)</p>
+<div id="emotional-introspection" class="section level3">
+<h3>Emotional introspection</h3>
+<p>In this exercise you go beyond subsetting on positive and negative language. Instead you will subset text by each of the 8 emotions in Plutchik’s emotional wheel to construct a visual. With this approach you will get more clarity in word usage by mapping to a specific emotion instead of just positive or negative.</p>
+<p>Using the tidytext subjectivity lexicon, “nrc”, you perform an inner_join() with your text. The “nrc” lexicon has the 8 emotions plus positive and negative term classes. So you will have to drop positive and negative words after performing your inner_join(). One way to do so is with the negation, !, and grepl().</p>
+<p>The “Global Regular Expression Print Logical,” grepl(), function will return a True or False if a string pattern is identified in each row. In this exercise you will search for positive OR negative using the | operator, representing “or” as shown below. Often this straight line is above the enter key on a keyboard. Since the ! negation precedes grepl(), the T or F is switched so the “positive|negative” is dropped instead of kept.</p>
+<p>Object &lt;- tibble %&gt;% filter(!grepl(“positive|negative”, column_name)) Next you apply count() on the identified words along with spread() to get the data frame organized.</p>
+<p>This exercise introduces rownames(). This function declares the names of rows in a data frame. It behaves a bit differently because rownames() is passed the object gaining the row names on the left side of &lt;-. On the right side the character vector of names is declared such as data_frame[, 1]. For instance:</p>
+<p>rownames(data_frame) &lt;- vector_of_names After setting row names you will create a more varied comparison.cloud().</p>
+<p>INSTRUCTIONS 100XP INSTRUCTIONS 100XP inner_join() moby and nrc to create moby_sentiment. Using filter() with a negation (!) and grepl() search for “positive|negative”. The column to search is called sentiment. Forward moby_pos_neg to count()with sentiment then term = term. %&gt;% this to spread() passing in sentiment, n, and fill = 0 and then change it to a data frame with as.data.frame(). Set the rownames() of moby_tidy to be the first column vector, moby_tidy[, 1]. Drop the first column of moby_tidy (since it was declared as row names) by setting moby_tidy[, 1] to NULL. Examine moby_tidy using head(). Apply comparison.cloud() to moby_tidy with max.words = 50, title.size = 1.5.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBKb2luIHRleHQgYW5kIGxleGljb25cbm96X25yYyA8LSBpbm5lcl9qb2luKG96LCBucmMsIGJ5ID0gYyhcInRlcm1cIiA9IFwid29yZFwiKSlcblxuIyBEYXRhRnJhbWUgb2YgdGFsbHlcbm96X3BsdXRjaGlrIDwtIG96X25yYyAlPiUgXG4gICMgT25seSBjb25zaWRlciBQbHV0Y2hpayBzZW50aW1lbnRzXG4gIGZpbHRlcighc2VudGltZW50ICVpbiUgYyhcInBvc2l0aXZlXCIsIFwibmVnYXRpdmVcIikpICU+JVxuICAjIEdyb3VwIGJ5IHNlbnRpbWVudFxuICBncm91cF9ieShzZW50aW1lbnQpICU+JSBcbiAgIyBHZXQgdG90YWwgY291bnQgYnkgc2VudGltZW50XG4gIHN1bW1hcml6ZSh0b3RhbF9jb3VudCA9IHN1bShjb3VudCkpXG5cbiMgUGxvdCB0aGUgY291bnRzXG5nZ3Bsb3Qob3pfcGx1dGNoaWssIGFlcyh4ID0gc2VudGltZW50LCB5ID0gdG90YWxfY291bnQpKSArXG4gICMgQWRkIGEgY29sdW1uIGdlb21cbiAgZ2VvbV9jb2woKVxuYGBgIn0= -->
-<pre class="r"><code># Join text and lexicon
-oz_nrc &lt;- inner_join(oz, nrc, by = c(&quot;term&quot; = &quot;word&quot;))
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBJbm5lciBqb2luXG5tb2J5X3NlbnRpbWVudCA8LSBpbm5lcl9qb2luKG1vYnksIG5yYylcblxuIyBEcm9wIHBvc2l0aXZlIG9yIG5lZ2F0aXZlXG5tb2J5X3Bvc19uZWcgPC0gbW9ieV9zZW50aW1lbnQgJT4lXG4gIGZpbHRlcighZ3JlcGwoXCJwb3NpdGl2ZXxuZWdhdGl2ZVwiLCBzZW50aW1lbnQpKVxuXG4jIENvdW50IHRlcm1zIGJ5IHNlbnRpbWVudCB0aGVuIHNwcmVhZCBcbm1vYnlfdGlkeSA8LSBtb2J5X3Bvc19uZWcgJT4lIFxuICBjb3VudChzZW50aW1lbnQsIHRlcm0gPSB0ZXJtKSAlPiUgXG4gIHNwcmVhZChzZW50aW1lbnQsIG4sIGZpbGwgPSAwKSAlPiVcbiAgYXMuZGF0YS5mcmFtZSgpXG5cbiMgU2V0IHJvdyBuYW1lc1xucm93bmFtZXMobW9ieV90aWR5KSA8LSBtb2J5X3RpZHlbLCAxXVxuXG4jIERyb3AgdGVybXMgY29sdW1uXG5tb2J5X3RpZHlbLCAxXSA8LSBOVUxMXG5cbiMgRXhhbWluZVxuaGVhZChtb2J5X3RpZHkpXG5cbiMgQ29tcGFyaXNvbiBjbG91ZFxuY29tcGFyaXNvbi5jbG91ZChtb2J5X3RpZHksIG1heC53b3JkcyA9IDUwLCB0aXRsZS5zaXplID0gMS41KVxuYGBgIn0= -->
+<pre class="r"><code># Inner join
+moby_sentiment &lt;- inner_join(moby, nrc)
 
-# DataFrame of tally
-oz_plutchik &lt;- oz_nrc %&gt;% 
-  # Only consider Plutchik sentiments
-  filter(!sentiment %in% c(&quot;positive&quot;, &quot;negative&quot;)) %&gt;%
-  # Group by sentiment
-  group_by(sentiment) %&gt;% 
-  # Get total count by sentiment
-  summarize(total_count = sum(count))
+# Drop positive or negative
+moby_pos_neg &lt;- moby_sentiment %&gt;%
+  filter(!grepl(&quot;positive|negative&quot;, sentiment))
 
-# Plot the counts
-ggplot(oz_plutchik, aes(x = sentiment, y = total_count)) +
-  # Add a column geom
-  geom_col()</code></pre>
+# Count terms by sentiment then spread 
+moby_tidy &lt;- moby_pos_neg %&gt;% 
+  count(sentiment, term = term) %&gt;% 
+  spread(sentiment, n, fill = 0) %&gt;%
+  as.data.frame()
+
+# Set row names
+rownames(moby_tidy) &lt;- moby_tidy[, 1]
+
+# Drop terms column
+moby_tidy[, 1] &lt;- NULL
+
+# Examine
+head(moby_tidy)
+
+# Comparison cloud
+comparison.cloud(moby_tidy, max.words = 50, title.size = 1.5)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p><a href="%22download%20(2).png%22">resulting plot</a></p>
+<p><a href="%22download%20(6).png%22">resulted wordcloud</a></p>
+</div>
+<div id="compare-contrast-stacked-bar-chart" class="section level3">
+<h3>Compare &amp; contrast stacked bar chart</h3>
+<p>Another way to slice your text is to understand how much of the document(s) are made of positive or negative words. For example a restaurant review may have some positive aspects such as “the food was good” but then continue to add “the restaurant was dirty, the staff was rude and parking was awful.” As a result, you may want to understand how much of a document is dedicated to positive vs negative language. In this example it would have a higher negative percentage compared to positive.</p>
+<p>One method for doing so is to count() the positive and negative words then divide by the number of subjectivity words identified. In the restaurant review example, “good” would count as 1 positive and “dirty,” “rude,” and “awful” count as 3 negative terms. A simple calculation would lead you to believe the restaurant review is 25% positive and 75% negative since there were 4 subjectivity terms.</p>
+<p>Start by performing the inner_join() on a unified tidy data frame containing 4 books, Agamemnon, Oz, Huck Finn, and Moby Dick. Just like the previous exercise you will use filter() and grepl().</p>
+<p>To perform the count() you have to group the data by book and then sentiment. For example all the positive words for Agamemnon have to be grouped then tallied so that positive words from all books are not mixed. Luckily, you can pass multiple variables into count() directly.</p>
+<p>INSTRUCTIONS 100XP INSTRUCTIONS 100XP Forward book_sents, which is the NRC inner join to all tidy books, to filter(). Perform a grepl() on the sentiment column, checking without the negation so that “positive|negative” are kept. Review the tail of books_pos_neg. Create books_sent_count by passing books_pos_neg to count() with parameters book and then sentiment. Review the entire object by calling books_sent_count. Create book_pos using group_by() and mutate() a new variable. Pass book as the grouping variable, then calculate the percentage by passing the expression n / sum(n) * 100 inside mutate(). Make a barplot with ggplot() using book_pos with aes(x = book, y = percent_positive, fill = sentiment). Add another layer with + and pass in geom_bar(stat = “identity”).</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBSZXZpZXcgdGFpbCBvZiBhbGxfYm9va3NcbnRhaWwoYWxsX2Jvb2tzKVxuXG4jIElubmVyIGpvaW5cbmJvb2tzX3NlbnRzIDwtIGlubmVyX2pvaW4oYWxsX2Jvb2tzLCBucmMpXG5cbiMgS2VlcCBvbmx5IHBvc2l0aXZlIG9yIG5lZ2F0aXZlXG5ib29rc19wb3NfbmVnIDwtIGJvb2tzX3NlbnRzICU+JVxuICBmaWx0ZXIoZ3JlcGwoXCJwb3NpdGl2ZXxuZWdhdGl2ZVwiLCBzZW50aW1lbnQpKVxuXG4jIFJldmlldyB0YWlsIGFnYWluXG50YWlsKGJvb2tzX3Bvc19uZWcpXG5cbiMgQ291bnQgYnkgYm9vayAmIHNlbnRpbWVudFxuYm9va3Nfc2VudF9jb3VudCA8LSBib29rc19wb3NfbmVnICU+JVxuICBjb3VudChib29rLCBzZW50aW1lbnQpXG5cbiMgUmV2aWV3IGVudGlyZSBvYmplY3RcbmJvb2tzX3NlbnRfY291bnRcblxuIyBTcGxpdCwgbWFrZSBwcm9wb3J0aW9uYWxcbmJvb2tfcG9zIDwtIGJvb2tzX3NlbnRfY291bnQgJT4lXG4gIGdyb3VwX2J5KGJvb2spICU+JSBcbiAgbXV0YXRlKHBlcmNlbnRfcG9zaXRpdmUgPSBuIC8gc3VtKG4pICogMTAwKVxuXG4jIFByb3BvcnRpb25hbCBiYXIgcGxvdFxuZ2dwbG90KGJvb2tfcG9zLCBhZXMoeCA9IGJvb2ssIHkgPSBwZXJjZW50X3Bvc2l0aXZlLCBmaWxsID0gc2VudGltZW50KSkgKyAgXG4gIGdlb21fYmFyKHN0YXQgPSBcImlkZW50aXR5XCIpXG5gYGAifQ== -->
+<pre class="r"><code># Review tail of all_books
+tail(all_books)
+
+# Inner join
+books_sents &lt;- inner_join(all_books, nrc)
+
+# Keep only positive or negative
+books_pos_neg &lt;- books_sents %&gt;%
+  filter(grepl(&quot;positive|negative&quot;, sentiment))
+
+# Review tail again
+tail(books_pos_neg)
+
+# Count by book &amp; sentiment
+books_sent_count &lt;- books_pos_neg %&gt;%
+  count(book, sentiment)
+
+# Review entire object
+books_sent_count
+
+# Split, make proportional
+book_pos &lt;- books_sent_count %&gt;%
+  group_by(book) %&gt;% 
+  mutate(percent_positive = n / sum(n) * 100)
+
+# Proportional bar plot
+ggplot(book_pos, aes(x = book, y = percent_positive, fill = sentiment)) +  
+  geom_bar(stat = &quot;identity&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><a href="%22download%20(7).png%22">resulted plot</a></p>
+</div>
+<div id="kernel-density-plot" class="section level3">
+<h3>Kernel density plot</h3>
+<p>Now that you learned about a kernel density plot you can create one! Remember it’s like a smoothed histogram but isn’t affected by binwidth. This exercise will help you construct a kernel density plot from sentiment values.</p>
+<p>In this exercise you will plot 2 kernel densities. One for Agamemnon and another for The Wizard of Oz. For both you will perform an inner_join() with the “afinn” lexicon. Recall the “afinn” lexicon has terms scored from -5 to 5. Once in a tidy format, both books will retain words and corresponding scores for the lexicon.</p>
+<p>After that, you need to row bind the results into a larger data frame using rbind() and create a plot with ggplot2.</p>
+<p>From the visual you will be able to understand which book uses more positive versus negative language. There is clearly overlap as negative things happen to Dorothy but you could infer the kernel density is demonstrating a greater probability of positive language in the Wizard of Oz compared to Agamemnon.</p>
+<p>In this exercise you will declare a new column with a repeating value. Here you are adding a new column by adding it to the data frame as in $new_column_name with a recycled value.</p>
+<p>data_frame<span class="math inline">\(new_column_name &lt;- 'repeating value' INSTRUCTIONS 100XP INSTRUCTIONS 100XP We've loaded ag as a tidy version of Agamemnon and created afinn as a subset of the tidytext &quot;afinn&quot; lexicon. Make a new object called ag_afinn using inner_join() on ag and afinn. Create a new column by declaring ag_afinn\)</span>book as “agamemnon”. This will append a new column that recycles the string for all rows. Perform another inner_join() on the preloaded oz and afinn objects. Call the new object oz_afinn. Append another column called oz_afinn$book with a recycled string “oz”. Declare all_df as a new object using rbind() on ag_afinn and oz_afinn. Create the kernel density plot with ggplot(). Pass in all_df as your data along with aes(x = score, fill = book). Add the density layer using geom_density() with an alpha = 0.3. Lastly, add a title using ggtitle() called “AFINN Score Densities”.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBBZ2FtZW1ub24gaW5uZXIgam9pblxuYWdfYWZpbm4gPC0gaW5uZXJfam9pbihhZywgYWZpbm4pXG5cbiMgQWRkIGJvb2tcbmFnX2FmaW5uJGJvb2sgPC0gXCJhZ2FtZW1ub25cIlxuXG4jIE96IGlubmVyIGpvaW5cbm96X2FmaW5uIDwtIGlubmVyX2pvaW4ob3osIGFmaW5uKVxuXG4jIEFkZCBib29rXG5vel9hZmlubiRib29rIDwtIFwib3pcIlxuXG4jIENvbWJpbmVcbmFsbF9kZiA8LSByYmluZChhZ19hZmlubiwgb3pfYWZpbm4pXG5cbiMgUGxvdCAyIGRlbnNpdGllc1xuZ2dwbG90KGFsbF9kZiwgYWVzKHggPSBzY29yZSwgZmlsbCA9IGJvb2spKSArIFxuICBnZW9tX2RlbnNpdHkoYWxwaGEgPSAwLjMpICsgXG4gIHRoZW1lX2dkb2NzKCkgK1xuICBnZ3RpdGxlKFwiQUZJTk4gU2NvcmUgRGVuc2l0aWVzXCIpXG5gYGAifQ== -->
+<pre class="r"><code># Agamemnon inner join
+ag_afinn &lt;- inner_join(ag, afinn)
+
+# Add book
+ag_afinn$book &lt;- &quot;agamemnon&quot;
+
+# Oz inner join
+oz_afinn &lt;- inner_join(oz, afinn)
+
+# Add book
+oz_afinn$book &lt;- &quot;oz&quot;
+
+# Combine
+all_df &lt;- rbind(ag_afinn, oz_afinn)
+
+# Plot 2 densities
+ggplot(all_df, aes(x = score, fill = book)) + 
+  geom_density(alpha = 0.3) + 
+  theme_gdocs() +
+  ggtitle(&quot;AFINN Score Densities&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><a href="%22download%20(8).png%22">resulted plot</a></p>
+</div>
+<div id="box-plot" class="section level3">
+<h3>Box plot</h3>
+<p>An easy way to compare multiple distributions is with a box plot. This code will help you construct multiple box plots to make a compact visual.</p>
+<p>In this exercise the all_book_polarity object is already loaded. The data frame contains two columns, book and polarity. It comprises all books with qdap’s polarity() function applied. Here are the first 3 rows of the large object.</p>
+<p>book polarity 14 huck 0.2773501 22 huck 0.2581989 26 huck -0.5773503 This exercise introduces tapply() which allows you to apply functions over a ragged array. You input a vector of values and then a vector of factors. For each factor, value combination the third parameter, a function like min(), is applied. For example here’s some code with tapply() used on two vectors.</p>
+<p>f1 &lt;- as.factor(c(“Group1”, “Group2”, “Group1”, “Group2”)) stat1 &lt;- c(1, 2, 1, 2) tapply(stat1, f1, sum) The result is an array where Group1 has a value of 2 (1+1) and Group2 has a value of 4 (2+2).</p>
+<p>INSTRUCTIONS 100XP INSTRUCTIONS 100XP Since it’s already loaded, examine the all_book_polarity with str(). Using tapply(), pass in all_book_polarity<span class="math inline">\(polarity, all_book_polarity\)</span>book and the summary() function. This will print the summary statistics for the 4 books in terms of their polarity() scores. You would expect to see Oz and Huck Finn to have higher averages than Agamemnon or Moby Dick. Pay close attention to the median. Create a box plot with ggplot() by passing in all_book_polarity. Aesthetics should be aes(x = book, y = polarity). Using a + add the geom_boxplot() with col = “darkred”. Pay close attention to the dark line in each box representing median. Next add another layer called geom_jitter() to add points for each of the words.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFeGFtaW5lXG5zdHIoYWxsX2Jvb2tfcG9sYXJpdHkpXG5cbiMgU3VtbWFyeSBieSBkb2N1bWVudFxudGFwcGx5KGFsbF9ib29rX3BvbGFyaXR5JHBvbGFyaXR5LCBhbGxfYm9va19wb2xhcml0eSRib29rLCBzdW1tYXJ5KVxuXG4jIEJveCBwbG90XG5nZ3Bsb3QoYWxsX2Jvb2tfcG9sYXJpdHksIGFlcyh4ID0gYm9vaywgeSA9IHBvbGFyaXR5KSkgK1xuICBnZW9tX2JveHBsb3QoZmlsbCA9IGMoXCIjYmFkYTU1XCIsIFwiI0YwMEI0MlwiLCBcIiNGMDAxRURcIiwgXCIjQkE2RTE1XCIpLCBjb2wgPSBcImRhcmtyZWRcIikgK1xuICBnZW9tX2ppdHRlcihwb3NpdGlvbiA9IHBvc2l0aW9uX2ppdHRlcih3aWR0aCA9IDAuMSwgaGVpZ2h0ID0gMCksIGFscGhhID0gMC4wMikgK1xuICB0aGVtZV9nZG9jcygpICtcbiAgZ2d0aXRsZShcIkJvb2sgUG9sYXJpdHlcIilcbmBgYCJ9 -->
+<pre class="r"><code># Examine
+str(all_book_polarity)
+
+# Summary by document
+tapply(all_book_polarity$polarity, all_book_polarity$book, summary)
+
+# Box plot
+ggplot(all_book_polarity, aes(x = book, y = polarity)) +
+  geom_boxplot(fill = c(&quot;#bada55&quot;, &quot;#F00B42&quot;, &quot;#F001ED&quot;, &quot;#BA6E15&quot;), col = &quot;darkred&quot;) +
+  geom_jitter(position = position_jitter(width = 0.1, height = 0), alpha = 0.02) +
+  theme_gdocs() +
+  ggtitle(&quot;Book Polarity&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><a href="%22download%20(9).png%22">resulted plot</a></p>
+</div>
+<div id="radar-chart" class="section level3">
+<h3>Radar chart</h3>
+<p>Remember Plutchik’s wheel of emotion? The NRC lexicon has the 8 emotions corresponding to the first ring of the wheel. Previously you created a comparison.cloud() according to the 8 primary emotions. Now you will create a radar chart similar to the wheel in this exercise.</p>
+<p>A radarchart is a two-dimensional representation of multidimensional data (at least 3). In this case the tally of the different emotions for a book are represented in the chart. Using a radar chart, you can review all 8 emotions simultaneously.</p>
+<p>As before we’ve loaded the “nrc” lexicon as nrc and moby_huck which is a combined tidy version of both Moby Dick and Huck Finn.</p>
+<p>In this exercise you once again use a negated grepl() to remove “positive|negative” emotional classes from the chart. As a refresher here is an example:</p>
+<p>object &lt;- tibble %&gt;% filter(!grepl(“positive|negative”, column_name)) This exercise reintroduces spread() which rearranges the tallied emotional words. As a refresher consider this raw data called datacamp.</p>
+<p>people food like Nicole bread 78 Nicole salad 66 Ted bread 99 Ted salad 21 If you applied spread() as in spread(datacamp, people, like) the data looks like this.</p>
+<p>food Nicole Ted bread 78 99 salad 66 21 INSTRUCTIONS 100XP INSTRUCTIONS 100XP Review moby_huck with tail(). inner_join() moby_huck and nrc. Next, filter() negating “positive|negative” in the sentiment column. Assign the result to books_pos_neg. After books_pos_neg is forwarded to group_by() with book and sentiment. Then tally() the object with an empty function. Then spread() the books_tally by the book and n column. Review the scores data. Call chartJSRadar() on scores which is an htmlwidget from the radarchart package.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBSZXZpZXcgdGFpbCBvZiBtb2J5X2h1Y2tcbnRhaWwobW9ieV9odWNrKVxuXG4jIElubmVyIGpvaW5cbmJvb2tzX3NlbnRzIDwtIGlubmVyX2pvaW4obW9ieV9odWNrLCBucmMpXG5cbiMgRHJvcCBwb3NpdGl2ZSBvciBuZWdhdGl2ZVxuYm9va3NfcG9zX25lZyA8LSBib29rc19zZW50cyAlPiVcbiAgZmlsdGVyKCFncmVwbChcInBvc2l0aXZlfG5lZ2F0aXZlXCIsIHNlbnRpbWVudCkpXG5cbiMgVGlkeSB0YWxseVxuYm9va3NfdGFsbHkgPC0gYm9va3NfcG9zX25lZyAlPiVcbiAgZ3JvdXBfYnkoYm9vaywgc2VudGltZW50KSAlPiVcbiAgdGFsbHkoKVxuXG4jIEtleSB2YWx1ZSBwYWlyc1xuc2NvcmVzIDwtIGJvb2tzX3RhbGx5ICU+JVxuICBzcHJlYWQoYm9vaywgbilcblxuIyBSZXZpZXcgc2NvcmVzXG5zY29yZXNcblxuIyBKYXZhU2NyaXB0IHJhZGFyIGNoYXJ0XG5jaGFydEpTUmFkYXIoc2NvcmVzKVxuYGBgIn0= -->
+<pre class="r"><code># Review tail of moby_huck
+tail(moby_huck)
+
+# Inner join
+books_sents &lt;- inner_join(moby_huck, nrc)
+
+# Drop positive or negative
+books_pos_neg &lt;- books_sents %&gt;%
+  filter(!grepl(&quot;positive|negative&quot;, sentiment))
+
+# Tidy tally
+books_tally &lt;- books_pos_neg %&gt;%
+  group_by(book, sentiment) %&gt;%
+  tally()
+
+# Key value pairs
+scores &lt;- books_tally %&gt;%
+  spread(book, n)
+
+# Review scores
+scores
+
+# JavaScript radar chart
+chartJSRadar(scores)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><a href="%22download%20(10).png%22">resulted plot</a></p>
+</div>
+<div id="treemaps-for-groups-of-documents" class="section level3">
+<h3>Treemaps for groups of documents</h3>
+<p>Often you will find yourself working with documents in groups, such as author, product or by company. This exercise lets you learn about the text while retaining the groups in a compact visual. For example, with customer reviews grouped by product you may want to explore multiple dimensions of the customer reviews at the same time. First you could calculate the polarity() of the reviews. Another dimension may be length. Document length can demonstrate the emotional intensity. If a customer leaves a short “great shoes!” one could infer they are actually less enthusiastic compared to a lengthier positive review. You may also want to group reviews by product type such as women’s, men’s and children’s shoes. A treemap lets you examine all of these dimensions.</p>
+<p>For text analysis, within a treemap each individual box represents a document such as a tweet. Documents are grouped in some manner such as author. The size of each box is determined by a numeric value such as number of words or letters. The individual colors are determined by a sentiment score.</p>
+<p>After you organize the tibble, you use the treemap library containing the function treemap() to make the visual. The code example below declares the data, grouping variables, size, color and other aesthetics.</p>
+<p>treemap(data_frame, index = c(“group”, “individual_document”), vSize = “V1”, vColor = “avg_score”, type = “value”, title = “Book Sentiment Scores”, palette = c(“red”, “white”, “green”)) The pre-loaded all_books object contains a combined tidy format corpus with 4 Shakespeare, 3 Melville and 4 Twain books. Based on the treemap you should be able to tell who writes longer books, and the polarity of the author as a whole and for individual books.</p>
+<p>INSTRUCTIONS 100XP INSTRUCTIONS 100XP inner_join() all_books and the afinnlexicon. Declare the by parameter equal to = c(“term” = “word”). Calculate each book’s length in a new object called book_length using count() with the book column. Create book_score with group_by() using author and book then summarize() with a new column mean_score using the mean() function on the score column. Forward book_score to another inner_join(). The second table is book_length and declare by = “book”. Examine book_tree. Call treemap() on book_tree followed by index specifying c() with “author” and “book”. Declare vSize as “n” and vColor as “mean_score”. The type needs to be “value” for appropriate coloring. Finally specify the palette as</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYm9va3Nfc2NvcmUgPC0gYWxsX2Jvb2tzICU+JSBcbiAgIyBJbm5lciBqb2luIHdpdGggQUZJTk4gc2NvcmVzXG4gIGlubmVyX2pvaW4oYWZpbm4sIGJ5ID0gYyhcInRlcm1cIiA9IFwid29yZFwiKSlcblxuYm9va19sZW5ndGggPC0gYm9va3Nfc2NvcmUgJT4lIFxuICAjIENvdW50IG51bWJlciBvZiB3b3JkcyBwZXIgYm9va1xuICBjb3VudChib29rKSBcblxuYm9va19zY29yZSA8LSBib29rc19zY29yZSAlPiUgXG4gICMgR3JvdXAgYnkgYXV0aG9yLCBib29rXG4gIGdyb3VwX2J5KGF1dGhvciwgYm9vaykgJT4lXG4gICMgQ2FsY3VsYXRlIG1lYW4gYm9vayBzY29yZVxuICBzdW1tYXJpemUobWVhbl9zY29yZSA9IG1lYW4oc2NvcmUpKSBcblxuYm9va190cmVlIDwtIGJvb2tfc2NvcmUgJT4lIFxuICAjIElubmVyIGpvaW4gYnkgYm9va1xuICBpbm5lcl9qb2luKGJvb2tfbGVuZ3RoLCBieSA9IFwiYm9va1wiKVxuXG4jIEV4YW1pbmUgdGhlIHJlc3VsdHNcbmJvb2tfdHJlZVxuXG4jIE1ha2UgdGhlIHZpc3VhbFxudHJlZW1hcChib29rX3RyZWUsXG4gICAgICAgIGluZGV4ID0gYyhcImF1dGhvclwiLCBcImJvb2tcIiksXG4gICAgICAgIHZTaXplID0gXCJuXCIsXG4gICAgICAgIHZDb2xvciA9IFwibWVhbl9zY29yZVwiLFxuICAgICAgICB0eXBlID0gXCJ2YWx1ZVwiLFxuICAgICAgICB0aXRsZSA9IFwiQm9vayBTZW50aW1lbnQgU2NvcmVzXCIsXG4gICAgICAgIHBhbGV0dGUgPSBjKFwicmVkXCIsIFwid2hpdGVcIiwgXCJncmVlblwiKSlcbmBgYCJ9 -->
+<pre class="r"><code>books_score &lt;- all_books %&gt;% 
+  # Inner join with AFINN scores
+  inner_join(afinn, by = c(&quot;term&quot; = &quot;word&quot;))
+
+book_length &lt;- books_score %&gt;% 
+  # Count number of words per book
+  count(book) 
+
+book_score &lt;- books_score %&gt;% 
+  # Group by author, book
+  group_by(author, book) %&gt;%
+  # Calculate mean book score
+  summarize(mean_score = mean(score)) 
+
+book_tree &lt;- book_score %&gt;% 
+  # Inner join by book
+  inner_join(book_length, by = &quot;book&quot;)
+
+# Examine the results
+book_tree
+
+# Make the visual
+treemap(book_tree,
+        index = c(&quot;author&quot;, &quot;book&quot;),
+        vSize = &quot;n&quot;,
+        vColor = &quot;mean_score&quot;,
+        type = &quot;value&quot;,
+        title = &quot;Book Sentiment Scores&quot;,
+        palette = c(&quot;red&quot;, &quot;white&quot;, &quot;green&quot;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><a href="%22download%20(11).png%22">resulted plot</a></p>
 <!-- rnb-text-end -->
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIyBDaGFwdGVyIDIgQ291cnNlIFNlbnRpbWVudCBBbmFseXNpcyBpbiBSDQoNCkluIHRoZSBzZWNvbmQgY2hhcHRlciB5b3Ugd2lsbCBleHBsb3JlIDMgc3ViamVjdGl2aXR5IGxleGljb25zIGZyb20gdGlkeXRleHQuIFRoZW4geW91IHdpbGwgZG8gYW4gaW5uZXIgam9pbiB0byBzY29yZSBzb21lIHRleHQuDQoNCg0KUGx1dGNoaWvigJlzIFdoZWVsIG9mIEVtb3Rpb24NCg0KDQoNCiMjIyBEVE0gdnMgdGlkeXRleHQgbWF0cml4DQoNCmBgYHtyfQ0KbGlicmFyeSh0aWR5dGV4dCkNCg0KIyBBcyBtYXRyaXgNCmFnX2R0bV9tIDwtIGFzLm1hdHJpeChhZ19kdG0pDQoNCiMgRXhhbWluZSBsaW5lIDIyMDYgYW5kIGNvbHVtbnMgMjQ1OjI1MA0KYWdfZHRtX21bMjIwNiwgMjQ1OjI1MF0NCmBgYA0KDQo+IGFnX2R0bV9tWzIyMDYsIDI0NToyNTBdDQogICAgICAgYmxlZWQgICAgICAgYmxlZWRzICAgICAgICBibGVudCAgICAgICAgYmxlc3MgYmxlc3PDo2QgICAgIGJsZXNzaW5nIA0KICAgICAgICAgICAwICAgICAgICAgICAgMCAgICAgICAgICAgIDAgICAgICAgICAgICAxICAgICAgICAgICAgMCAgICAgICAgICAgIDANCg0KYGBge3J9DQojIFRpZHkgdXAgdGhlIERUTQ0KYWdfdGlkeSA8LSB0aWR5KGFnX2R0bSkNCg0KIyBFeGFtaW5lIHRpZHkgd2l0aCBhIHdvcmQgeW91IHNhdw0KYWdfdGlkeVs4MzE6ODM1LCBdDQpgYGANCg0KPiBhZ190aWR5WzgzMTo4MzUsIF0NCiMgQSB0aWJibGU6IDUgeCAzDQogIGRvY3VtZW50ICAgICB0ZXJtIGNvdW50DQogICAgIDxjaHI+ICAgIDxjaHI+IDxkYmw+DQoxICAgICAgMjM0ICAgYmxlZWRzICAgICAxDQoyICAgICAgMjM0IHNsZWVwZXRoICAgICAxDQozICAgICAgMjM1ICAgIGNvbWVzICAgICAxDQo0ICAgICAgMjM1ICAgICB3aWxsICAgICAxDQo1ICAgICAgMjM1ICAgd2lzZG9tICAgICAxDQoNCg0KIyMjIEV4YW1pbmUgdGhlIHNlbnRpbWVudHMgZGF0YSBmcmFtZQ0KDQpFeGFtaW5lIHRoZSBzZW50aW1lbnRzIGRhdGEgZnJhbWUNCg0KU28gZmFyIHlvdSBoYXZlIHVzZWQgYSBzaW5nbGUgbGV4aWNvbi4gTm93IHdlIHdpbGwgdHJhbnNpdGlvbiB0byB1c2luZyB0aHJlZSwgZWFjaCBtZWFzdXJpbmcgc2VudGltZW50IGluIGRpZmZlcmVudCB3YXlzLg0KDQpUaGUgdGlkeXRleHQgcGFja2FnZSBjb250YWlucyBhIGRhdGEgZnJhbWUgY2FsbGVkIHNlbnRpbWVudHMuIFRoZSBkYXRhIGZyYW1lIGNvbnRhaW5zIG92ZXIgMjMwMDAgdGVybXMgZnJvbSB0aHJlZSBkaWZmZXJlbnQgc3ViamVjdGl2aXR5IGxleGljb25zIHdpdGggY29ycmVzcG9uZGluZyBpbmZvcm1hdGlvbi4gSGVyZSBhcmUgc29tZSBleGFtcGxlIHJvd3MgZnJvbSB0aGUgc2VudGltZW50cyBkYXRhIGZyYW1lLg0KDQp8V29yZHxTZW50aW1lbnQJTGV4aWNvbglTY29yZQ0KfGFiaG9ycmVudHwJTkF8CUFGSU5OfAktMw0KfGNvb2wJTkEJQUZJTk4JMQ0KfGNvbmdlbmlhbAlwb3NpdGl2ZQlCaW5nCU5BDQp8ZW5lbXkJbmVnYXRpdmUJQmluZwlOQQ0KfHVuZ3JhdGVmdWwJYW5nZXIJTlJDCU5BDQp8c2VjdGFyaWFuCWFuZ2VyCU5SQwlOQQ0KDQpgYGB7cn0NCmluc3RhbGwucGFja2FnZXMoIlJjcHAiKQ0KI2luc3RhbGwucGFja2FnZXMoInRpZHl0ZXh0IikNCmxpYnJhcnkodGlkeXRleHQpDQojIFN1YnNldCB0byBBRklOTg0KDQphZmlubl9sZXggPC0gZ2V0X3NlbnRpbWVudHMoImFmaW5uIikNCg0KIyBDb3VudCBBRklOTiBzY29yZXMNCmFmaW5uX2xleCAlPiUgDQogIGNvdW50KHNjb3JlKQ0KYGBgDQoNCj4gYWZpbm5fbGV4ICU+JSANCiAgICBjb3VudChzY29yZSkNCiMgQSB0aWJibGU6IDExIHggMg0KICAgc2NvcmUgICAgIG4NCiAgIDxpbnQ+IDxpbnQ+DQogMSAgICAtNSAgICAxNg0KIDIgICAgLTQgICAgNDMNCiAzICAgIC0zICAgMjY0DQogNCAgICAtMiAgIDk2NQ0KIDUgICAgLTEgICAzMDkNCiA2ICAgICAwICAgICAxDQogNyAgICAgMSAgIDIwOA0KIDggICAgIDIgICA0NDgNCiA5ICAgICAzICAgMTcyDQoxMCAgICAgNCAgICA0NQ0KMTEgICAgIDUgICAgIDUNCg0KDQpgYGB7cn0NCiMgU3Vic2V0IHRvIG5yYw0KbnJjX2xleCA8LSBnZXRfc2VudGltZW50cygibnJjIikNCg0KIyBQcmludCBucmNfbGV4DQpucmNfbGV4DQpgYGANCg0KPiBucmNfbGV4DQojIEEgdGliYmxlOiAxMyw5MDEgeCAyDQogICAgICAgICAgd29yZCBzZW50aW1lbnQNCiAgICAgICAgIDxjaHI+ICAgICA8Y2hyPg0KIDEgICAgICBhYmFjdXMgICAgIHRydXN0DQogMiAgICAgYWJhbmRvbiAgICAgIGZlYXINCiAzICAgICBhYmFuZG9uICBuZWdhdGl2ZQ0KIDQgICAgIGFiYW5kb24gICBzYWRuZXNzDQogNSAgIGFiYW5kb25lZCAgICAgYW5nZXINCiA2ICAgYWJhbmRvbmVkICAgICAgZmVhcg0KIDcgICBhYmFuZG9uZWQgIG5lZ2F0aXZlDQogOCAgIGFiYW5kb25lZCAgIHNhZG5lc3MNCiA5IGFiYW5kb25tZW50ICAgICBhbmdlcg0KMTAgYWJhbmRvbm1lbnQgICAgICBmZWFyDQojIC4uLiB3aXRoIDEzLDg5MSBtb3JlIHJvd3MNCg0KYGBge3J9DQoNCiMgTWFrZSB0aGUgbnJjIGNvdW50cyBvYmplY3QNCm5yY19jb3VudHMgPC0gbnJjX2xleCAlPiUgDQogIGNvdW50KHNlbnRpbWVudCkNCiAgICAgICAgDQojIEJhcnBsb3QNCmdncGxvdChucmNfY291bnRzLCBhZXMoeCA9IHNlbnRpbWVudCwgeSA9IG4pKSsNCiAgZ2VvbV9iYXIoc3RhdCA9ICJpZGVudGl0eSIpICsNCiAgdGhlbWVfZ2RvY3MoKQ0KYGBgDQoNCiMjIyBzaW1wbGUgZXhhbXBsZSBvbiBwb2xhcml0eQ0KDQpCaW5nIHRpZHkgcG9sYXJpdHk6IFNpbXBsZSBleGFtcGxlDQoNClRoZSBCaW5nIGxleGljb24gbGFiZWxzIHdvcmRzIGFzIHBvc2l0aXZlIG9yIG5lZ2F0aXZlLiBUaGUgbmV4dCB0aHJlZSBleGVyY2lzZXMgbGV0IHlvdSBpbnRlcmFjdCB3aXRoIHRoaXMgc3BlY2lmaWMgbGV4aWNvbi4gSW5zdGVhZCBvZiB1c2luZyBmaWx0ZXIoKSB0byBleHRyYWN0IGEgbGV4aWNvbiB0aGlzIGV4ZXJjaXNlIHVzZXMgZ2V0X3NlbnRpbWVudHMoKSB3aGljaCBhY2NlcHRzIGEgc3RyaW5nIHN1Y2ggYXMgImFmaW5uIiwgImJpbmciLCAibnJjIiwgb3IgImxvdWdocmFuIi4NCg0KTm93IHRoYXQgeW91IHVuZGVyc3RhbmQgdGhlIGJhc2ljcyBvZiBhbiBpbm5lciBqb2luLCBsZXQncyBhcHBseSB0aGlzIHRvIHRoZSAiQmluZyIgbGV4aWNvbi4gS2VlcCBpbiBtaW5kIHRoZSBpbm5lcl9qb2luKCkgZnVuY3Rpb24gY29tZXMgZnJvbSBkcGx5ciBhbmQgdGhlIHNlbnRpbWVudHMgb2JqZWN0IGlzIGZyb20gdGlkeXRleHQuDQoNClRoZSBpbm5lciBqb2luIHdvcmtmbG93Og0KDQpPYnRhaW4gdGhlIGNvcnJlY3QgbGV4aWNvbiB1c2luZyBlaXRoZXIgZmlsdGVyKCkgb3IgZ2V0X3NlbnRpbWVudHMoKS4NClBhc3MgdGhlIGxleGljb24gYW5kIHRoZSB0aWR5IHRleHQgZGF0YSB0byBpbm5lcl9qb2luKCkuDQpJbiBvcmRlciBmb3IgaW5uZXJfam9pbigpIHRvIHdvcmsgdGhlcmUgbXVzdCBiZSBhIHNoYXJlZCBjb2x1bW4gbmFtZS4gSWYgdGhlcmUgYXJlIG5vIHNoYXJlZCBjb2x1bW4gbmFtZXMsIGRlY2xhcmUgdGhlbSB3aXRoIGFuIGFkZGl0aW9uYWwgcGFyYW1ldGVyLCBieSBlcXVhbCB0byBjIHdpdGggY29sdW1uIG5hbWVzIGxpa2UgYmVsb3cuDQoNCmBgYHtyfQ0Kb2JqZWN0IDwtIHggJT4lIA0KICAgIGlubmVyX2pvaW4oeSwgYnkgPSBjKCJjb2x1bW5fZnJvbV94IiA9ICJjb2x1bW5fZnJvbV95IikpDQpgYGANCg0KIyMjIyBQZXJmb3JtIHNvbWUgYWdncmVnYXRpb24gYW5kIGFuYWx5c2lzIG9uIHRoZSB0YWJsZSBpbnRlcnNlY3Rpb24uDQoNCmBgYHtyfQ0KIyBRZGFwIHBvbGFyaXR5DQpwb2xhcml0eShhZ190eHQpDQpgYGANCg0KPiBwb2xhcml0eShhZ190eHQpDQpXYXJuaW5nIG1lc3NhZ2U6IA0KICBTb21lIHJvd3MgY29udGFpbiBkb3VibGUgcHVuY3R1YXRpb24uICBTdWdnZXN0ZWQgdXNlIG9mIGBzZW50U3BsaXRgIGZ1bmN0aW9uLg0KICBhbGwgdG90YWwuc2VudGVuY2VzIHRvdGFsLndvcmRzIGF2ZS5wb2xhcml0eSBzZC5wb2xhcml0eSBzdGFuLm1lYW4ucG9sYXJpdHkNCjEgYWxsICAgICAgICAgICAgIDEwMCAgICAgICAxNTE1NSAgICAgICAtMi43ODMgICAgICAgICAgTkEgICAgICAgICAgICAgICAgIE5BDQoNCmBgYHtyfQ0KIyBHZXQgQmluZyBsZXhpY29uDQpiaW5nIDwtIGdldF9zZW50aW1lbnRzKCJiaW5nIikNCg0KIyBKb2luIHRleHQgdG8gbGV4aWNvbg0KYWdfYmluZ193b3JkcyA8LSBpbm5lcl9qb2luKGFnX3RpZHksIGJpbmcsIGJ5ID0gYygidGVybSIgPSAid29yZCIpKQ0KDQojIEV4YW1pbmUNCmFnX2Jpbmdfd29yZHMNCmBgYA0KDQo+IGFnX2Jpbmdfd29yZHMNCiMgQSB0aWJibGU6IDQ4MyB4IDQNCiAgIGRvY3VtZW50ICAgICAgIHRlcm0gY291bnQgc2VudGltZW50DQogICAgICA8Y2hyPiAgICAgIDxjaHI+IDxkYmw+ICAgICA8Y2hyPg0KIDEgICAgICAgIDEgIGFidW5kYW5jZSAgICAgMSAgcG9zaXRpdmUNCiAyICAgICAgICAxICAgIGFjY2xhaW0gICAgIDEgIHBvc2l0aXZlDQogMyAgICAgICAgMSAgICAgICBhY2hlICAgICAyICBuZWdhdGl2ZQ0KIDQgICAgICAgIDEgICAgIGFjaGluZyAgICAgMyAgbmVnYXRpdmUNCiA1ICAgICAgICAxIGFmZmxpY3Rpb24gICAgIDEgIG5lZ2F0aXZlDQogNiAgICAgICAgMSAgICBhZmZyb250ICAgICAxICBuZWdhdGl2ZQ0KIDcgICAgICAgIDEgICAgIGFmcmFpZCAgICAgMiAgbmVnYXRpdmUNCiA4ICAgICAgICAxICAgICBhZ2hhc3QgICAgIDEgIG5lZ2F0aXZlDQogOSAgICAgICAgMSAgICAgIGFnb255ICAgICA1ICBuZWdhdGl2ZQ0KMTAgICAgICAgIDEgICAgICBhbXBseSAgICAgMSAgcG9zaXRpdmUNCiMgLi4uIHdpdGggNDczIG1vcmUgcm93cw0KDQpgYGB7cn0NCg0KDQojIEdldCBjb3VudHMgYnkgc2VudGltZW50DQphZ19iaW5nX3dvcmRzICU+JQ0KICBjb3VudChzZW50aW1lbnQpDQpgYGANCg0KPiBhZ19iaW5nX3dvcmRzICU+JQ0KICAgIGNvdW50KHNlbnRpbWVudCkNCiMgQSB0aWJibGU6IDIgeCAyDQogIHNlbnRpbWVudCAgICAgbg0KICAgICAgPGNocj4gPGludD4NCjEgIG5lZ2F0aXZlICAgMzIxDQoyICBwb3NpdGl2ZSAgIDE2Mg0KDQoNCiMjIyBCaW5nIHRpZHkgcG9sYXJpdHk6IENvdW50ICYgc3ByZWFkIHRoZSB3aGl0ZSB3aGFsZQ0KDQpJbiB0aGlzIGV4ZXJjaXNlIHlvdSB3aWxsIGFwcGx5IGFub3RoZXIgaW5uZXJfam9pbigpIHVzaW5nIHRoZSAiYmluZyIgbGV4aWNvbi4NCg0KVGhlbiB5b3Ugd2lsbCBtYW5pcHVsYXRlIHRoZSByZXN1bHRzIHdpdGggYm90aCBjb3VudCgpIGZyb20gZHBseXIgYW5kIHNwcmVhZCgpIGZyb20gdGlkeXIgdG8gbGVhcm4gYWJvdXQgdGhlIHRleHQuDQoNClRoZSBzcHJlYWQoKSBmdW5jdGlvbiBzcHJlYWRzIGEga2V5LXZhbHVlIHBhaXIgYWNyb3NzIG11bHRpcGxlIGNvbHVtbnMuIEluIHRoaXMgY2FzZSBrZXkgaXMgdGhlIHNlbnRpbWVudCBhbmQgdGhlIHZhbHVlcyBhcmUgdGhlIGZyZXF1ZW5jeSBvZiBwb3NpdGl2ZSBvciBuZWdhdGl2ZSB0ZXJtcyBmb3IgZWFjaCBsaW5lLiBVc2luZyBzcHJlYWQoKSBjaGFuZ2VzIHRoZSBkYXRhIHNvIHRoYXQgZWFjaCByb3cgbm93IGhhcyBwb3NpdGl2ZSBhbmQgbmVnYXRpdmUgdmFsdWVzLCBldmVuIGlmIGl0IGlzIDAuDQoNCmBgYHtyfQ0KIyBJbm5lciBqb2luDQptb2J5X2xleF93b3JkcyA8LSBpbm5lcl9qb2luKG1fZGlja190aWR5LCBiaW5nLCBieSA9IGMoInRlcm0iID0gIndvcmQiKSkNCg0KbW9ieV9sZXhfd29yZHMgPC0gbW9ieV9sZXhfd29yZHMgJT4lDQogICMgU2V0IGluZGV4IHRvIG51bWVyaWMgZG9jdW1lbnQNCiAgbXV0YXRlKGluZGV4ID0gYXMubnVtZXJpYyhkb2N1bWVudCkpDQoNCm1vYnlfY291bnQgPC0gbW9ieV9sZXhfd29yZHMgJT4lDQogICMgQ291bnQgYnkgc2VudGltZW50LCBpbmRleA0KICBjb3VudChzZW50aW1lbnQsIGluZGV4KQ0KDQojIEV4YW1pbmUgdGhlIGNvdW50cw0KbW9ieV9jb3VudA0KYGBgDQoNCj4gbW9ieV9jb3VudA0KIyBBIHRpYmJsZTogMTAsNjA5IHggMw0KICAgc2VudGltZW50IGluZGV4ICAgICBuDQogICAgICAgPGNocj4gPGRibD4gPGludD4NCiAxICBuZWdhdGl2ZSAgICAgOSAgICAgMQ0KIDIgIG5lZ2F0aXZlICAgIDExICAgICAxDQogMyAgbmVnYXRpdmUgICAgMjIgICAgIDENCiA0ICBuZWdhdGl2ZSAgICA0MSAgICAgMQ0KIDUgIG5lZ2F0aXZlICAgIDQyICAgICAyDQogNiAgbmVnYXRpdmUgICAgNDQgICAgIDENCiA3ICBuZWdhdGl2ZSAgICA1NiAgICAgMQ0KIDggIG5lZ2F0aXZlICAgIDY0ICAgICAxDQogOSAgbmVnYXRpdmUgICAgNjYgICAgIDENCjEwICBuZWdhdGl2ZSAgICA2OCAgICAgMQ0KIyAuLi4gd2l0aCAxMCw1OTkgbW9yZSByb3dzDQoNCmBgYHtyfQ0KbW9ieV9zcHJlYWQgPC0gbW9ieV9jb3VudCAlPiUNCiAgIyBTcHJlYWQgc2VudGltZW50cw0KICBzcHJlYWQoc2VudGltZW50LCBuLCBmaWxsID0gMCkNCg0KIyBSZXZpZXcgdGhlIHNwcmVhZCBkYXRhDQptb2J5X3NwcmVhZA0KYGBgDQoNCj4gbW9ieV9zcHJlYWQNCiMgQSB0aWJibGU6IDksMjM0IHggMw0KICAgaW5kZXggbmVnYXRpdmUgcG9zaXRpdmUNCiAqIDxkYmw+ICAgIDxkYmw+ICAgIDxkYmw+DQogMSAgICAgNSAgICAgICAgMCAgICAgICAgMQ0KIDIgICAgIDkgICAgICAgIDEgICAgICAgIDANCiAzICAgIDExICAgICAgICAxICAgICAgICAwDQogNCAgICAxMyAgICAgICAgMCAgICAgICAgMQ0KIDUgICAgMTcgICAgICAgIDAgICAgICAgIDENCiA2ICAgIDE5ICAgICAgICAwICAgICAgICAxDQogNyAgICAyMiAgICAgICAgMSAgICAgICAgMA0KIDggICAgMjQgICAgICAgIDAgICAgICAgIDENCiA5ICAgIDI1ICAgICAgICAwICAgICAgICAxDQoxMCAgICAzMSAgICAgICAgMCAgICAgICAgMg0KIyAuLi4gd2l0aCA5LDIyNCBtb3JlIHJvd3MNCg0KDQojIyMgQmluZyB0aWR5IHBvbGFyaXR5OiBDYWxsIG1lIElzaG1hZWwgKHdpdGggZ2dwbG90MikhDQoNClRoZSBsYXN0IEJpbmcgbGV4aWNvbiBleGVyY2lzZSEgV2Ugc3RhcnRlZCB3aXRoIHRoaXMgbGV4aWNvbiBzaW5jZSBpdHMgc2ltaWxhciB0byB0aGUgcmVzdWx0cyBpbiBDaGFwdGVyIDEuIEluIHRoaXMgZXhlcmNpc2UgeW91IHdpbGwgdXNlIHRoZSBwaXBlIG9wZXJhdG9yICglPiUpIHRvIGNyZWF0ZSBhIHRpbWVsaW5lIG9mIHRoZSBzZW50aW1lbnQgaW4gTW9ieSBEaWNrLiBJbiB0aGUgZW5kIHlvdSB3aWxsIGFsc28gY3JlYXRlIGEgc2ltcGxlIHZpc3VhbCBmb2xsb3dpbmcgdGhlIGNvZGUgc3RydWN0dXJlIGJlbG93LiBUaGUgbmV4dCBjaGFwdGVyIGdvZXMgaW50byBtb3JlIGRlcHRoIGZvciB2aXN1YWxzLg0KDQpgYGB7cn0NCmdncGxvdChzcHJlYWRfZGF0YSwgYWVzKGluZGV4X2NvbHVtbiwgcG9sYXJpdHlfY29sdW1uKSkgKw0KICBnZW9tX3Ntb290aCgpDQpgYGANCg0KWW91ciBSIHNlc3Npb24gaGFzIG1vYnkgYXMgeW91ciB0ZXh0IGFuZCBiaW5nIGFzIHlvdXIgbGV4aWNvbi4gQWZ0ZXIgdGhpcyBleGVyY2lzZSB5b3Ugc2hvdWxkIGtub3cgSXMgTW9ieSBEaWNrIGEgaGFwcHkgb3Igc2FkIGJvb2s/DQoNCklubmVyIGpvaW4gbW9ieSB0byB0aGUgYmluZyBsZXhpY29uLg0KQ2FsbCBpbm5lcl9qb2luKCkgdG8gam9pbiB0aGUgdGliYmxlcy4NCkpvaW4gYnkgdGhlIHRlcm0gY29sdW1uIGluIHRoZSB0ZXh0IGFuZCB0aGUgd29yZCBjb2x1bW4gaW4gdGhlIGxleGljb24uDQpDb3VudCBieSBzZW50aW1lbnQgYW5kIGluZGV4Lg0KUmVzaGFwZSBzbyB0aGF0IGVhY2ggc2VudGltZW50IGhhcyBpdHMgb3duIGNvbHVtbi4NCkNhbGwgc3ByZWFkKCkuDQpUaGUga2V5IGNvbHVtbiAodG8gc3BsaXQgaW50byBtdWx0aXBsZSBjb2x1bW5zKSBpcyBzZW50aW1lbnQuDQpUaGUgdmFsdWUgY29sdW1uIChjb250YWluaW5nIHRoZSBjb3VudHMpIGlzIG4uDQpBbHNvIHNwZWNpZnkgZmlsbCA9IDAgdG8gZmlsbCBvdXQgbWlzc2luZyB2YWx1ZXMgd2l0aCBhIHplcm8uDQpVc2UgbXV0YXRlKCkgdG8gYWRkIHRoZSBwb2xhcml0eSBjb2x1bW4uIERlZmluZSBpdCBhcyB0aGUgZGlmZmVyZW5jZSBiZXR3ZWVuIHRoZSBwb3NpdGl2ZSBhbmQgbmVnYXRpdmUgY29sdW1ucy4NCkxhc3RseSwgY3JlYXRlIGEgc2VudGltZW50IHRpbWUgc2VyaWVzIHdpdGggZ2dwbG90KCkuDQpQYXNzIGluIG1vYnlfcG9sYXJpdHkgdG8gdGhlIGRhdGEgYXJndW1lbnQuDQpUaGVuIHNwZWNpZnkgdGhlIHggYW5kIHkgYWVzdGhldGljcywgY2FsbGluZyBhZXMoKSBhbmQgcGFzc2luZyBpbmRleCBhbmQgcG9sYXJpdHkgd2l0aG91dCBxdW90ZXMuDQpBZGQgYSBzbW9vdGhlZCBzZW50aW1lbnQgY3VydmUgd2l0aCBnZW9tX3Ntb290aCgpLg0KDQoNCmBgYHtyfQ0KbW9ieV9wb2xhcml0eSA8LSBtb2J5ICU+JQ0KICAjIElubmVyIGpvaW4gdG8gbGV4aWNvbg0KICBpbm5lcl9qb2luKGJpbmcsIGJ5ID0gYygidGVybSIgPSAid29yZCIpKSAlPiUNCiAgIyBDb3VudCB0aGUgc2VudGltZW50IHNjb3Jlcw0KICBjb3VudChzZW50aW1lbnQsIGluZGV4KSAlPiUgDQogICMgU3ByZWFkIHRoZSBzZW50aW1lbnQgaW50byBwb3NpdGl2ZSBhbmQgbmVnYXRpdmUgY29sdW1ucw0KICBzcHJlYWQoc2VudGltZW50LCBuLCBmaWxsID0gMCkgJT4lDQogICMgQWRkIHBvbGFyaXR5IGNvbHVtbg0KICBtdXRhdGUocG9sYXJpdHkgPSBwb3NpdGl2ZSAtIG5lZ2F0aXZlKQ0KDQojIFBsb3QgcG9sYXJpdHkgdnMuIGluZGV4DQpnZ3Bsb3QobW9ieV9wb2xhcml0eSwgYWVzKGluZGV4LCBwb2xhcml0eSkpICsgDQogICMgQWRkIGEgc21vb3RoIHRyZW5kIGN1cnZlDQogIGdlb21fc21vb3RoKCkNCmBgYA0KDQpbcmVzdWx0aW5nIHBsb3RdKCJkb3dubG9hZC5wbmciKQ0KDQpDYWxsIG1lIHBsZWFzZWQgd2l0aCB5b3VyIHdvcmshIERvZXMgTW9ieSBEaWNrIGhhdmUgYSBoYXBweSBlbmRpbmc/DQoNCg0KIyMjIEFGSU5OOiBJJ20geW91ciBIdWNrbGViZXJyeQ0KDQpOb3cgd2UgdHJhbnNpdGlvbiB0byB0aGUgQUZJTk4gbGV4aWNvbi4gVGhlIEFGSU5OIGxleGljb24gaGFzIG51bWVyaWMgdmFsdWVzIGZyb20gNSB0byAtNSwgbm90IGp1c3QgcG9zaXRpdmUgb3IgbmVnYXRpdmUuIFVubGlrZSB0aGUgQmluZyBsZXhpY29uJ3Mgc2VudGltZW50LCB0aGUgQUZJTk4gbGV4aWNvbidzIHNlbnRpbWVudCBzY29yZSBjb2x1bW4gaXMgY2FsbGVkIHNjb3JlLg0KDQpBcyBiZWZvcmUsIHlvdSBhcHBseSBpbm5lcl9qb2luKCkgdGhlbiBjb3VudCgpLiBOZXh0LCB0byBzdW0gdGhlIHNjb3JlcyBvZiBlYWNoIGxpbmUsIHdlIHVzZSBkcGx5cidzIGdyb3VwX2J5KCkgYW5kIHN1bW1hcml6ZSgpIGZ1bmN0aW9ucy4gVGhlIGdyb3VwX2J5KCkgZnVuY3Rpb24gdGFrZXMgYW4gZXhpc3RpbmcgZGF0YSBmcmFtZSBhbmQgY29udmVydHMgaXQgaW50byBhIGdyb3VwZWQgZGF0YSBmcmFtZSB3aGVyZSBvcGVyYXRpb25zIGFyZSBwZXJmb3JtZWQgImJ5IGdyb3VwIi4gVGhlbiwgdGhlIHN1bW1hcml6ZSgpIGZ1bmN0aW9uIGxldHMgeW91IGNhbGN1bGF0ZSBhIHZhbHVlIGZvciBlYWNoIGdyb3VwIGluIHlvdXIgZGF0YSBmcmFtZSB1c2luZyBhIGZ1bmN0aW9uIHRoYXQgYWdncmVnYXRlcyBkYXRhLCBsaWtlIHN1bSgpIG9yIG1lYW4oKS4gU28sIGluIG91ciBjYXNlIHdlIGNhbiBkbyBzb21ldGhpbmcgbGlrZQ0KDQpkYXRhX2ZyYW1lICU+JSANCiAgICBncm91cF9ieShib29rX2xpbmUpICU+JSANCiAgICBzdW1tYXJpemUodG90YWxfc2NvcmUgPSBzdW0oYm9va19saW5lKSkNCkluIHRoZSB0aWR5IHZlcnNpb24gb2YgSHVja2xlYmVycnkgRmlubiwgbGluZSA5NzAzIGNvbnRhaW5zIHdvcmRzICJiZXN0IiwgImV2ZXIiLCAiZnVuIiwgImxpZmUiIGFuZCAic3Bpcml0Ii4gImJlc3QiIGFuZCAiZnVuIiBoYXZlIEFGSU5OIHNjb3JlcyBvZiAzIGFuZCA0IHJlc3BlY3RpdmVseS4gQWZ0ZXIgYWdncmVnYXRpbmcsIGxpbmUgOTcwMyB3aWxsIGhhdmUgYSB0b3RhbCBzY29yZSBvZiA3Lg0KDQpJbiB0aGUgdGlkeXZlcnNlLCBmaWx0ZXIoKSBpcyBwcmVmZXJyZWQgdG8gc3Vic2V0KCkgYmVjYXVzZSBpdCBjb21iaW5lcyB0aGUgZnVuY3Rpb25hbGl0eSBvZiBzdWJzZXQoKSB3aXRoIHNpbXBsZXIgc3ludGF4LiBIZXJlIGlzIGFuIGV4YW1wbGUgdGhhdCBmaWx0ZXIoKXMgZGF0YV9mcmFtZSB3aGVyZSBzb21lIHZhbHVlIGluIGNvbHVtbjEgaXMgZXF1YWwgdG8gMjQuIE5vdGljZSB0aGUgY29sdW1uIG5hbWUgaXMgbm90IGluIHF1b3Rlcy4NCg0KZmlsdGVyKGRhdGFfZnJhbWUsIGNvbHVtbjEgPT0gMjQpDQoNClRoZSBhZmlubiBvYmplY3QgY29udGFpbnMgdGhlIEFGSU5OIGxleGljb24uIFRoZSBodWNrIG9iamVjdCBpcyBhIHRpZHkgdmVyc2lvbiBvZiBNYXJrIFR3YWluJ3MgQWR2ZW50dXJlcyBvZiBIdWNrbGViZXJyeSBGaW5uIGZvciBhbmFseXNpcy4NCg0KTGluZSA1NDAwIGlzIEFsbCB0aGUgbG9hZmVycyBsb29rZWQgZ2xhZDsgSSByZWNrb25lZCB0aGV5IHdhcyB1c2VkIHRvIGhhdmluZyBmdW4gb3V0IG9mIEJvZ2dzLiBTdG9wd29yZHMgYW5kIHB1bmN0dWF0aW9uIGhhdmUgYWxyZWFkeSBiZWVuIHJlbW92ZWQgaW4gdGhlIGRhdGFzZXQuDQoNCmlubmVyX2pvaW4oKSBodWNrIHRvIHRoZSBhZmlubiBsZXhpY29uLg0KUmVtZW1iZXIgaHVjayBpcyBhbHJlYWR5IHBpcGVkIGludG8gdGhlIGZ1bmN0aW9uIHNvIGp1c3QgYWRkIHRoZSBsZXhpY29uLg0KSm9pbiBieSB0aGUgdGVybSBjb2x1bW4gaW4gdGhlIHRleHQgYW5kIHRoZSB3b3JkIGNvbHVtbiBpbiB0aGUgbGV4aWNvbi4NClVzZSBjb3VudCgpIHdpdGggc2NvcmUgYW5kIGxpbmUgdG8gdGFsbHkvY291bnQgb2JzZXJ2YXRpb25zIGJ5IGdyb3VwLg0KQXNzaWduIHRoZSByZXN1bHQgdG8gaHVja19hZmlubi4NCkdldCB0aGUgdG90YWwgc2VudGltZW50IHNjb3JlIGJ5IGxpbmUgZm9yd2FyZGluZyBodWNrX2FmaW5uIHRvIGdyb3VwX2J5KCkgYW5kIHBhc3NpbmcgbGluZSB3aXRob3V0IHF1b3Rlcy4NCkNyZWF0ZSBodWNrX2FmaW5uX2FnZyB1c2luZyBzdW1tYXJpemUoKSwgc2V0dGluZyB0b3RhbF9zY29yZSBlcXVhbCB0byB0aGUgc3VtKCkgb2Ygc2NvcmUuDQpVc2UgZmlsdGVyKCkgb24gaHVja19hZmlubl9hZ2cgYW5kIGxpbmUgPT0gNTQwMCB0byByZXZpZXcgYSBzaW5nbGUgbGluZS4NClRvIGNyZWF0ZSBhIHNlbnRpbWVudCB0aW1lbGluZSBnZ3Bsb3QoKSwgcGFzcyBpbiBodWNrX2FmaW5uX2FnZyB0byB0aGUgZGF0YSBhcmd1bWVudC4NClRoZW4gc3BlY2lmeSB0aGUgeCBhbmQgeSB3aXRoaW4gYWVzKCkgYXMgbGluZSBhbmQgdG90YWxfc2NvcmUgd2l0aG91dCBxdW90ZXMuDQpBZGQgYSBsYXllciB3aXRoIGdlb21fc21vb3RoKCkuDQoNCmBgYHtyfQ0KIyBTZWUgYWJicmV2aWF0ZWQgbGluZSA1NDAwDQpodWNrICU+JSBmaWx0ZXIobGluZSA9PSA1NDAwKQ0KDQojIFdoYXQgYXJlIHRoZSBzY29yZXMgb2YgdGhlIHNlbnRpbWVudCB3b3Jkcz8NCmFmaW5uICU+JSBmaWx0ZXIod29yZCAlaW4lIGMoImZ1biIsICJnbGFkIikpDQoNCmh1Y2tfYWZpbm4gPC0gaHVjayAlPiUgDQogICMgSW5uZXIgSm9pbiB0byBBRklOTiBsZXhpY29uDQogIGlubmVyX2pvaW4oYWZpbm4sIGJ5ID0gYygidGVybSIgPSAid29yZCIpKSAlPiUNCiAgIyBDb3VudCBieSBzY29yZSBhbmQgbGluZQ0KICBjb3VudChzY29yZSwgbGluZSkNCg0KaHVja19hZmlubl9hZ2cgPC0gaHVja19hZmlubiAlPiUgDQogICMgR3JvdXAgYnkgbGluZQ0KICBncm91cF9ieShsaW5lKSAlPiUNCiAgIyBTdW0gc2NvcmVzIGJ5IGxpbmUNCiAgc3VtbWFyaXplKHRvdGFsX3Njb3JlID0gc3VtKHNjb3JlKSkNCmBgYA0KDQpbcmVzdWx0aW5nIHBsb3RdKCJkb3dubG9hZCAoMSkucG5nIikNCg0KV293LCB5b3UncmUgYSB0aWR5dGV4dCB3aXphcmQhIEh1Y2tsZWJlcnJ5IEZpbm4gaGFzIGEgbm90LXF1aXRlLWEtaGFwcHktZW5kaW5nLg0KDQojIyMgVGhlIHdvbmRlcmZ1bCB3aXphcmQgb2YgTlJDDQoNCkxhc3QgYnV0IG5vdCBsZWFzdCwgeW91IGdldCB0byB3b3JrIHdpdGggdGhlIE5SQyBsZXhpY29uIHdoaWNoIGxhYmVscyB3b3JkcyBhY3Jvc3MgbXVsdGlwbGUgZW1vdGlvbmFsIHN0YXRlcy4gUmVtZW1iZXIgUGx1dGNoaWsncyB3aGVlbCBvZiBlbW90aW9uPyBUaGUgTlJDIGxleGljb24gdGFncyB3b3JkcyBhY2NvcmRpbmcgdG8gUGx1dGNoaWsncyA4IGVtb3Rpb25zIHBsdXMgcG9zaXRpdmUvbmVnYXRpdmUuDQoNCkluIHRoaXMgZXhlcmNpc2UgdGhlcmUgaXMgYSBuZXcgb3BlcmF0b3IsICVpbiUsIHdoaWNoIG1hdGNoZXMgYSB2ZWN0b3IgdG8gYW5vdGhlci4gSW4gdGhlIGNvZGUgYmVsb3cgJWluJSB3aWxsIHJldHVybiBGQUxTRSwgRkFMU0UsIFRSVUUuIFRoaXMgaXMgYmVjYXVzZSB3aXRoaW4gc29tZV92ZWMsIDEgYW5kIDIgYXJlIG5vdCBmb3VuZCB3aXRoaW4gc29tZV9vdGhlcl92ZWN0b3IgYnV0IDMgaXMgZm91bmQgYW5kIHJldHVybnMgVFJVRS4gVGhlICVpbiUgaXMgdXNlZnVsIHRvIGZpbmQgbWF0Y2hlcy4NCg0Kc29tZV92ZWMgPC0gYygxLCAyLCAzKQ0Kc29tZV9vdGhlcl92ZWN0b3IgPC0gYygzLCAiYSIsICJiIikNCnNvbWVfdmVjICVpbiUgc29tZV9vdGhlcl92ZWN0b3INCkFub3RoZXIgbmV3IG9wZXJhdG9yIGlzICEuIEZvciBsb2dpY2FsIGNvbmRpdGlvbnMsIGFkZGluZyAhIHdpbGwgaW52ZXJzZSB0aGUgcmVzdWx0LiBJbiB0aGUgYWJvdmUgZXhhbXBsZSwgdGhlIEZBTFNFLCBGQUxTRSwgVFJVRSB3aWxsIGJlY29tZSBUUlVFLCBUUlVFLCBGQUxTRS4gVXNpbmcgaXQgaW4gY29uY2VydCB3aXRoICVpbiUgd2lsbCBpbnZlcnNlIHRoZSByZXNwb25zZSBhbmQgaXMgZ29vZCBmb3IgcmVtb3ZpbmcgaXRlbXMgdGhhdCBhcmUgbWF0Y2hlZC4NCg0KIXNvbWVfdmVjICVpbiUgc29tZV9vdGhlcl92ZWN0b3INCklOU1RSVUNUSU9OUw0KMTAwWFANCklOU1RSVUNUSU9OUw0KMTAwWFANCldlJ3ZlIGNyZWF0ZWQgb3ogd2hpY2ggaXMgdGhlIHRpZHkgdmVyc2lvbiBvZiBUaGUgV2l6YXJkIG9mIE96IGFsb25nIHdpdGggbnJjIGNvbnRhaW5pbmcgdGhlICJOUkMiIGxleGljb24gd2l0aCByZW5hbWVkIGNvbHVtbnMuDQoNCklubmVyIGpvaW4gb3ogdG8gdGhlIG5yYyBsZXhpY29uLg0KQ2FsbCBpbm5lcl9qb2luKCkgdG8gam9pbiB0aGUgdGliYmxlcy4NCkpvaW4gYnkgdGhlIHRlcm0gY29sdW1uIGluIHRoZSB0ZXh0IGFuZCB0aGUgd29yZCBjb2x1bW4gaW4gdGhlIGxleGljb24uDQpBc3NpZ24gdGhlIHJlc3VsdCB0byBvel9ucmMuDQpGaWx0ZXIgdG8gb25seSBQbHVjaGlrJ3MgZW1vdGlvbnMgYW5kIGRyb3AgdGhlIHBvc2l0aXZlIG9yIG5lZ2F0aXZlIHdvcmRzIGluIHRoZSBsZXhpY29uLg0KVXNlIGZpbHRlcigpIHRvIGtlZXAgcm93cyB3aGVyZSB0aGUgc2VudGltZW50IGlzIG5vdCAicG9zaXRpdmUiIG9yICJuZWdhdGl2ZSIuDQpHcm91cCBieSBzZW50aW1lbnQuDQpDYWxsIGdyb3VwX2J5KCksIHBhc3Npbmcgc2VudGltZW50IHdpdGhvdXQgcXVvdGVzLg0KR2V0IHRoZSB0b3RhbCBjb3VudCBvZiBlYWNoIHNlbnRpbWVudC4NCkNhbGwgc3VtbWFyaXplKCksIHNldHRpbmcgdG90YWxfY291bnQgZXF1YWwgdG8gdGhlIHN1bSgpIG9mIGNvdW50Lg0KQXNzaWduIHRoZSByZXN1bHQgdG8gb3pfcGx1dGNoaWsuDQpMYXN0bHksIGNyZWF0ZSBhIGJhciBwbG90IHdpdGggZ2dwbG90KCkuDQpQYXNzIGluIG96X3BsdXRjaGlrIHRvIHRoZSBkYXRhIGFyZ3VtZW50Lg0KVGhlbiBzcGVjaWZ5IHRoZSB4IGFuZCB5IGFlc3RoZXRpY3MsIGNhbGxpbmcgYWVzKCkgYW5kIHBhc3Npbmcgc2VudGltZW50IGFuZCB0b3RhbF9jb3VudCB3aXRob3V0IHF1b3Rlcy4NCkFkZCBhIGNvbHVtbiBnZW9tIHdpdGggZ2VvbV9jb2woKS4gKFRoaXMgaXMgdGhlIHNhbWUgYXMgZ2VvbV9iYXIoKSwgYnV0IGRvZXNuJ3Qgc3VtbWFyaXplIHRoZSBkYXRhLCBzaW5jZSB5b3UndmUgZG9uZSB0aGF0IGFscmVhZHkuKQ0KDQpgYGB7cn0NCiMgSm9pbiB0ZXh0IGFuZCBsZXhpY29uDQpvel9ucmMgPC0gaW5uZXJfam9pbihveiwgbnJjLCBieSA9IGMoInRlcm0iID0gIndvcmQiKSkNCg0KIyBEYXRhRnJhbWUgb2YgdGFsbHkNCm96X3BsdXRjaGlrIDwtIG96X25yYyAlPiUgDQogICMgT25seSBjb25zaWRlciBQbHV0Y2hpayBzZW50aW1lbnRzDQogIGZpbHRlcighc2VudGltZW50ICVpbiUgYygicG9zaXRpdmUiLCAibmVnYXRpdmUiKSkgJT4lDQogICMgR3JvdXAgYnkgc2VudGltZW50DQogIGdyb3VwX2J5KHNlbnRpbWVudCkgJT4lIA0KICAjIEdldCB0b3RhbCBjb3VudCBieSBzZW50aW1lbnQNCiAgc3VtbWFyaXplKHRvdGFsX2NvdW50ID0gc3VtKGNvdW50KSkNCg0KIyBQbG90IHRoZSBjb3VudHMNCmdncGxvdChvel9wbHV0Y2hpaywgYWVzKHggPSBzZW50aW1lbnQsIHkgPSB0b3RhbF9jb3VudCkpICsNCiAgIyBBZGQgYSBjb2x1bW4gZ2VvbQ0KICBnZW9tX2NvbCgpDQpgYGANCg0KW3Jlc3VsdGluZyBwbG90XSgiZG93bmxvYWQgKDIpLnBuZyIp</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIyBDaGFwdGVyIDMgVmlzdWFsaXphdGlvbg0KDQojIyNSZWFsIGluc2lnaHQ/DQoNCllvdSBhcmUgZ2l2ZW4gYSBzdGFjayBvZiAxMCBlbXBsb3llZSBzdXJ2ZXlzIGFuZCB0b2xkIHRvIGZpZ3VyZSBvdXQgdGhlIHRlYW0ncyBzZW50aW1lbnQuIFRoZSB0d28gcXVlc3Rpb24gc3VydmV5IGhhcyAxIHF1ZXN0aW9uIHdpdGggYSBudW1lcmljIHNjYWxlICgxLTEwKSB3aGVyZSBlbXBsb3llZXMgYW5zd2VyIGhvdyBpbnNwaXJlZCB0aGV5IGFyZSBhdCB3b3JrIGFuZCBhIHNlY29uZCBxdWVzdGlvbiBmb3IgZnJlZSBmb3JtIHRleHQuDQoNCllvdSBhcmUgYXNrZWQgdG8gcGVyZm9ybSBhIHNlbnRpbWVudCBhbmFseXNpcyBvbiB0aGUgZnJlZSBmb3JtIHRleHQuIFdvdWxkIHBlcmZvcm1pbmcgc2VudGltZW50IGFuYWx5c2lzIG9uIHRoZSB0ZXh0IGJlIGFwcHJvcHJpYXRlPw0KDQpBTlNXRVIgVEhFIFFVRVNUSU9ODQo1MFhQDQpQb3NzaWJsZSBBbnN3ZXJzDQpZZXMsIHRoZSBzZW50aW1lbnQgYW5hbHlzaXMgY29uZmlybXMgdGhlIGVtcGxveWVlIHJhdGluZ3MuDQpwcmVzcyAxDQotLT4gY29ycmVjdDogTm8sIHRoZSBmcmVlIGZvcm0gdGV4dCB3aWxsIGNvcnJlbGF0ZSB3aXRoIHRoZSByYXRpbmdzIGFuZCB3aXRoIG9ubHkgMTAgc3VydmV5cyB0aGUgcmVzdWx0cyBtYXkgaGF2ZSBzZWxlY3Rpb24gYW5kIHNpbXVsdGFuZWl0eSBiaWFzLg0KDQojIyMgVW5oYXBweSBlbmRpbmc/IENocm9ub2xvZ2ljYWwgcG9sYXJpdHkNCg0KU29tZXRpbWVzIHlvdSB3YW50IHRvIHRyYWNrIHNlbnRpbWVudCBvdmVyIHRpbWUuIEZvciBleGFtcGxlLCBkdXJpbmcgYW4gYWQgY2FtcGFpZ24geW91IGNvdWxkIHRyYWNrIGJyYW5kIHNlbnRpbWVudCB0byBzZWUgdGhlIGNhbXBhaWduJ3MgZWZmZWN0LiBZb3Ugc2F3IGEgZmV3IGV4YW1wbGVzIG9mIHRoaXMgYXQgdGhlIGVuZCBvZiB0aGUgbGFzdCBjaGFwdGVyLg0KDQpJbiB0aGlzIGV4ZXJjaXNlIHlvdSdsbCByZWNhcCB0aGUgd29ya2Zsb3cgZm9yIGV4cGxvcmluZyBzZW50aW1lbnQgb3ZlciB0aW1lIHVzaW5nIHRoZSBub3ZlbCBNb2J5IERpY2suIE9uZSBzaG91bGQgZXhwZWN0IHRoYXQgaGFwcHkgbW9tZW50cyBpbiB0aGUgYm9vayB3b3VsZCBoYXZlIG1vcmUgcG9zaXRpdmUgd29yZHMgdGhhbiBuZWdhdGl2ZS4gQ29udmVyc2VseSBkYXJrIG1vbWVudHMgYW5kIHNhZCBlbmRpbmdzIHNob3VsZCB1c2UgbW9yZSBuZWdhdGl2ZSBsYW5ndWFnZS4gWW91J2xsIGFsc28gc2VlIHNvbWUgdHJpY2tzIHRvIG1ha2UgeW91ciBzZW50aW1lbnQgdGltZSBzZXJpZXMgbW9yZSB2aXN1YWxseSBhcHBlYWxsaW5nLg0KDQpSZWNhbGwgdGhhdCB0aGUgd29ya2Zsb3cgaXM6DQoNCklubmVyIGpvaW4gdGhlIHRleHQgdG8gdGhlIGxleGljb24gYnkgd29yZC4NCkNvdW50IHRoZSBzZW50aW1lbnRzIGJ5IGxpbmUuDQpSZXNoYXBlIHRoZSBkYXRhIHNvIGVhY2ggc2VudGltZW50IGhhcyBpdHMgb3duIGNvbHVtbi4NCihEZXBlbmRpbmcgdXBvbiB0aGUgbGV4aWNvbikgQ2FsY3VsYXRlIHRoZSBwb2xhcml0eSBhcyBwb3NpdGl2ZSBzY29yZSBtaW51cyBuZWdhdGl2ZSBzY29yZS4NCkRyYXcgdGhlIHBvbGFyaXR5IHRpbWUgc2VyaWVzLg0KSU5TVFJVQ1RJT05TDQoxMDBYUA0KSU5TVFJVQ1RJT05TDQoxMDBYUA0KVGhpcyBleGVyY2lzZSBzaG91bGQgbG9vayBmYW1pbGlhcjogaXQgZXh0ZW5kcyBCaW5nIHRpZHkgcG9sYXJpdHk6IENhbGwgbWUgSXNobWFlbCAod2l0aCBnZ3Bsb3QyKSEuDQoNCmlubmVyX2pvaW4oKSB0aGUgcHJlLWxvYWRlZCB0aWR5IHZlcnNpb24gb2YgTW9ieSBEaWNrLCBtb2J5LCB0byB0aGUgYmluZyBsZXhpY29uLg0KSm9pbiBieSB0aGUgInRlcm0iIGNvbHVtbiBpbiB0aGUgdGV4dCBhbmQgdGhlICJ3b3JkIiBjb2x1bW4gaW4gdGhlIGxleGljb24uDQpDb3VudCBieSBzZW50aW1lbnQgYW5kIGluZGV4Lg0KUmVzaGFwZSBzbyB0aGF0IGVhY2ggc2VudGltZW50IGhhcyBpdHMgb3duIGNvbHVtbiB1c2luZyBzcHJlYWQoKSB3aXRoIHRoZSBjb2x1bW4gc2VudGltZW50IGFuZCB0aGUgY291bnRzIGNvbHVtbiBjYWxsZWQgbi4NCkFsc28gc3BlY2lmeSBmaWxsID0gMCB0byBmaWxsIG91dCBtaXNzaW5nIHZhbHVlcyB3aXRoIGEgemVyby4NClVzaW5nIG11dGF0ZSgpIGFkZCB0d28gY29sdW1uczogcG9sYXJpdHkgYW5kIGxpbmVfbnVtYmVyLg0KU2V0IHBvbGFyaXR5IGVxdWFsIHRvIHRoZSBwb3NpdGl2ZSBzY29yZSBtaW51cyB0aGUgbmVnYXRpdmUgc2NvcmUuDQpTZXQgbGluZV9udW1iZXIgZXF1YWwgdG8gdGhlIHJvdyBudW1iZXIgdXNpbmcgdGhlIHJvd19udW1iZXIoKSBmdW5jdGlvbi4NCkNyZWF0ZSBhIHNlbnRpbWVudCB0aW1lIHNlcmllcyB3aXRoIGdncGxvdCgpLg0KUGFzcyBpbiBtb2J5X3BvbGFyaXR5IHRvIHRoZSBkYXRhIGFyZ3VtZW50Lg0KQ2FsbCBhZXMoKSBhbmQgcGFzcyBpbiBsaW5lX251bWJlciBhbmQgcG9sYXJpdHkgd2l0aG91dCBxdW90ZXMuDQpBZGQgYSBzbW9vdGhlZCBjdXJ2ZSB3aXRoIGdlb21fc21vb3RoKCkuDQpBZGQgYSByZWQgaG9yaXpvbnRhbCBsaW5lIGF0IHplcm8gYnkgY2FsbGluZyBnZW9tX2hsaW5lKCksIHdpdGggcGFyYW1ldGVycyAwIGFuZCAicmVkIi4NCkFkZCBhIHRpdGxlIHdpdGggZ2d0aXRsZSgpIHNldCB0byAiTW9ieSBEaWNrIENocm9ub2xvZ2ljYWwgUG9sYXJpdHkiLg0KDQoNCmBgYHtyfQ0KbW9ieV9wb2xhcml0eSA8LSBtb2J5ICU+JQ0KICAjIElubmVyIGpvaW4gdG8gdGhlIGxleGljb24NCiAgaW5uZXJfam9pbihiaW5nLCBieSA9IGMoInRlcm0iID0gIndvcmQiKSkgJT4lDQogICMgQ291bnQgYnkgc2VudGltZW50LCBpbmRleA0KICBjb3VudChzZW50aW1lbnQsIGluZGV4KSAlPiUNCiAgIyBTcHJlYWQgc2VudGltZW50cw0KICBzcHJlYWQoc2VudGltZW50LCBuLCBmaWxsID0gMCkgJT4lDQogIG11dGF0ZSgNCiAgICAjIEFkZCBwb2xhcml0eSBmaWVsZA0KICAgIHBvbGFyaXR5ID0gcG9zaXRpdmUgLSBuZWdhdGl2ZSwNCiAgICAjIEFkZCBsaW5lIG51bWJlciBmaWVsZA0KICAgIGxpbmVfbnVtYmVyID0gcm93X251bWJlcigpDQogICkNCg0KIyBQbG90DQpnZ3Bsb3QobW9ieV9wb2xhcml0eSwgYWVzKGxpbmVfbnVtYmVyLCBwb2xhcml0eSkpICsgDQogIGdlb21fc21vb3RoKCkgKw0KICBnZW9tX2hsaW5lKHlpbnRlcmNlcHQgPSAwLCBjb2xvciA9ICJyZWQiKSArDQogIGdndGl0bGUoIk1vYnkgRGljayBDaHJvbm9sb2dpY2FsIFBvbGFyaXR5IikgKw0KICB0aGVtZV9nZG9jcygpDQpgYGANCg0KW3Jlc3VsdGVkIHBsb3RdKCJkb3dubG9hZCAoMykucG5nIikNCg0KIyMjIFdvcmQgaW1wYWN0LCBmcmVxdWVuY3kgYW5hbHlzaXMNCg0KT25lIG9mIHRoZSBlYXNpZXN0IHdheXMgdG8gZXhwbG9yZSBkYXRhIGlzIHdpdGggYSBmcmVxdWVuY3kgYW5hbHlzaXMuIEFsdGhvdWdoIG5vdCBkaWZmaWN1bHQsIGluIHNlbnRpbWVudCBhbmFseXNpcyB0aGlzIHNpbXBsZSBtZXRob2QgY2FuIGJlIHN1cnByaXNpbmdseSBpbGx1bWluYXRpbmcuIFNwZWNpZmljYWxseSwgeW91IHdpbGwgYnVpbGQgYSBiYXJwbG90LiBJbiB0aGlzIGV4ZXJjaXNlIHlvdSBhcmUgb25jZSBhZ2FpbiB3b3JraW5nIHdpdGggbW9ieSBhbmQgYmluZyB0byBjb25zdHJ1Y3QgeW91ciB2aXN1YWwuDQoNCklOU1RSVUNUSU9OUw0KMTAwWFANCklOU1RSVUNUSU9OUw0KMTAwWFANCkNyZWF0ZSBtb2J5X3RpZHlfc2VudGltZW50Lg0KVXNlIGNvdW50KCkgb24gbW9ieV9zZW50cyB3aXRoIHRlcm0sIHNlbnRpbWVudCwgYW5kIHd0ID0gY291bnQuDQpQaXBlIHRvIHNwcmVhZCgpIHdpdGggc2VudGltZW50LCBuLCBhbmQgZmlsbCA9IDAuDQpQaXBlIHRvIG11dGF0ZSgpLiBDYWxsIHRoZSBuZXcgdmFyaWFibGUgcG9sYXJpdHk7IGNhbGN1bGF0ZWQgYXMgcG9zaXRpdmUgLSBuZWdhdGl2ZS4NCkNhbGwgbW9ieV90aWR5X3NlbnRpbWVudCB0byByZXZpZXcgYW5kIGNvbXBhcmUgaXQgdG8gdGhlIHByZXZpb3VzIGV4ZXJjaXNlLg0KQ3JlYXRlIG1vYnlfdGlkeV9zbWFsbCB3aXRoIGZpbHRlcigpIGFwcGxpZWQgdG8gbW9ieV90aWR5X3NlbnRpbWVudC4gVGhlIGxvZ2ljYWwgY2hlY2sgc2hvdWxkIGJlIGFicyhwb2xhcml0eSkgPj0gNTAuIFVzaW5nIHRoZSBhYnMoKSBmdW5jdGlvbiByZXR1cm5zIGFueSByb3dzIHdob3NlIGFic29sdXRlIHBvbGFyaXR5IGlzIGdyZWF0ZXIgdGhhbiBvciBlcXVhbCB0byA1MC4NCm11dGF0ZSgpIGEgbmV3IHZlY3RvciBwb2wgd2l0aCBhbiBpZmVsc2UoKSBmdW5jdGlvbiBjaGVja2luZyBpZiBwb2xhcml0eSA+IDAgdGhlbiBkZWNsYXJlIHRoZSBkb2N1bWVudCAicG9zaXRpdmUiIGVsc2UgZGVjbGFyZSBpdCAibmVnYXRpdmUiLg0KVXNpbmcgZ2dwbG90KCkgcGFzcyBpbiBtb2J5X3RpZHlfcG9sLCBhZXMocmVvcmRlcih0ZXJtLCBwb2xhcml0eSksIHBvbGFyaXR5LCBmaWxsID0gcG9sKSB3aGljaCBpcyB0aGUgZGF0YSwgYW4gWCBheGlzIHJlb3JkZXJpbmcgdGVybXMgYnkgcG9sYXJpdHksIGEgWSBheGlzIHJlcHJlc2VudGVkIGJ5IHRoZSBwb2xhcml0eSBhbmQgYSBmaWxsIGNvbG9yIGRlZmluZWQgYnkgdGhlIHBvbCBkZXNpZ25hdGlvbi4NCkFkZCBnZW9tX2JhcigpIHdpdGggc3RhdCA9ICJpZGVudGl0eSIuDQpJbiB0aGUgbGFzdCBsYXllciBhZGp1c3QgdGhlIHRoZW1lIHRvIHRoZW1lKGF4aXMudGV4dC54ID0gZWxlbWVudF90ZXh0KGFuZ2xlID0gOTAsIHZqdXN0ID0gLTAuMSkpLg0KDQpgYGB7cn0NCiMgSW5uZXIgam9pbiB3aXRob3V0IHJlbmFtZWQgY29sdW1ucw0KbW9ieV9zZW50cyA8LSBpbm5lcl9qb2luKG1vYnksIGJpbmcsIGJ5ID0gYygidGVybSIgPSAid29yZCIpKQ0KDQojIFRpZHkgc2VudGltZW50IGNhbGN1bGF0aW9uDQptb2J5X3RpZHlfc2VudGltZW50IDwtIG1vYnlfc2VudHMgJT4lIA0KICBjb3VudCh0ZXJtLCBzZW50aW1lbnQsIHd0ID0gY291bnQpICU+JQ0KICBzcHJlYWQoc2VudGltZW50LCBuLCBmaWxsID0gMCkgJT4lDQogIG11dGF0ZShwb2xhcml0eSA9IHBvc2l0aXZlIC0gbmVnYXRpdmUpDQoNCiMgUmV2aWV3DQptb2J5X3RpZHlfc2VudGltZW50DQoNCiMgU3Vic2V0DQptb2J5X3RpZHlfc21hbGwgPC0gbW9ieV90aWR5X3NlbnRpbWVudCAlPiUgDQogIGZpbHRlcihhYnMocG9sYXJpdHkpID49IDUwKQ0KDQojIEFkZCBwb2xhcml0eQ0KbW9ieV90aWR5X3BvbCA8LSBtb2J5X3RpZHlfc21hbGwgJT4lIA0KICBtdXRhdGUoDQogICAgcG9sID0gaWZlbHNlKHBvbGFyaXR5ID4gMCwgInBvc2l0aXZlIiwgIm5lZ2F0aXZlIikNCiAgKQ0KDQojIFBsb3QNCmdncGxvdCgNCiAgbW9ieV90aWR5X3BvbCwgDQogIGFlcyhyZW9yZGVyKHRlcm0sIHBvbGFyaXR5KSwgcG9sYXJpdHksIGZpbGwgPSBwb2wpDQopICsNCiAgZ2VvbV9iYXIoc3RhdCA9ICJpZGVudGl0eSIpICsgDQogIGdndGl0bGUoIk1vYnkgRGljazogU2VudGltZW50IFdvcmQgRnJlcXVlbmN5IikgKyANCiAgdGhlbWVfZ2RvY3MoKSArDQogIHRoZW1lKGF4aXMudGV4dC54ID0gZWxlbWVudF90ZXh0KGFuZ2xlID0gOTAsIHZqdXN0ID0gLTAuMSkpDQpgYGANCg0KW3Jlc3VsdGVkIHBsb3RdKCJkb3dubG9hZCAoNCkucG5nIikNCg0KIyMjIERpdmlkZSAmIGNvbnF1ZXI6IFVzaW5nIHBvbGFyaXR5IGZvciBhIGNvbXBhcmlzb24gY2xvdWQNCg0KTm93IHRoYXQgeW91IGhhdmUgc2VlbiBob3cgcG9sYXJpdHkgY2FuIGJlIHVzZWQgdG8gZGl2aWRlIGEgY29ycHVzLCBsZXQncyBkbyBpdCEgVGhpcyBjb2RlIHdpbGwgd2FsayB5b3UgdGhyb3VnaCBkaXZpZGluZyBhIGNvcnB1cyBiYXNlZCBvbiBzZW50aW1lbnQgc28geW91IGNhbiBwZWVyIGludG8gdGhlIGluZm9ybWF0b24gaW4gc3Vic2V0cyBpbnN0ZWFkIG9mIGhvbGlzdGljYWxseS4NCg0KWW91ciBSIHNlc3Npb24gaGFzIG96X3BvbCB3aGljaCB3YXMgY3JlYXRlZCBieSBhcHBseWluZyBwb2xhcml0eSgpIHRvICJUaGUgV29uZGVyZnVsIFdpemFyZCBvZiBPei4iDQoNCkZvciBzaW1wbGljaXR5J3Mgc2FrZSwgd2UgY3JlYXRlZCBhIHNpbXBsZSBjdXN0b20gZnVuY3Rpb24gY2FsbGVkIHBvbF9zdWJzZWN0aW9ucygpIHdoaWNoIHdpbGwgZGl2aWRlIHRoZSBjb3JwdXMgYnkgcG9sYXJpdHkgc2NvcmUuIEZpcnN0LCB0aGUgZnVuY3Rpb24gYWNjZXB0cyBhIGRhdGEgZnJhbWUgd2l0aCBlYWNoIHJvdyBiZWluZyBhIHNlbnRlbmNlIG9yIGRvY3VtZW50IG9mIHRoZSBjb3JwdXMuIFRoZSBkYXRhIGZyYW1lIGlzIHN1YnNldCBhbnl3aGVyZSB0aGUgcG9sYXJpdHkgdmFsdWVzIGFyZSBncmVhdGVyIHRoYW4gb3IgbGVzcyB0aGFuIDAuIEZpbmFsbHksIHRoZSBwb3NpdGl2ZSBhbmQgbmVnYXRpdmUgc2VudGVuY2VzLCBub24temVybyBwb2xhcml0aWVzLCBhcmUgcGFzdGVkIHdpdGggcGFyYW1ldGVyIGNvbGxhcHNlIHNvIHRoYXQgdGhlIHRlcm1zIGFyZSBncm91cGVkIGludG8gYSBzaW5nbGUgY29ycHVzLiBMYXN0bHksIHRoZSB0d28gZG9jdW1lbnRzIGFyZSBjb25jYXRlbmF0ZWQgaW50byBhIHNpbmdsZSB2ZWN0b3Igb2YgdHdvIGRpc3RpbmN0IGRvY3VtZW50cy4NCg0KcG9sX3N1YnNlY3Rpb25zIDwtIGZ1bmN0aW9uKGRmKSB7DQogIHgucG9zIDwtIHN1YnNldChkZiR0ZXh0LCBkZiRwb2xhcml0eSA+IDApDQogIHgubmVnIDwtIHN1YnNldChkZiR0ZXh0LCBkZiRwb2xhcml0eSA8IDApDQogIHgucG9zIDwtIHBhc3RlKHgucG9zLCBjb2xsYXBzZSA9ICIgIikNCiAgeC5uZWcgPC0gcGFzdGUoeC5uZWcsIGNvbGxhcHNlID0gIiAiKQ0KICBhbGwudGVybXMgPC0gYyh4LnBvcywgeC5uZWcpDQogIHJldHVybihhbGwudGVybXMpDQp9DQpBdCB0aGlzIHBvaW50IHlvdSBoYXZlIG9taXR0ZWQgdGhlIG5ldXRyYWwgc2VudGVuY2VzIGFuZCB3YW50IHRvIGZvY3VzIG9uIG9yZ2FuaXppbmcgdGhlIHJlbWFpbmluZyB0ZXh0LiBJbiB0aGlzIGV4ZXJjaXNlIHdlIHVzZSB0aGUgJT4lIG9wZXJhdG9yIGFnYWluIHRvIGZvcndhcmQgb2JqZWN0cyB0byBmdW5jdGlvbnMuIEFmdGVyIHNvbWUgc2ltcGxlIGNsZWFuaW5nIHVzZSBjb21wYXJpc29uLmNsb3VkKCkgdG8gbWFrZSB0aGUgdmlzdWFsLg0KDQpJTlNUUlVDVElPTlMNCjEwMFhQDQpJTlNUUlVDVElPTlMNCjEwMFhQDQpXaXRoaW4gc2VsZWN0KCkgZGVjbGFyZSB0aGUgZmlyc3QgY29sdW1uIHRleHQgYXMgdGV4dC52YXIgd2hpY2ggaXMgdGhlIHJhdyB0ZXh0LiBUaGUgc2Vjb25kIGNvbHVtbiBwb2xhcml0eSBzaG91bGQgcmVmZXIgdG8gdGhlIHBvbGFyaXR5IHNjb3JlcyBwb2xhcml0eS4gUGlwZWQgY29sdW1uIG5hbWVzIGRvbid0IG5lZWQgJCwgeW91IGp1c3QgdXNlIHRoZSBjb2x1bW4gbmFtZSB3aXRob3V0IHF1b3Rlcy4NCk5vdyBhcHBseSBwb2xfc3Vic2VjdGlvbnMoKSB0byBvel9kZi4gQ2FsbCB0aGUgbmV3IG9iamVjdCBhbGxfdGVybXMuDQpUbyBjcmVhdGUgYWxsX2NvcnB1cyBhcHBseSBWZWN0b3JTb3VyY2UoKSB0byBhbGxfdGVybXMgYW5kIHRoZW4gJT4lIHRvIFZDb3JwdXMoKS4NCkNyZWF0ZSBhIFRETSwgYWxsX3RkbSwgdXNpbmcgVGVybURvY3VtZW50TWF0cml4KCkgb24gYWxsX2NvcnB1cy4NCkFkZCBpbiB0aGUgcGFyYW1ldGVycyBjb250cm9sID0gbGlzdChyZW1vdmVQdW5jdHVhdGlvbiA9IFRSVUUsIHN0b3B3b3JkcyA9IHN0b3B3b3JkcyhraW5kID0gImVuIikpKS4NClRoZW4gJT4lIHRvIGFzLm1hdHJpeCgpIGFuZCAlPiUgYWdhaW4gdG8gc2V0X2NvbG5hbWVzKGMoInBvc2l0aXZlIiwgIm5lZ2F0aXZlIikpLg0KQXBwbHkgY29tcGFyaXNvbi5jbG91ZCgpIHRvIGFsbF90ZG0gd2l0aCBwYXJhbWV0ZXJzIG1heC53b3JkcyA9IDUwLCBhbmQgY29sb3JzID0gYygiZGFya2dyZWVuIiwiZGFya3JlZCIpLg0KDQpgYGB7cn0NCiMgQWRkIHNjb3JlcyB0byBlYWNoIGRvY3VtZW50IGxpbmUgaW4gYSBkYXRhIGZyYW1lDQpvel9kZiA8LSBvel9wb2wkYWxsICU+JQ0KICBzZWxlY3QodGV4dCA9IHRleHQudmFyLCBwb2xhcml0eSA9IHBvbGFyaXR5KQ0KDQojIEN1c3RvbSBmdW5jdGlvbg0KYWxsX3Rlcm1zIDwtIHBvbF9zdWJzZWN0aW9ucyhvel9kZikNCg0KIyBNYWtlIGEgY29ycHVzDQphbGxfY29ycHVzIDwtIGFsbF90ZXJtcyAlPiUNCiAgVmVjdG9yU291cmNlKCkgJT4lIA0KICBWQ29ycHVzKCkNCg0KIyBCYXNpYyBURE0NCmFsbF90ZG0gPC0gVGVybURvY3VtZW50TWF0cml4KA0KICBhbGxfY29ycHVzLA0KICBjb250cm9sID0gbGlzdCgNCiAgICByZW1vdmVQdW5jdHVhdGlvbiA9IFRSVUUsDQogICAgc3RvcHdvcmRzID0gc3RvcHdvcmRzKGtpbmQgPSAiZW4iKQ0KICApDQopICU+JQ0KICBhcy5tYXRyaXgoKSAlPiUNCiAgc2V0X2NvbG5hbWVzKGMoInBvc2l0aXZlIiwgIm5lZ2F0aXZlIikpDQoNCiMgTWFrZSBhIGNvbXBhcmlzb24gY2xvdWQNCmNvbXBhcmlzb24uY2xvdWQoDQogIGFsbF90ZG0sDQogIG1heC53b3JkcyA9IDUwLA0KICBjb2xvcnMgPSBjKCJkYXJrZ3JlZW4iLCAiZGFya3JlZCIpDQopDQpgYGANCltyZXN1bHRlZCB3b3JkY2xvdWRdKCJkb3dubG9hZCAoNSkucG5nIikNCg0KIyMjIEVtb3Rpb25hbCBpbnRyb3NwZWN0aW9uDQoNCkluIHRoaXMgZXhlcmNpc2UgeW91IGdvIGJleW9uZCBzdWJzZXR0aW5nIG9uIHBvc2l0aXZlIGFuZCBuZWdhdGl2ZSBsYW5ndWFnZS4gSW5zdGVhZCB5b3Ugd2lsbCBzdWJzZXQgdGV4dCBieSBlYWNoIG9mIHRoZSA4IGVtb3Rpb25zIGluIFBsdXRjaGlrJ3MgZW1vdGlvbmFsIHdoZWVsIHRvIGNvbnN0cnVjdCBhIHZpc3VhbC4gV2l0aCB0aGlzIGFwcHJvYWNoIHlvdSB3aWxsIGdldCBtb3JlIGNsYXJpdHkgaW4gd29yZCB1c2FnZSBieSBtYXBwaW5nIHRvIGEgc3BlY2lmaWMgZW1vdGlvbiBpbnN0ZWFkIG9mIGp1c3QgcG9zaXRpdmUgb3IgbmVnYXRpdmUuDQoNClVzaW5nIHRoZSB0aWR5dGV4dCBzdWJqZWN0aXZpdHkgbGV4aWNvbiwgIm5yYyIsIHlvdSBwZXJmb3JtIGFuIGlubmVyX2pvaW4oKSB3aXRoIHlvdXIgdGV4dC4gVGhlICJucmMiIGxleGljb24gaGFzIHRoZSA4IGVtb3Rpb25zIHBsdXMgcG9zaXRpdmUgYW5kIG5lZ2F0aXZlIHRlcm0gY2xhc3Nlcy4gU28geW91IHdpbGwgaGF2ZSB0byBkcm9wIHBvc2l0aXZlIGFuZCBuZWdhdGl2ZSB3b3JkcyBhZnRlciBwZXJmb3JtaW5nIHlvdXIgaW5uZXJfam9pbigpLiBPbmUgd2F5IHRvIGRvIHNvIGlzIHdpdGggdGhlIG5lZ2F0aW9uLCAhLCBhbmQgZ3JlcGwoKS4NCg0KVGhlICJHbG9iYWwgUmVndWxhciBFeHByZXNzaW9uIFByaW50IExvZ2ljYWwsIiBncmVwbCgpLCBmdW5jdGlvbiB3aWxsIHJldHVybiBhIFRydWUgb3IgRmFsc2UgaWYgYSBzdHJpbmcgcGF0dGVybiBpcyBpZGVudGlmaWVkIGluIGVhY2ggcm93LiBJbiB0aGlzIGV4ZXJjaXNlIHlvdSB3aWxsIHNlYXJjaCBmb3IgcG9zaXRpdmUgT1IgbmVnYXRpdmUgdXNpbmcgdGhlIHwgb3BlcmF0b3IsIHJlcHJlc2VudGluZyAib3IiIGFzIHNob3duIGJlbG93LiBPZnRlbiB0aGlzIHN0cmFpZ2h0IGxpbmUgaXMgYWJvdmUgdGhlIGVudGVyIGtleSBvbiBhIGtleWJvYXJkLiBTaW5jZSB0aGUgISBuZWdhdGlvbiBwcmVjZWRlcyBncmVwbCgpLCB0aGUgVCBvciBGIGlzIHN3aXRjaGVkIHNvIHRoZSAicG9zaXRpdmV8bmVnYXRpdmUiIGlzIGRyb3BwZWQgaW5zdGVhZCBvZiBrZXB0Lg0KDQpPYmplY3QgPC0gdGliYmxlICU+JQ0KICBmaWx0ZXIoIWdyZXBsKCJwb3NpdGl2ZXxuZWdhdGl2ZSIsIGNvbHVtbl9uYW1lKSkNCk5leHQgeW91IGFwcGx5IGNvdW50KCkgb24gdGhlIGlkZW50aWZpZWQgd29yZHMgYWxvbmcgd2l0aCBzcHJlYWQoKSB0byBnZXQgdGhlIGRhdGEgZnJhbWUgb3JnYW5pemVkLg0KDQpUaGlzIGV4ZXJjaXNlIGludHJvZHVjZXMgcm93bmFtZXMoKS4gVGhpcyBmdW5jdGlvbiBkZWNsYXJlcyB0aGUgbmFtZXMgb2Ygcm93cyBpbiBhIGRhdGEgZnJhbWUuIEl0IGJlaGF2ZXMgYSBiaXQgZGlmZmVyZW50bHkgYmVjYXVzZSByb3duYW1lcygpIGlzIHBhc3NlZCB0aGUgb2JqZWN0IGdhaW5pbmcgdGhlIHJvdyBuYW1lcyBvbiB0aGUgbGVmdCBzaWRlIG9mIDwtLiBPbiB0aGUgcmlnaHQgc2lkZSB0aGUgY2hhcmFjdGVyIHZlY3RvciBvZiBuYW1lcyBpcyBkZWNsYXJlZCBzdWNoIGFzIGRhdGFfZnJhbWVbLCAxXS4gRm9yIGluc3RhbmNlOg0KDQpyb3duYW1lcyhkYXRhX2ZyYW1lKSA8LSB2ZWN0b3Jfb2ZfbmFtZXMNCkFmdGVyIHNldHRpbmcgcm93IG5hbWVzIHlvdSB3aWxsIGNyZWF0ZSBhIG1vcmUgdmFyaWVkIGNvbXBhcmlzb24uY2xvdWQoKS4NCg0KSU5TVFJVQ1RJT05TDQoxMDBYUA0KSU5TVFJVQ1RJT05TDQoxMDBYUA0KaW5uZXJfam9pbigpIG1vYnkgYW5kIG5yYyB0byBjcmVhdGUgbW9ieV9zZW50aW1lbnQuDQpVc2luZyBmaWx0ZXIoKSB3aXRoIGEgbmVnYXRpb24gKCEpIGFuZCBncmVwbCgpIHNlYXJjaCBmb3IgInBvc2l0aXZlfG5lZ2F0aXZlIi4gVGhlIGNvbHVtbiB0byBzZWFyY2ggaXMgY2FsbGVkIHNlbnRpbWVudC4NCkZvcndhcmQgbW9ieV9wb3NfbmVnIHRvIGNvdW50KCl3aXRoIHNlbnRpbWVudCB0aGVuIHRlcm0gPSB0ZXJtLiAlPiUgdGhpcyB0byBzcHJlYWQoKSBwYXNzaW5nIGluIHNlbnRpbWVudCwgbiwgYW5kIGZpbGwgPSAwIGFuZCB0aGVuIGNoYW5nZSBpdCB0byBhIGRhdGEgZnJhbWUgd2l0aCBhcy5kYXRhLmZyYW1lKCkuDQpTZXQgdGhlIHJvd25hbWVzKCkgb2YgbW9ieV90aWR5IHRvIGJlIHRoZSBmaXJzdCBjb2x1bW4gdmVjdG9yLCBtb2J5X3RpZHlbLCAxXS4NCkRyb3AgdGhlIGZpcnN0IGNvbHVtbiBvZiBtb2J5X3RpZHkgKHNpbmNlIGl0IHdhcyBkZWNsYXJlZCBhcyByb3cgbmFtZXMpIGJ5IHNldHRpbmcgbW9ieV90aWR5WywgMV0gdG8gTlVMTC4NCkV4YW1pbmUgbW9ieV90aWR5IHVzaW5nIGhlYWQoKS4NCkFwcGx5IGNvbXBhcmlzb24uY2xvdWQoKSB0byBtb2J5X3RpZHkgd2l0aCBtYXgud29yZHMgPSA1MCwgdGl0bGUuc2l6ZSA9IDEuNS4NCg0KYGBge3J9DQojIElubmVyIGpvaW4NCm1vYnlfc2VudGltZW50IDwtIGlubmVyX2pvaW4obW9ieSwgbnJjKQ0KDQojIERyb3AgcG9zaXRpdmUgb3IgbmVnYXRpdmUNCm1vYnlfcG9zX25lZyA8LSBtb2J5X3NlbnRpbWVudCAlPiUNCiAgZmlsdGVyKCFncmVwbCgicG9zaXRpdmV8bmVnYXRpdmUiLCBzZW50aW1lbnQpKQ0KDQojIENvdW50IHRlcm1zIGJ5IHNlbnRpbWVudCB0aGVuIHNwcmVhZCANCm1vYnlfdGlkeSA8LSBtb2J5X3Bvc19uZWcgJT4lIA0KICBjb3VudChzZW50aW1lbnQsIHRlcm0gPSB0ZXJtKSAlPiUgDQogIHNwcmVhZChzZW50aW1lbnQsIG4sIGZpbGwgPSAwKSAlPiUNCiAgYXMuZGF0YS5mcmFtZSgpDQoNCiMgU2V0IHJvdyBuYW1lcw0Kcm93bmFtZXMobW9ieV90aWR5KSA8LSBtb2J5X3RpZHlbLCAxXQ0KDQojIERyb3AgdGVybXMgY29sdW1uDQptb2J5X3RpZHlbLCAxXSA8LSBOVUxMDQoNCiMgRXhhbWluZQ0KaGVhZChtb2J5X3RpZHkpDQoNCiMgQ29tcGFyaXNvbiBjbG91ZA0KY29tcGFyaXNvbi5jbG91ZChtb2J5X3RpZHksIG1heC53b3JkcyA9IDUwLCB0aXRsZS5zaXplID0gMS41KQ0KYGBgDQpbcmVzdWx0ZWQgd29yZGNsb3VkXSgiZG93bmxvYWQgKDYpLnBuZyIpDQoNCg0KIyMjIENvbXBhcmUgJiBjb250cmFzdCBzdGFja2VkIGJhciBjaGFydA0KDQpBbm90aGVyIHdheSB0byBzbGljZSB5b3VyIHRleHQgaXMgdG8gdW5kZXJzdGFuZCBob3cgbXVjaCBvZiB0aGUgZG9jdW1lbnQocykgYXJlIG1hZGUgb2YgcG9zaXRpdmUgb3IgbmVnYXRpdmUgd29yZHMuIEZvciBleGFtcGxlIGEgcmVzdGF1cmFudCByZXZpZXcgbWF5IGhhdmUgc29tZSBwb3NpdGl2ZSBhc3BlY3RzIHN1Y2ggYXMgInRoZSBmb29kIHdhcyBnb29kIiBidXQgdGhlbiBjb250aW51ZSB0byBhZGQgInRoZSByZXN0YXVyYW50IHdhcyBkaXJ0eSwgdGhlIHN0YWZmIHdhcyBydWRlIGFuZCBwYXJraW5nIHdhcyBhd2Z1bC4iIEFzIGEgcmVzdWx0LCB5b3UgbWF5IHdhbnQgdG8gdW5kZXJzdGFuZCBob3cgbXVjaCBvZiBhIGRvY3VtZW50IGlzIGRlZGljYXRlZCB0byBwb3NpdGl2ZSB2cyBuZWdhdGl2ZSBsYW5ndWFnZS4gSW4gdGhpcyBleGFtcGxlIGl0IHdvdWxkIGhhdmUgYSBoaWdoZXIgbmVnYXRpdmUgcGVyY2VudGFnZSBjb21wYXJlZCB0byBwb3NpdGl2ZS4NCg0KT25lIG1ldGhvZCBmb3IgZG9pbmcgc28gaXMgdG8gY291bnQoKSB0aGUgcG9zaXRpdmUgYW5kIG5lZ2F0aXZlIHdvcmRzIHRoZW4gZGl2aWRlIGJ5IHRoZSBudW1iZXIgb2Ygc3ViamVjdGl2aXR5IHdvcmRzIGlkZW50aWZpZWQuIEluIHRoZSByZXN0YXVyYW50IHJldmlldyBleGFtcGxlLCAiZ29vZCIgd291bGQgY291bnQgYXMgMSBwb3NpdGl2ZSBhbmQgImRpcnR5LCIgInJ1ZGUsIiBhbmQgImF3ZnVsIiBjb3VudCBhcyAzIG5lZ2F0aXZlIHRlcm1zLiBBIHNpbXBsZSBjYWxjdWxhdGlvbiB3b3VsZCBsZWFkIHlvdSB0byBiZWxpZXZlIHRoZSByZXN0YXVyYW50IHJldmlldyBpcyAyNSUgcG9zaXRpdmUgYW5kIDc1JSBuZWdhdGl2ZSBzaW5jZSB0aGVyZSB3ZXJlIDQgc3ViamVjdGl2aXR5IHRlcm1zLg0KDQpTdGFydCBieSBwZXJmb3JtaW5nIHRoZSBpbm5lcl9qb2luKCkgb24gYSB1bmlmaWVkIHRpZHkgZGF0YSBmcmFtZSBjb250YWluaW5nIDQgYm9va3MsIEFnYW1lbW5vbiwgT3osIEh1Y2sgRmlubiwgYW5kIE1vYnkgRGljay4gSnVzdCBsaWtlIHRoZSBwcmV2aW91cyBleGVyY2lzZSB5b3Ugd2lsbCB1c2UgZmlsdGVyKCkgYW5kIGdyZXBsKCkuDQoNClRvIHBlcmZvcm0gdGhlIGNvdW50KCkgeW91IGhhdmUgdG8gZ3JvdXAgdGhlIGRhdGEgYnkgYm9vayBhbmQgdGhlbiBzZW50aW1lbnQuIEZvciBleGFtcGxlIGFsbCB0aGUgcG9zaXRpdmUgd29yZHMgZm9yIEFnYW1lbW5vbiBoYXZlIHRvIGJlIGdyb3VwZWQgdGhlbiB0YWxsaWVkIHNvIHRoYXQgcG9zaXRpdmUgd29yZHMgZnJvbSBhbGwgYm9va3MgYXJlIG5vdCBtaXhlZC4gTHVja2lseSwgeW91IGNhbiBwYXNzIG11bHRpcGxlIHZhcmlhYmxlcyBpbnRvIGNvdW50KCkgZGlyZWN0bHkuDQoNCklOU1RSVUNUSU9OUw0KMTAwWFANCklOU1RSVUNUSU9OUw0KMTAwWFANCkZvcndhcmQgYm9va19zZW50cywgd2hpY2ggaXMgdGhlIE5SQyBpbm5lciBqb2luIHRvIGFsbCB0aWR5IGJvb2tzLCB0byBmaWx0ZXIoKS4NClBlcmZvcm0gYSBncmVwbCgpIG9uIHRoZSBzZW50aW1lbnQgY29sdW1uLCBjaGVja2luZyB3aXRob3V0IHRoZSBuZWdhdGlvbiBzbyB0aGF0ICJwb3NpdGl2ZXxuZWdhdGl2ZSIgYXJlIGtlcHQuDQpSZXZpZXcgdGhlIHRhaWwgb2YgYm9va3NfcG9zX25lZy4NCkNyZWF0ZSBib29rc19zZW50X2NvdW50IGJ5IHBhc3NpbmcgYm9va3NfcG9zX25lZyB0byBjb3VudCgpIHdpdGggcGFyYW1ldGVycyBib29rIGFuZCB0aGVuIHNlbnRpbWVudC4NClJldmlldyB0aGUgZW50aXJlIG9iamVjdCBieSBjYWxsaW5nIGJvb2tzX3NlbnRfY291bnQuDQpDcmVhdGUgYm9va19wb3MgdXNpbmcgZ3JvdXBfYnkoKSBhbmQgbXV0YXRlKCkgYSBuZXcgdmFyaWFibGUuIFBhc3MgYm9vayBhcyB0aGUgZ3JvdXBpbmcgdmFyaWFibGUsIHRoZW4gY2FsY3VsYXRlIHRoZSBwZXJjZW50YWdlIGJ5IHBhc3NpbmcgdGhlIGV4cHJlc3Npb24gbiAvIHN1bShuKSAqIDEwMCBpbnNpZGUgbXV0YXRlKCkuDQpNYWtlIGEgYmFycGxvdCB3aXRoIGdncGxvdCgpIHVzaW5nIGJvb2tfcG9zIHdpdGggYWVzKHggPSBib29rLCB5ID0gcGVyY2VudF9wb3NpdGl2ZSwgZmlsbCA9IHNlbnRpbWVudCkuDQpBZGQgYW5vdGhlciBsYXllciB3aXRoICsgYW5kIHBhc3MgaW4gZ2VvbV9iYXIoc3RhdCA9ICJpZGVudGl0eSIpLg0KDQoNCmBgYHtyfQ0KIyBSZXZpZXcgdGFpbCBvZiBhbGxfYm9va3MNCnRhaWwoYWxsX2Jvb2tzKQ0KDQojIElubmVyIGpvaW4NCmJvb2tzX3NlbnRzIDwtIGlubmVyX2pvaW4oYWxsX2Jvb2tzLCBucmMpDQoNCiMgS2VlcCBvbmx5IHBvc2l0aXZlIG9yIG5lZ2F0aXZlDQpib29rc19wb3NfbmVnIDwtIGJvb2tzX3NlbnRzICU+JQ0KICBmaWx0ZXIoZ3JlcGwoInBvc2l0aXZlfG5lZ2F0aXZlIiwgc2VudGltZW50KSkNCg0KIyBSZXZpZXcgdGFpbCBhZ2Fpbg0KdGFpbChib29rc19wb3NfbmVnKQ0KDQojIENvdW50IGJ5IGJvb2sgJiBzZW50aW1lbnQNCmJvb2tzX3NlbnRfY291bnQgPC0gYm9va3NfcG9zX25lZyAlPiUNCiAgY291bnQoYm9vaywgc2VudGltZW50KQ0KDQojIFJldmlldyBlbnRpcmUgb2JqZWN0DQpib29rc19zZW50X2NvdW50DQoNCiMgU3BsaXQsIG1ha2UgcHJvcG9ydGlvbmFsDQpib29rX3BvcyA8LSBib29rc19zZW50X2NvdW50ICU+JQ0KICBncm91cF9ieShib29rKSAlPiUgDQogIG11dGF0ZShwZXJjZW50X3Bvc2l0aXZlID0gbiAvIHN1bShuKSAqIDEwMCkNCg0KIyBQcm9wb3J0aW9uYWwgYmFyIHBsb3QNCmdncGxvdChib29rX3BvcywgYWVzKHggPSBib29rLCB5ID0gcGVyY2VudF9wb3NpdGl2ZSwgZmlsbCA9IHNlbnRpbWVudCkpICsgIA0KICBnZW9tX2JhcihzdGF0ID0gImlkZW50aXR5IikNCmBgYA0KW3Jlc3VsdGVkIHBsb3RdKCJkb3dubG9hZCAoNykucG5nIikNCg0KDQoNCiMjIyBLZXJuZWwgZGVuc2l0eSBwbG90DQoNCk5vdyB0aGF0IHlvdSBsZWFybmVkIGFib3V0IGEga2VybmVsIGRlbnNpdHkgcGxvdCB5b3UgY2FuIGNyZWF0ZSBvbmUhIFJlbWVtYmVyIGl0J3MgbGlrZSBhIHNtb290aGVkIGhpc3RvZ3JhbSBidXQgaXNuJ3QgYWZmZWN0ZWQgYnkgYmlud2lkdGguIFRoaXMgZXhlcmNpc2Ugd2lsbCBoZWxwIHlvdSBjb25zdHJ1Y3QgYSBrZXJuZWwgZGVuc2l0eSBwbG90IGZyb20gc2VudGltZW50IHZhbHVlcy4NCg0KSW4gdGhpcyBleGVyY2lzZSB5b3Ugd2lsbCBwbG90IDIga2VybmVsIGRlbnNpdGllcy4gT25lIGZvciBBZ2FtZW1ub24gYW5kIGFub3RoZXIgZm9yIFRoZSBXaXphcmQgb2YgT3ouIEZvciBib3RoIHlvdSB3aWxsIHBlcmZvcm0gYW4gaW5uZXJfam9pbigpIHdpdGggdGhlICJhZmlubiIgbGV4aWNvbi4gUmVjYWxsIHRoZSAiYWZpbm4iIGxleGljb24gaGFzIHRlcm1zIHNjb3JlZCBmcm9tIC01IHRvIDUuIE9uY2UgaW4gYSB0aWR5IGZvcm1hdCwgYm90aCBib29rcyB3aWxsIHJldGFpbiB3b3JkcyBhbmQgY29ycmVzcG9uZGluZyBzY29yZXMgZm9yIHRoZSBsZXhpY29uLg0KDQpBZnRlciB0aGF0LCB5b3UgbmVlZCB0byByb3cgYmluZCB0aGUgcmVzdWx0cyBpbnRvIGEgbGFyZ2VyIGRhdGEgZnJhbWUgdXNpbmcgcmJpbmQoKSBhbmQgY3JlYXRlIGEgcGxvdCB3aXRoIGdncGxvdDIuDQoNCkZyb20gdGhlIHZpc3VhbCB5b3Ugd2lsbCBiZSBhYmxlIHRvIHVuZGVyc3RhbmQgd2hpY2ggYm9vayB1c2VzIG1vcmUgcG9zaXRpdmUgdmVyc3VzIG5lZ2F0aXZlIGxhbmd1YWdlLiBUaGVyZSBpcyBjbGVhcmx5IG92ZXJsYXAgYXMgbmVnYXRpdmUgdGhpbmdzIGhhcHBlbiB0byBEb3JvdGh5IGJ1dCB5b3UgY291bGQgaW5mZXIgdGhlIGtlcm5lbCBkZW5zaXR5IGlzIGRlbW9uc3RyYXRpbmcgYSBncmVhdGVyIHByb2JhYmlsaXR5IG9mIHBvc2l0aXZlIGxhbmd1YWdlIGluIHRoZSBXaXphcmQgb2YgT3ogY29tcGFyZWQgdG8gQWdhbWVtbm9uLg0KDQpJbiB0aGlzIGV4ZXJjaXNlIHlvdSB3aWxsIGRlY2xhcmUgYSBuZXcgY29sdW1uIHdpdGggYSByZXBlYXRpbmcgdmFsdWUuIEhlcmUgeW91IGFyZSBhZGRpbmcgYSBuZXcgY29sdW1uIGJ5IGFkZGluZyBpdCB0byB0aGUgZGF0YSBmcmFtZSBhcyBpbiAkbmV3X2NvbHVtbl9uYW1lIHdpdGggYSByZWN5Y2xlZCB2YWx1ZS4NCg0KZGF0YV9mcmFtZSRuZXdfY29sdW1uX25hbWUgPC0gJ3JlcGVhdGluZyB2YWx1ZScNCklOU1RSVUNUSU9OUw0KMTAwWFANCklOU1RSVUNUSU9OUw0KMTAwWFANCldlJ3ZlIGxvYWRlZCBhZyBhcyBhIHRpZHkgdmVyc2lvbiBvZiBBZ2FtZW1ub24gYW5kIGNyZWF0ZWQgYWZpbm4gYXMgYSBzdWJzZXQgb2YgdGhlIHRpZHl0ZXh0ICJhZmlubiIgbGV4aWNvbi4gTWFrZSBhIG5ldyBvYmplY3QgY2FsbGVkIGFnX2FmaW5uIHVzaW5nIGlubmVyX2pvaW4oKSBvbiBhZyBhbmQgYWZpbm4uDQpDcmVhdGUgYSBuZXcgY29sdW1uIGJ5IGRlY2xhcmluZyBhZ19hZmlubiRib29rIGFzICJhZ2FtZW1ub24iLiBUaGlzIHdpbGwgYXBwZW5kIGEgbmV3IGNvbHVtbiB0aGF0IHJlY3ljbGVzIHRoZSBzdHJpbmcgZm9yIGFsbCByb3dzLg0KUGVyZm9ybSBhbm90aGVyIGlubmVyX2pvaW4oKSBvbiB0aGUgcHJlbG9hZGVkIG96IGFuZCBhZmlubiBvYmplY3RzLiBDYWxsIHRoZSBuZXcgb2JqZWN0IG96X2FmaW5uLg0KQXBwZW5kIGFub3RoZXIgY29sdW1uIGNhbGxlZCBvel9hZmlubiRib29rIHdpdGggYSByZWN5Y2xlZCBzdHJpbmcgIm96Ii4NCkRlY2xhcmUgYWxsX2RmIGFzIGEgbmV3IG9iamVjdCB1c2luZyByYmluZCgpIG9uIGFnX2FmaW5uIGFuZCBvel9hZmlubi4NCkNyZWF0ZSB0aGUga2VybmVsIGRlbnNpdHkgcGxvdCB3aXRoIGdncGxvdCgpLiBQYXNzIGluIGFsbF9kZiBhcyB5b3VyIGRhdGEgYWxvbmcgd2l0aCBhZXMoeCA9IHNjb3JlLCBmaWxsID0gYm9vaykuIEFkZCB0aGUgZGVuc2l0eSBsYXllciB1c2luZyBnZW9tX2RlbnNpdHkoKSB3aXRoIGFuIGFscGhhID0gMC4zLiBMYXN0bHksIGFkZCBhIHRpdGxlIHVzaW5nIGdndGl0bGUoKSBjYWxsZWQgIkFGSU5OIFNjb3JlIERlbnNpdGllcyIuDQoNCmBgYHtyfQ0KIyBBZ2FtZW1ub24gaW5uZXIgam9pbg0KYWdfYWZpbm4gPC0gaW5uZXJfam9pbihhZywgYWZpbm4pDQoNCiMgQWRkIGJvb2sNCmFnX2FmaW5uJGJvb2sgPC0gImFnYW1lbW5vbiINCg0KIyBPeiBpbm5lciBqb2luDQpvel9hZmlubiA8LSBpbm5lcl9qb2luKG96LCBhZmlubikNCg0KIyBBZGQgYm9vaw0Kb3pfYWZpbm4kYm9vayA8LSAib3oiDQoNCiMgQ29tYmluZQ0KYWxsX2RmIDwtIHJiaW5kKGFnX2FmaW5uLCBvel9hZmlubikNCg0KIyBQbG90IDIgZGVuc2l0aWVzDQpnZ3Bsb3QoYWxsX2RmLCBhZXMoeCA9IHNjb3JlLCBmaWxsID0gYm9vaykpICsgDQogIGdlb21fZGVuc2l0eShhbHBoYSA9IDAuMykgKyANCiAgdGhlbWVfZ2RvY3MoKSArDQogIGdndGl0bGUoIkFGSU5OIFNjb3JlIERlbnNpdGllcyIpDQpgYGANCg0KW3Jlc3VsdGVkIHBsb3RdKCJkb3dubG9hZCAoOCkucG5nIikNCg0KDQojIyMgQm94IHBsb3QNCg0KQW4gZWFzeSB3YXkgdG8gY29tcGFyZSBtdWx0aXBsZSBkaXN0cmlidXRpb25zIGlzIHdpdGggYSBib3ggcGxvdC4gVGhpcyBjb2RlIHdpbGwgaGVscCB5b3UgY29uc3RydWN0IG11bHRpcGxlIGJveCBwbG90cyB0byBtYWtlIGEgY29tcGFjdCB2aXN1YWwuDQoNCkluIHRoaXMgZXhlcmNpc2UgdGhlIGFsbF9ib29rX3BvbGFyaXR5IG9iamVjdCBpcyBhbHJlYWR5IGxvYWRlZC4gVGhlIGRhdGEgZnJhbWUgY29udGFpbnMgdHdvIGNvbHVtbnMsIGJvb2sgYW5kIHBvbGFyaXR5LiBJdCBjb21wcmlzZXMgYWxsIGJvb2tzIHdpdGggcWRhcCdzIHBvbGFyaXR5KCkgZnVuY3Rpb24gYXBwbGllZC4gSGVyZSBhcmUgdGhlIGZpcnN0IDMgcm93cyBvZiB0aGUgbGFyZ2Ugb2JqZWN0Lg0KDQpib29rCXBvbGFyaXR5DQoxNAlodWNrCTAuMjc3MzUwMQ0KMjIJaHVjawkwLjI1ODE5ODkNCjI2CWh1Y2sJLTAuNTc3MzUwMw0KVGhpcyBleGVyY2lzZSBpbnRyb2R1Y2VzIHRhcHBseSgpIHdoaWNoIGFsbG93cyB5b3UgdG8gYXBwbHkgZnVuY3Rpb25zIG92ZXIgYSByYWdnZWQgYXJyYXkuIFlvdSBpbnB1dCBhIHZlY3RvciBvZiB2YWx1ZXMgYW5kIHRoZW4gYSB2ZWN0b3Igb2YgZmFjdG9ycy4gRm9yIGVhY2ggZmFjdG9yLCB2YWx1ZSBjb21iaW5hdGlvbiB0aGUgdGhpcmQgcGFyYW1ldGVyLCBhIGZ1bmN0aW9uIGxpa2UgbWluKCksIGlzIGFwcGxpZWQuIEZvciBleGFtcGxlIGhlcmUncyBzb21lIGNvZGUgd2l0aCB0YXBwbHkoKSB1c2VkIG9uIHR3byB2ZWN0b3JzLg0KDQpmMSA8LSBhcy5mYWN0b3IoYygiR3JvdXAxIiwgIkdyb3VwMiIsICJHcm91cDEiLCAiR3JvdXAyIikpDQpzdGF0MSA8LSBjKDEsIDIsIDEsIDIpDQp0YXBwbHkoc3RhdDEsIGYxLCBzdW0pDQpUaGUgcmVzdWx0IGlzIGFuIGFycmF5IHdoZXJlIEdyb3VwMSBoYXMgYSB2YWx1ZSBvZiAyICgxKzEpIGFuZCBHcm91cDIgaGFzIGEgdmFsdWUgb2YgNCAoMisyKS4NCg0KSU5TVFJVQ1RJT05TDQoxMDBYUA0KSU5TVFJVQ1RJT05TDQoxMDBYUA0KU2luY2UgaXQncyBhbHJlYWR5IGxvYWRlZCwgZXhhbWluZSB0aGUgYWxsX2Jvb2tfcG9sYXJpdHkgd2l0aCBzdHIoKS4NClVzaW5nIHRhcHBseSgpLCBwYXNzIGluIGFsbF9ib29rX3BvbGFyaXR5JHBvbGFyaXR5LCBhbGxfYm9va19wb2xhcml0eSRib29rIGFuZCB0aGUgc3VtbWFyeSgpIGZ1bmN0aW9uLiBUaGlzIHdpbGwgcHJpbnQgdGhlIHN1bW1hcnkgc3RhdGlzdGljcyBmb3IgdGhlIDQgYm9va3MgaW4gdGVybXMgb2YgdGhlaXIgcG9sYXJpdHkoKSBzY29yZXMuIFlvdSB3b3VsZCBleHBlY3QgdG8gc2VlIE96IGFuZCBIdWNrIEZpbm4gdG8gaGF2ZSBoaWdoZXIgYXZlcmFnZXMgdGhhbiBBZ2FtZW1ub24gb3IgTW9ieSBEaWNrLiBQYXkgY2xvc2UgYXR0ZW50aW9uIHRvIHRoZSBtZWRpYW4uDQpDcmVhdGUgYSBib3ggcGxvdCB3aXRoIGdncGxvdCgpIGJ5IHBhc3NpbmcgaW4gYWxsX2Jvb2tfcG9sYXJpdHkuDQpBZXN0aGV0aWNzIHNob3VsZCBiZSBhZXMoeCA9IGJvb2ssIHkgPSBwb2xhcml0eSkuDQpVc2luZyBhICsgYWRkIHRoZSBnZW9tX2JveHBsb3QoKSB3aXRoIGNvbCA9ICJkYXJrcmVkIi4gUGF5IGNsb3NlIGF0dGVudGlvbiB0byB0aGUgZGFyayBsaW5lIGluIGVhY2ggYm94IHJlcHJlc2VudGluZyBtZWRpYW4uDQpOZXh0IGFkZCBhbm90aGVyIGxheWVyIGNhbGxlZCBnZW9tX2ppdHRlcigpIHRvIGFkZCBwb2ludHMgZm9yIGVhY2ggb2YgdGhlIHdvcmRzLg0KDQoNCmBgYHtyfQ0KIyBFeGFtaW5lDQpzdHIoYWxsX2Jvb2tfcG9sYXJpdHkpDQoNCiMgU3VtbWFyeSBieSBkb2N1bWVudA0KdGFwcGx5KGFsbF9ib29rX3BvbGFyaXR5JHBvbGFyaXR5LCBhbGxfYm9va19wb2xhcml0eSRib29rLCBzdW1tYXJ5KQ0KDQojIEJveCBwbG90DQpnZ3Bsb3QoYWxsX2Jvb2tfcG9sYXJpdHksIGFlcyh4ID0gYm9vaywgeSA9IHBvbGFyaXR5KSkgKw0KICBnZW9tX2JveHBsb3QoZmlsbCA9IGMoIiNiYWRhNTUiLCAiI0YwMEI0MiIsICIjRjAwMUVEIiwgIiNCQTZFMTUiKSwgY29sID0gImRhcmtyZWQiKSArDQogIGdlb21faml0dGVyKHBvc2l0aW9uID0gcG9zaXRpb25faml0dGVyKHdpZHRoID0gMC4xLCBoZWlnaHQgPSAwKSwgYWxwaGEgPSAwLjAyKSArDQogIHRoZW1lX2dkb2NzKCkgKw0KICBnZ3RpdGxlKCJCb29rIFBvbGFyaXR5IikNCmBgYA0KDQpbcmVzdWx0ZWQgcGxvdF0oImRvd25sb2FkICg5KS5wbmciKQ0KDQoNCiMjIyBSYWRhciBjaGFydA0KDQpSZW1lbWJlciBQbHV0Y2hpaydzIHdoZWVsIG9mIGVtb3Rpb24/IFRoZSBOUkMgbGV4aWNvbiBoYXMgdGhlIDggZW1vdGlvbnMgY29ycmVzcG9uZGluZyB0byB0aGUgZmlyc3QgcmluZyBvZiB0aGUgd2hlZWwuIFByZXZpb3VzbHkgeW91IGNyZWF0ZWQgYSBjb21wYXJpc29uLmNsb3VkKCkgYWNjb3JkaW5nIHRvIHRoZSA4IHByaW1hcnkgZW1vdGlvbnMuIE5vdyB5b3Ugd2lsbCBjcmVhdGUgYSByYWRhciBjaGFydCBzaW1pbGFyIHRvIHRoZSB3aGVlbCBpbiB0aGlzIGV4ZXJjaXNlLg0KDQpBIHJhZGFyY2hhcnQgaXMgYSB0d28tZGltZW5zaW9uYWwgcmVwcmVzZW50YXRpb24gb2YgbXVsdGlkaW1lbnNpb25hbCBkYXRhIChhdCBsZWFzdCAzKS4gSW4gdGhpcyBjYXNlIHRoZSB0YWxseSBvZiB0aGUgZGlmZmVyZW50IGVtb3Rpb25zIGZvciBhIGJvb2sgYXJlIHJlcHJlc2VudGVkIGluIHRoZSBjaGFydC4gVXNpbmcgYSByYWRhciBjaGFydCwgeW91IGNhbiByZXZpZXcgYWxsIDggZW1vdGlvbnMgc2ltdWx0YW5lb3VzbHkuDQoNCkFzIGJlZm9yZSB3ZSd2ZSBsb2FkZWQgdGhlICJucmMiIGxleGljb24gYXMgbnJjIGFuZCBtb2J5X2h1Y2sgd2hpY2ggaXMgYSBjb21iaW5lZCB0aWR5IHZlcnNpb24gb2YgYm90aCBNb2J5IERpY2sgYW5kIEh1Y2sgRmlubi4NCg0KSW4gdGhpcyBleGVyY2lzZSB5b3Ugb25jZSBhZ2FpbiB1c2UgYSBuZWdhdGVkIGdyZXBsKCkgdG8gcmVtb3ZlICJwb3NpdGl2ZXxuZWdhdGl2ZSIgZW1vdGlvbmFsIGNsYXNzZXMgZnJvbSB0aGUgY2hhcnQuIEFzIGEgcmVmcmVzaGVyIGhlcmUgaXMgYW4gZXhhbXBsZToNCg0Kb2JqZWN0IDwtIHRpYmJsZSAlPiUNCiAgZmlsdGVyKCFncmVwbCgicG9zaXRpdmV8bmVnYXRpdmUiLCBjb2x1bW5fbmFtZSkpDQpUaGlzIGV4ZXJjaXNlIHJlaW50cm9kdWNlcyBzcHJlYWQoKSB3aGljaCByZWFycmFuZ2VzIHRoZSB0YWxsaWVkIGVtb3Rpb25hbCB3b3Jkcy4gQXMgYSByZWZyZXNoZXIgY29uc2lkZXIgdGhpcyByYXcgZGF0YSBjYWxsZWQgZGF0YWNhbXAuDQoNCnBlb3BsZQlmb29kCWxpa2UNCk5pY29sZQlicmVhZAk3OA0KTmljb2xlCXNhbGFkCTY2DQpUZWQJYnJlYWQJOTkNClRlZAlzYWxhZAkyMQ0KSWYgeW91IGFwcGxpZWQgc3ByZWFkKCkgYXMgaW4gc3ByZWFkKGRhdGFjYW1wLCBwZW9wbGUsIGxpa2UpIHRoZSBkYXRhIGxvb2tzIGxpa2UgdGhpcy4NCg0KZm9vZAlOaWNvbGUJVGVkDQpicmVhZAk3OAk5OQ0Kc2FsYWQJNjYJMjENCklOU1RSVUNUSU9OUw0KMTAwWFANCklOU1RSVUNUSU9OUw0KMTAwWFANClJldmlldyBtb2J5X2h1Y2sgd2l0aCB0YWlsKCkuDQppbm5lcl9qb2luKCkgbW9ieV9odWNrIGFuZCBucmMuDQpOZXh0LCBmaWx0ZXIoKSBuZWdhdGluZyAicG9zaXRpdmV8bmVnYXRpdmUiIGluIHRoZSBzZW50aW1lbnQgY29sdW1uLiBBc3NpZ24gdGhlIHJlc3VsdCB0byBib29rc19wb3NfbmVnLg0KQWZ0ZXIgYm9va3NfcG9zX25lZyBpcyBmb3J3YXJkZWQgdG8gZ3JvdXBfYnkoKSB3aXRoIGJvb2sgYW5kIHNlbnRpbWVudC4gVGhlbiB0YWxseSgpIHRoZSBvYmplY3Qgd2l0aCBhbiBlbXB0eSBmdW5jdGlvbi4NClRoZW4gc3ByZWFkKCkgdGhlIGJvb2tzX3RhbGx5IGJ5IHRoZSBib29rIGFuZCBuIGNvbHVtbi4NClJldmlldyB0aGUgc2NvcmVzIGRhdGEuDQpDYWxsIGNoYXJ0SlNSYWRhcigpIG9uIHNjb3JlcyB3aGljaCBpcyBhbiBodG1sd2lkZ2V0IGZyb20gdGhlIHJhZGFyY2hhcnQgcGFja2FnZS4NCg0KYGBge3J9DQojIFJldmlldyB0YWlsIG9mIG1vYnlfaHVjaw0KdGFpbChtb2J5X2h1Y2spDQoNCiMgSW5uZXIgam9pbg0KYm9va3Nfc2VudHMgPC0gaW5uZXJfam9pbihtb2J5X2h1Y2ssIG5yYykNCg0KIyBEcm9wIHBvc2l0aXZlIG9yIG5lZ2F0aXZlDQpib29rc19wb3NfbmVnIDwtIGJvb2tzX3NlbnRzICU+JQ0KICBmaWx0ZXIoIWdyZXBsKCJwb3NpdGl2ZXxuZWdhdGl2ZSIsIHNlbnRpbWVudCkpDQoNCiMgVGlkeSB0YWxseQ0KYm9va3NfdGFsbHkgPC0gYm9va3NfcG9zX25lZyAlPiUNCiAgZ3JvdXBfYnkoYm9vaywgc2VudGltZW50KSAlPiUNCiAgdGFsbHkoKQ0KDQojIEtleSB2YWx1ZSBwYWlycw0Kc2NvcmVzIDwtIGJvb2tzX3RhbGx5ICU+JQ0KICBzcHJlYWQoYm9vaywgbikNCg0KIyBSZXZpZXcgc2NvcmVzDQpzY29yZXMNCg0KIyBKYXZhU2NyaXB0IHJhZGFyIGNoYXJ0DQpjaGFydEpTUmFkYXIoc2NvcmVzKQ0KYGBgDQoNCltyZXN1bHRlZCBwbG90XSgiZG93bmxvYWQgKDEwKS5wbmciKQ0KDQojIyMgVHJlZW1hcHMgZm9yIGdyb3VwcyBvZiBkb2N1bWVudHMNCg0KT2Z0ZW4geW91IHdpbGwgZmluZCB5b3Vyc2VsZiB3b3JraW5nIHdpdGggZG9jdW1lbnRzIGluIGdyb3Vwcywgc3VjaCBhcyBhdXRob3IsIHByb2R1Y3Qgb3IgYnkgY29tcGFueS4gVGhpcyBleGVyY2lzZSBsZXRzIHlvdSBsZWFybiBhYm91dCB0aGUgdGV4dCB3aGlsZSByZXRhaW5pbmcgdGhlIGdyb3VwcyBpbiBhIGNvbXBhY3QgdmlzdWFsLiBGb3IgZXhhbXBsZSwgd2l0aCBjdXN0b21lciByZXZpZXdzIGdyb3VwZWQgYnkgcHJvZHVjdCB5b3UgbWF5IHdhbnQgdG8gZXhwbG9yZSBtdWx0aXBsZSBkaW1lbnNpb25zIG9mIHRoZSBjdXN0b21lciByZXZpZXdzIGF0IHRoZSBzYW1lIHRpbWUuIEZpcnN0IHlvdSBjb3VsZCBjYWxjdWxhdGUgdGhlIHBvbGFyaXR5KCkgb2YgdGhlIHJldmlld3MuIEFub3RoZXIgZGltZW5zaW9uIG1heSBiZSBsZW5ndGguIERvY3VtZW50IGxlbmd0aCBjYW4gZGVtb25zdHJhdGUgdGhlIGVtb3Rpb25hbCBpbnRlbnNpdHkuIElmIGEgY3VzdG9tZXIgbGVhdmVzIGEgc2hvcnQgImdyZWF0IHNob2VzISIgb25lIGNvdWxkIGluZmVyIHRoZXkgYXJlIGFjdHVhbGx5IGxlc3MgZW50aHVzaWFzdGljIGNvbXBhcmVkIHRvIGEgbGVuZ3RoaWVyIHBvc2l0aXZlIHJldmlldy4gWW91IG1heSBhbHNvIHdhbnQgdG8gZ3JvdXAgcmV2aWV3cyBieSBwcm9kdWN0IHR5cGUgc3VjaCBhcyB3b21lbidzLCBtZW4ncyBhbmQgY2hpbGRyZW4ncyBzaG9lcy4gQSB0cmVlbWFwIGxldHMgeW91IGV4YW1pbmUgYWxsIG9mIHRoZXNlIGRpbWVuc2lvbnMuDQoNCkZvciB0ZXh0IGFuYWx5c2lzLCB3aXRoaW4gYSB0cmVlbWFwIGVhY2ggaW5kaXZpZHVhbCBib3ggcmVwcmVzZW50cyBhIGRvY3VtZW50IHN1Y2ggYXMgYSB0d2VldC4gRG9jdW1lbnRzIGFyZSBncm91cGVkIGluIHNvbWUgbWFubmVyIHN1Y2ggYXMgYXV0aG9yLiBUaGUgc2l6ZSBvZiBlYWNoIGJveCBpcyBkZXRlcm1pbmVkIGJ5IGEgbnVtZXJpYyB2YWx1ZSBzdWNoIGFzIG51bWJlciBvZiB3b3JkcyBvciBsZXR0ZXJzLiBUaGUgaW5kaXZpZHVhbCBjb2xvcnMgYXJlIGRldGVybWluZWQgYnkgYSBzZW50aW1lbnQgc2NvcmUuDQoNCkFmdGVyIHlvdSBvcmdhbml6ZSB0aGUgdGliYmxlLCB5b3UgdXNlIHRoZSB0cmVlbWFwIGxpYnJhcnkgY29udGFpbmluZyB0aGUgZnVuY3Rpb24gdHJlZW1hcCgpIHRvIG1ha2UgdGhlIHZpc3VhbC4gVGhlIGNvZGUgZXhhbXBsZSBiZWxvdyBkZWNsYXJlcyB0aGUgZGF0YSwgZ3JvdXBpbmcgdmFyaWFibGVzLCBzaXplLCBjb2xvciBhbmQgb3RoZXIgYWVzdGhldGljcy4NCg0KdHJlZW1hcChkYXRhX2ZyYW1lLA0KICAgICAgICBpbmRleCA9IGMoImdyb3VwIiwgImluZGl2aWR1YWxfZG9jdW1lbnQiKSwNCiAgICAgICAgdlNpemUgPSAiVjEiLA0KICAgICAgICB2Q29sb3IgPSAiYXZnX3Njb3JlIiwNCiAgICAgICAgdHlwZSA9ICJ2YWx1ZSIsDQogICAgICAgIHRpdGxlID0gIkJvb2sgU2VudGltZW50IFNjb3JlcyIsDQogICAgICAgIHBhbGV0dGUgPSBjKCJyZWQiLCAid2hpdGUiLCAiZ3JlZW4iKSkNClRoZSBwcmUtbG9hZGVkIGFsbF9ib29rcyBvYmplY3QgY29udGFpbnMgYSBjb21iaW5lZCB0aWR5IGZvcm1hdCBjb3JwdXMgd2l0aCA0IFNoYWtlc3BlYXJlLCAzIE1lbHZpbGxlIGFuZCA0IFR3YWluIGJvb2tzLiBCYXNlZCBvbiB0aGUgdHJlZW1hcCB5b3Ugc2hvdWxkIGJlIGFibGUgdG8gdGVsbCB3aG8gd3JpdGVzIGxvbmdlciBib29rcywgYW5kIHRoZSBwb2xhcml0eSBvZiB0aGUgYXV0aG9yIGFzIGEgd2hvbGUgYW5kIGZvciBpbmRpdmlkdWFsIGJvb2tzLg0KDQpJTlNUUlVDVElPTlMNCjEwMFhQDQpJTlNUUlVDVElPTlMNCjEwMFhQDQppbm5lcl9qb2luKCkgYWxsX2Jvb2tzIGFuZCB0aGUgYWZpbm5sZXhpY29uLiBEZWNsYXJlIHRoZSBieSBwYXJhbWV0ZXIgZXF1YWwgdG8gPSBjKCJ0ZXJtIiA9ICJ3b3JkIikuDQpDYWxjdWxhdGUgZWFjaCBib29rJ3MgbGVuZ3RoIGluIGEgbmV3IG9iamVjdCBjYWxsZWQgYm9va19sZW5ndGggdXNpbmcgY291bnQoKSB3aXRoIHRoZSBib29rIGNvbHVtbi4NCkNyZWF0ZSBib29rX3Njb3JlIHdpdGggZ3JvdXBfYnkoKSB1c2luZyBhdXRob3IgYW5kIGJvb2sgdGhlbiBzdW1tYXJpemUoKSB3aXRoIGEgbmV3IGNvbHVtbiBtZWFuX3Njb3JlIHVzaW5nIHRoZSBtZWFuKCkgZnVuY3Rpb24gb24gdGhlIHNjb3JlIGNvbHVtbi4NCkZvcndhcmQgYm9va19zY29yZSB0byBhbm90aGVyIGlubmVyX2pvaW4oKS4gVGhlIHNlY29uZCB0YWJsZSBpcyBib29rX2xlbmd0aCBhbmQgZGVjbGFyZSBieSA9ICJib29rIi4NCkV4YW1pbmUgYm9va190cmVlLg0KQ2FsbCB0cmVlbWFwKCkgb24gYm9va190cmVlIGZvbGxvd2VkIGJ5IGluZGV4IHNwZWNpZnlpbmcgYygpIHdpdGggImF1dGhvciIgYW5kICJib29rIi4gRGVjbGFyZSB2U2l6ZSBhcyAibiIgYW5kIHZDb2xvciBhcyAibWVhbl9zY29yZSIuIFRoZSB0eXBlIG5lZWRzIHRvIGJlICJ2YWx1ZSIgZm9yIGFwcHJvcHJpYXRlIGNvbG9yaW5nLiBGaW5hbGx5IHNwZWNpZnkgdGhlIHBhbGV0dGUgYXMgDQoNCmBgYHtyfQ0KYm9va3Nfc2NvcmUgPC0gYWxsX2Jvb2tzICU+JSANCiAgIyBJbm5lciBqb2luIHdpdGggQUZJTk4gc2NvcmVzDQogIGlubmVyX2pvaW4oYWZpbm4sIGJ5ID0gYygidGVybSIgPSAid29yZCIpKQ0KDQpib29rX2xlbmd0aCA8LSBib29rc19zY29yZSAlPiUgDQogICMgQ291bnQgbnVtYmVyIG9mIHdvcmRzIHBlciBib29rDQogIGNvdW50KGJvb2spIA0KDQpib29rX3Njb3JlIDwtIGJvb2tzX3Njb3JlICU+JSANCiAgIyBHcm91cCBieSBhdXRob3IsIGJvb2sNCiAgZ3JvdXBfYnkoYXV0aG9yLCBib29rKSAlPiUNCiAgIyBDYWxjdWxhdGUgbWVhbiBib29rIHNjb3JlDQogIHN1bW1hcml6ZShtZWFuX3Njb3JlID0gbWVhbihzY29yZSkpIA0KDQpib29rX3RyZWUgPC0gYm9va19zY29yZSAlPiUgDQogICMgSW5uZXIgam9pbiBieSBib29rDQogIGlubmVyX2pvaW4oYm9va19sZW5ndGgsIGJ5ID0gImJvb2siKQ0KDQojIEV4YW1pbmUgdGhlIHJlc3VsdHMNCmJvb2tfdHJlZQ0KDQojIE1ha2UgdGhlIHZpc3VhbA0KdHJlZW1hcChib29rX3RyZWUsDQogICAgICAgIGluZGV4ID0gYygiYXV0aG9yIiwgImJvb2siKSwNCiAgICAgICAgdlNpemUgPSAibiIsDQogICAgICAgIHZDb2xvciA9ICJtZWFuX3Njb3JlIiwNCiAgICAgICAgdHlwZSA9ICJ2YWx1ZSIsDQogICAgICAgIHRpdGxlID0gIkJvb2sgU2VudGltZW50IFNjb3JlcyIsDQogICAgICAgIHBhbGV0dGUgPSBjKCJyZWQiLCAid2hpdGUiLCAiZ3JlZW4iKSkNCmBgYA0KDQpbcmVzdWx0ZWQgcGxvdF0oImRvd25sb2FkICgxMSkucG5nIikNCg0KDQoNCg0KDQoNCg0KDQo=</div>
 
 
 
