@@ -175,11 +175,328 @@ $(document).ready(function () {
 <div id="chapter-3-visualization" class="section level2">
 <h2>Chapter 3 Visualization</h2>
 <p>Is your property a good rental? What do people look for in a good rental?</p>
-<p><a href="%22download%20(11).png%22">resulted plot</a></p>
+<div id="step-1-what-do-you-want-to-know" class="section level3">
+<h3>Step 1: What do you want to know?</h3>
+<p>Throughout this chapter you will analyse the text of a corpus of Airbnb housing rental reviews. Which of the following questions can you answer using a sentiment analysis of these reviews?</p>
+<p>ANSWER THE QUESTION 50XP Possible Answers What document clusters exist in the reviews? press 1 How many words are associated with rental reviews? press 2 –&gt; correct: What property qualities are listed in positive or negative comments? press 3 What named entities are in the documents?</p>
+</div>
+<div id="step-2-identify-text-sources" class="section level3">
+<h3>Step 2: Identify Text Sources</h3>
+<p>In this short exercise you will load and examine a small corpus of property rental reviews from around Boston. Hopefully you already know read.csv() which enables you to load a comma separated file. In this exercise you will also need to specify stringsAsFactors = FALSE when loading the corpus. This ensures the reviews are character classes, not factors. This may seem mundane but the point of this chapter is to get you doing an entire workflow from start to finish so let’s begin with data ingestion!</p>
+<p>Next you simply apply str() to review the data frame’s structure. It is a convenient function for compactly displaying initial values and class types for vectors.</p>
+<p>Lastly you will apply dim() to print the dimensions of the data frame. For a data frame, your console will print the number of rows and the number of columns.</p>
+<p>Other functions like head(), tail() or summary() are often used for data exploration but in this case we keep the examination short so you can get to the fun sentiment analysis!</p>
+<p>INSTRUCTIONS 100XP INSTRUCTIONS 100XP The Boston property rental reviews are stored in a CSV file located by the predefined variable bos_reviews_file.</p>
+<p>Load the property reviews from bos_reviews_file with read.csv(). Call the object bos_reviews. Be sure to pass in the parameter stringsAsFactors = FALSE so the comments are not unique factors. Examine the structure of the data frame using the base str() function applied to bos_reviews. Find out how many reviews you are working with by calling dim() on the bos_reviews.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBib3NfcmV2aWV3c19maWxlIGhhcyBiZWVuIHByZS1kZWZpbmVkXG5ib3NfcmV2aWV3c19maWxlXG5cbiMgbG9hZCByYXcgdGV4dFxuYm9zX3Jldmlld3MgPC0gcmVhZC5jc3YoYm9zX3Jldmlld3NfZmlsZSwgc3RyaW5nc0FzRmFjdG9ycyA9IEZBTFNFKVxuXG4jIFN0cnVjdHVyZVxuc3RyKGJvc19yZXZpZXdzKVxuXG4jIERpbWVuc2lvbnNcbmRpbShib3NfcmV2aWV3cylcbmBgYCJ9 -->
+<pre class="r"><code># bos_reviews_file has been pre-defined
+bos_reviews_file
+
+# load raw text
+bos_reviews &lt;- read.csv(bos_reviews_file, stringsAsFactors = FALSE)
+
+# Structure
+str(bos_reviews)
+
+# Dimensions
+dim(bos_reviews)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<blockquote>
+<p>bos_reviews_file [1] “/usr/local/share/datasets/bos_reviews.csv”</p>
+</blockquote>
+<blockquote>
+<p>str(bos_reviews) ‘data.frame’: 1000 obs. of 2 variables: $ id : int 1 2 3 4 5 6 7 8 9 10 … $ comments: chr “My daughter and I had a wonderful stay with Maura. She kept in close touch with us throughout the day as we wer”| <strong>truncated</strong> “We stay at Elizabeth’s place for 3 nights in October 2014.apartment is really a great place to stay. ”| <strong>truncated</strong> “If you’re staying in South Boston, this is a terrific place to camp out. The apartment and bedroom are lovely,”| <strong>truncated</strong> “Derian and Brian were great and prompt with their communications with us. The room was as described; it was a s”| <strong>truncated</strong> …</p>
+<h1 id="dimensions">Dimensions</h1>
+<p>dim(bos_reviews) [1] 1000 2</p>
+</blockquote>
+</div>
+<div id="quickly-examine-the-basic-polarity" class="section level3">
+<h3>Quickly examine the basic polarity</h3>
+<p>When starting a sentiment project, sometimes a quick polarity() will help you set expectations or learn about the problem. In this exercise (to save time), you will apply polarity() to a portion of the comments vector while the larger polarity object is loaded in the background.</p>
+<p>Using a kernel density plot you should notice the reviews do not center on 0. Often there are two causes for this sentiment “grade inflation.” First, social norms may lead respondents to be pleasant instead of neutral. This, of course, is channel specific. Particularly snarky channels like e-sports or social media posts may skew negative leading to “deflation.” These channels have different expectations. A second possible reason could be “feature based sentiment”. In some reviews an author may write “the bed was comfortable and nice but the kitchen was dirty and gross.” The sentiment of this type of review encompasses multiple features simultaneously and therefore could make an average score skewed.</p>
+<p>In a subsequent exercise you will adjust this “grade inflation” but here explore the reviews without any change.</p>
+<p>INSTRUCTIONS 100XP INSTRUCTIONS 100XP Create practice_pol using polarity() on the first six reviews as in bos_reviews<span class="math inline">\(comments[1:6] Review the returned polarity object by calling practice_pol. Call summary() on practice_pol\)</span>all$polarity - this will access the overall polarity for all 6 comments. We’ve also loaded a larger polarity object for all 1000 comments. This new object is called bos_pol. Now apply summary() to the correct list element that returns all polarity scores of bos_pol. The sample code has a barplot and kernel density plot almost ready to print. However, you must enter the data frame representing all scores. Hint: in the previous step, polarity represents a column of this data frame.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBQcmFjdGljZSBhcHBseSBwb2xhcml0eSB0byBmaXJzdCA2IHJldmlld3NcbnByYWN0aWNlX3BvbCA8LSBwb2xhcml0eShib3NfcmV2aWV3cyRjb21tZW50c1sxOjZdKVxuXG4jIFJldmlldyB0aGUgb2JqZWN0XG5wcmFjdGljZV9wb2xcblxuIyBDaGVjayBvdXQgdGhlIHByYWN0aWNlIHBvbGFyaXR5XG5zdW1tYXJ5KHByYWN0aWNlX3BvbCRhbGwkcG9sYXJpdHkpXG5cbiMgU3VtbWFyeSBmb3IgYWxsIHJldmlld3NcbnN1bW1hcnkoYm9zX3BvbCRhbGwkcG9sYXJpdHkpXG5cbiMgUGxvdCBpdFxuZ2dwbG90KGJvc19wb2wkYWxsLCBhZXMoeCA9IHBvbGFyaXR5LCB5ID0gLi5kZW5zaXR5Li4pKSArXG4gIHRoZW1lX2dkb2NzKCkgKyBcbiAgZ2VvbV9oaXN0b2dyYW0oYmlud2lkdGggPSAwLjI1LCBmaWxsID0gXCIjYmFkYTU1XCIsIGNvbG91ciA9IFwiZ3JleTYwXCIpICtcbiAgZ2VvbV9kZW5zaXR5KHNpemUgPSAwLjc1KVxuYGBgIn0= -->
+<pre class="r"><code># Practice apply polarity to first 6 reviews
+practice_pol &lt;- polarity(bos_reviews$comments[1:6])
+
+# Review the object
+practice_pol
+
+# Check out the practice polarity
+summary(practice_pol$all$polarity)
+
+# Summary for all reviews
+summary(bos_pol$all$polarity)
+
+# Plot it
+ggplot(bos_pol$all, aes(x = polarity, y = ..density..)) +
+  theme_gdocs() + 
+  geom_histogram(binwidth = 0.25, fill = &quot;#bada55&quot;, colour = &quot;grey60&quot;) +
+  geom_density(size = 0.75)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><a href="%22download%20(12).png%22">resulted plot</a></p>
+</div>
+<div id="create-a-polarity-based-corpora" class="section level3">
+<h3>Create a Polarity Based Corpora</h3>
+<p>In this exercise you will perform Step 3 of the text mining workflow. Although qdap isn’t a tidy package you will mutate() a new column based on the returned polarity list representing all polarity (that’s a hint BTW) scores. In chapter 3 we used a custom function pol_subsections which uses only base R declarations. However, in following the tidy principles this exercise uses filter() then introduces pull(). The pull() function works like works like [[ to extract a single variable.</p>
+<p>Once segregated you collapse all the positive and negative comments into two larger documents representing all words among the positive and negative rental reviews.</p>
+<p>Lastly, you will create a Term Frequency Inverse Document Frequency (TFIDF) weighted Term Document Matrix (TDM). Since this exercise code starts with a tidy structure, some of the functions borrowed from tm are used along with the %&gt;% operator to keep the style consistent. If the basics of the tm package aren’t familiar check out the Text Mining: Bag of Words course. Instead of counting the number of times a word is used (frequency), the values in the TDM are penalized for over used terms, which helps reduce non-informative words.</p>
+<p>INSTRUCTIONS 100XP INSTRUCTIONS 100XP Review the polarity group with bos_pol<span class="math inline">\(group. Note the average polarity scores are not centered at 0. Forward bos_reviews to mutate() and create a new column polarity equal to bos_pol\)</span>all$polarity. Forward bos_reviews_with_pol to filter() with polarity &gt; 0 and then pull() the comments column. The new object, pos_comments, contains only positive comments. Now create neg_comments following the previous workflow but change polarity &lt; 0. Don’t forget to pull() the comments column. Using paste() with pos_comments and the additional parameter collapse = &quot; &quot; will collapse all the positive reviews into a single document. Now make neg_terms as a single document again using paste() on neg_comments with collapse = &quot; “. Create all_terms by concatenating pos_terms and neg_terms Forward all_terms to VectorSource() and VCorpus(). Pass all_corpus to TermDocumentMatrix() with control = list(weighting = weightTfIdf, removePunctuation = TRUE, stopwords = stopwords(kind = ‘en’))). Review the TDM by calling all_tdm.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBSZXZpZXdcbmJvc19wb2wkZ3JvdXBcblxuIyBBZGQgcG9sYXJpdHkgY29sdW1uXG5ib3NfcmV2aWV3c193aXRoX3BvbCA8LSBib3NfcmV2aWV3cyAlPiVcbiAgbXV0YXRlKHBvbGFyaXR5ID0gYm9zX3BvbCRhbGwkcG9sYXJpdHkpXG5cbiMgU3Vic2V0IHBvc2l0aXZlIGNvbW1lbnRzIFxucG9zX2NvbW1lbnRzIDwtIGJvc19yZXZpZXdzX3dpdGhfcG9sICU+JVxuICBmaWx0ZXIocG9sYXJpdHkgPiAwKSAlPiVcbiAgcHVsbChjb21tZW50cylcblxuIyBTdWJzZXQgbmVnYXRpdmUgY29tbWVudHNcbm5lZ19jb21tZW50cyA8LSBib3NfcmV2aWV3c193aXRoX3BvbCAlPiVcbiAgZmlsdGVyKHBvbGFyaXR5IDwgMCkgJT4lXG4gIHB1bGwoY29tbWVudHMpXG5cbiMgUGFzdGUgYW5kIGNvbGxhcHNlIHRoZSBwb3NpdGl2ZSBjb21tZW50c1xucG9zX3Rlcm1zIDwtIHBhc3RlKHBvc19jb21tZW50cywgY29sbGFwc2UgPSBcIiBcIilcblxuIyBQYXN0ZSBhbmQgY29sbGFwc2UgdGhlIG5lZ2F0aXZlIGNvbW1lbnRzXG5uZWdfdGVybXMgPC0gcGFzdGUobmVnX2NvbW1lbnRzLCBjb2xsYXBzZSA9IFwiIFwiKVxuXG4jIENvbmNhdGVuYXRlIHRoZSB0ZXJtc1xuYWxsX3Rlcm1zIDwtIGMocG9zX3Rlcm1zLCBuZWdfdGVybXMpXG5cbiMgUGlwZSBhIFZlY3RvclNvdXJjZSBDb3JwdXNcbmFsbF9jb3JwdXMgPC0gYWxsX3Rlcm1zICU+JSBcbiAgVmVjdG9yU291cmNlKCkgJT4lIFxuICBWQ29ycHVzKClcblxuIyBTaW1wbGUgVEZJREYgVERNXG5hbGxfdGRtIDwtIFRlcm1Eb2N1bWVudE1hdHJpeChcbiAgYWxsX2NvcnB1cywgXG4gIGNvbnRyb2wgPSBsaXN0KFxuICAgIHdlaWdodGluZyA9IHdlaWdodFRmSWRmLCBcbiAgICByZW1vdmVQdW5jdHVhdGlvbiA9IFRSVUUsIFxuICAgIHN0b3B3b3JkcyA9IHN0b3B3b3JkcyhraW5kID0gXCJlblwiKVxuICApXG4pXG5cbiMgRXhhbWluZSB0aGUgVERNXG5hbGxfdGRtXG5gYGAifQ== -->
+<pre class="r"><code># Review
+bos_pol$group
+
+# Add polarity column
+bos_reviews_with_pol &lt;- bos_reviews %&gt;%
+  mutate(polarity = bos_pol$all$polarity)
+
+# Subset positive comments 
+pos_comments &lt;- bos_reviews_with_pol %&gt;%
+  filter(polarity &gt; 0) %&gt;%
+  pull(comments)
+
+# Subset negative comments
+neg_comments &lt;- bos_reviews_with_pol %&gt;%
+  filter(polarity &lt; 0) %&gt;%
+  pull(comments)
+
+# Paste and collapse the positive comments
+pos_terms &lt;- paste(pos_comments, collapse = &quot; &quot;)
+
+# Paste and collapse the negative comments
+neg_terms &lt;- paste(neg_comments, collapse = &quot; &quot;)
+
+# Concatenate the terms
+all_terms &lt;- c(pos_terms, neg_terms)
+
+# Pipe a VectorSource Corpus
+all_corpus &lt;- all_terms %&gt;% 
+  VectorSource() %&gt;% 
+  VCorpus()
+
+# Simple TFIDF TDM
+all_tdm &lt;- TermDocumentMatrix(
+  all_corpus, 
+  control = list(
+    weighting = weightTfIdf, 
+    removePunctuation = TRUE, 
+    stopwords = stopwords(kind = &quot;en&quot;)
+  )
+)
+
+# Examine the TDM
+all_tdm</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<blockquote>
+<p>bos_pol$group all total.sentences total.words ave.polarity sd.polarity stan.mean.polarity 1 all 1000 70481 0.9021735 0.5015318 1.798836</p>
+</blockquote>
+<blockquote>
+<p>all_tdm &lt;<TermDocumentMatrix (terms: 4969, documents: 2)>&gt; Non-/sparse entries: 4352/5586 Sparsity : 56% Maximal term length: 186 Weighting : term frequency - inverse document frequency (normalized) (tf-idf)</p>
+</blockquote>
+</div>
+<div id="create-a-tidy-text-tibble" class="section level3">
+<h3>Create a Tidy Text Tibble!</h3>
+<p>Since you learned about tidy principles this code helps you organize your data into a tibble so you can then work within the tidyverse!</p>
+<p>Previously you learned that applying tidy() on a TermDocumentMatrix() object will convert the TDM to a tibble. In this exercise you will create the word data directly from the review column called comments.</p>
+<p>First you use unnest_tokens() to make the text lowercase and tokenize the reviews into single words.</p>
+<p>Sometimes it is useful to capture the original word order within each group of a corpus. To do so, use mutate(). In mutate() you will use seq_along() to create a sequence of numbers from 1 to the length of the object. This will capture the word order as it was written.</p>
+<p>In the tm package, you would use removeWords() to remove stopwords. In the tidyverse you first need to load the stop words lexicon and then apply an anti_join() between the tidy text data frame and the stopwords.</p>
+<p>INSTRUCTIONS 100XP INSTRUCTIONS 100XP Create tidy_reviews by piping (%&gt;%) the original reviews object bos_reviews to the unnest_tokens() function. Pass in a new column name, word and declare the comments column. Remember in the tidyverse you don’t need a $ or quotes. Create a new variable the tidy way! Rewrite tidy_reviews by piping tidy_reviews to group_by with the column id. Then %&gt;% it again to mutate(). Within mutate create a new variable original_word_order equal to seq_along(word). Print out the tibble, tidy_reviews. Load the premade “SMART” stopwords to your R session with data(“stop_words”). Overwrite tidy_reviews by passing the original tidy_reviews to anti_join() with a %&gt;%. Within anti_join() pass in the predetermined stop_words lexicon.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBWZWN0b3IgdG8gdGliYmxlXG50aWR5X3Jldmlld3MgPC0gYm9zX3Jldmlld3MgJT4lIFxuICB1bm5lc3RfdG9rZW5zKHdvcmQsIGNvbW1lbnRzKVxuXG4jIEdyb3VwIGJ5IGFuZCBtdXRhdGVcbnRpZHlfcmV2aWV3cyA8LSB0aWR5X3Jldmlld3MgJT4lIFxuICBncm91cF9ieShpZCkgJT4lIFxuICBtdXRhdGUob3JpZ2luYWxfd29yZF9vcmRlciA9IHNlcV9hbG9uZyh3b3JkKSlcblxuIyBRdWljayByZXZpZXdcbnRpZHlfcmV2aWV3c1xuXG4jIExvYWQgc3RvcHdvcmRzXG5kYXRhKFwic3RvcF93b3Jkc1wiKVxuXG4jIFBlcmZvcm0gYW50aS1qb2luXG50aWR5X3Jldmlld3Nfd2l0aG91dF9zdG9wd29yZHMgPC0gdGlkeV9yZXZpZXdzICU+JSBcbiAgYW50aV9qb2luKHN0b3Bfd29yZHMpXG5gYGAifQ== -->
+<pre class="r"><code># Vector to tibble
+tidy_reviews &lt;- bos_reviews %&gt;% 
+  unnest_tokens(word, comments)
+
+# Group by and mutate
+tidy_reviews &lt;- tidy_reviews %&gt;% 
+  group_by(id) %&gt;% 
+  mutate(original_word_order = seq_along(word))
+
+# Quick review
+tidy_reviews
+
+# Load stopwords
+data(&quot;stop_words&quot;)
+
+# Perform anti-join
+tidy_reviews_without_stopwords &lt;- tidy_reviews %&gt;% 
+  anti_join(stop_words)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="compare-tidy-sentiment-to-qdap-polarity" class="section level3">
+<h3>Compare Tidy Sentiment to Qdap Polarity</h3>
+<p>Here you will learn that differing sentiment methods will cause different results. Often you will simply need to have results align directionally although the specifics may be different. In the last exercise you created tidy_reviews which is a data frame of rental reviews without stopwords. Earlier in the chapter, you calculated and plotted qdap’s basic polarity() function. This showed you the reviews tend to be positive.</p>
+<p>Now let’s perform a similar analysis the tidytext way! Recall from an earlier chapter you will perform an inner_join() followed by count() and then a spread().</p>
+<p>Lastly, you will create a new column using mutate() and passing in positive - negative.</p>
+<p>INSTRUCTIONS 100XP Using the get_sentiments() function with “bing” will automatically filter the tidytext sentiments data. Call the lexicon bing. Since you already wrote this code in Chapter 2 simply enter in the lexicon object, bing, the new column name (polarity) and its calculation within mutate(). Lastly call summary() on the new object pos_neg. Although the values are different, are most rental reviews similarly positive compared to using polarity()? Do you see “grade inflation?”</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBHZXQgdGhlIGNvcnJlY3QgbGV4aWNvblxuYmluZyA8LSBnZXRfc2VudGltZW50cyhcImJpbmdcIilcblxuIyBDYWxjdWxhdGUgcG9sYXJpdHkgZm9yIGVhY2ggcmV2aWV3XG5wb3NfbmVnIDwtIHRpZHlfcmV2aWV3cyAlPiUgXG4gIGlubmVyX2pvaW4oYmluZykgJT4lXG4gIGNvdW50KHNlbnRpbWVudCkgJT4lXG4gIHNwcmVhZChzZW50aW1lbnQsIG4sIGZpbGwgPSAwKSAlPiUgXG4gIG11dGF0ZShwb2xhcml0eSA9IHBvc2l0aXZlIC0gbmVnYXRpdmUpXG5cbiMgQ2hlY2sgb3V0Y29tZVxuc3VtbWFyeShwb3NfbmVnKVxuYGBgIn0= -->
+<pre class="r"><code># Get the correct lexicon
+bing &lt;- get_sentiments(&quot;bing&quot;)
+
+# Calculate polarity for each review
+pos_neg &lt;- tidy_reviews %&gt;% 
+  inner_join(bing) %&gt;%
+  count(sentiment) %&gt;%
+  spread(sentiment, n, fill = 0) %&gt;% 
+  mutate(polarity = positive - negative)
+
+# Check outcome
+summary(pos_neg)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<blockquote>
+<h1 id="check-outcome">Check outcome</h1>
+<p>summary(pos_neg) id negative positive polarity<br />
+Min. : 1.0 Min. : 0.0000 Min. : 0.00 Min. :-11.000<br />
+1st Qu.: 253.0 1st Qu.: 0.0000 1st Qu.: 3.00 1st Qu.: 2.000<br />
+Median : 498.0 Median : 0.0000 Median : 4.00 Median : 4.000<br />
+Mean : 500.4 Mean : 0.6139 Mean : 4.97 Mean : 4.356<br />
+3rd Qu.: 748.0 3rd Qu.: 1.0000 3rd Qu.: 7.00 3rd Qu.: 6.000<br />
+Max. :1000.0 Max. :14.0000 Max. :28.00 Max. : 26.000</p>
+</blockquote>
+</div>
+<div id="assessing-author-effort" class="section level3">
+<h3>Assessing author effort</h3>
+<p>Often authors will use more words when they are more passionate. For example, a mad airline passenger will leave a longer review the worse (the perceived) service. Conversely a less impassioned passenger may not feel compelled to spend a lot of time writing a review. Lengthy reviews may inflate overall sentiment since the reviews will inherently contain more positive or negative language as the review lengthens. This coding exercise helps to examine effort and sentiment.</p>
+<p>In this exercise you will visualize the relationship between effort and sentiment. Recall your rental review tibble contains an id and that a word is represented in each row. As a result a simple count() of the id will capture the number of words used in each review. Then you will join this summary to the positive and negative data. Ultimately you will create a scatter plot that will visualize author review length and its relationship to polarity.</p>
+<p>INSTRUCTIONS 100XP INSTRUCTIONS 100XP tidy_reviews and pos_neg from the previous exercises are available in your workspace.</p>
+<p>Create effort using tidy_reviews and piping %&gt;% the object to count(). Within count() pass in the vector id. Perform an inner_join() using pos_neg and effort. Call the object pos_neg_with_effort. Review pos_neg_with_effort. Create pos_neg_pol by passing pos_neg_with_effort to mutate(). Define pol with an ifelse() function. This function will label items as “Positive” if polarity &gt;= 0 else it will label them as “Negative”. Construct a visual with aes as polarity, n, color = pol. After the example code layer containing geom_point(alpha = 0.25) add another layer using geom_smooth to aid you in seeing the pattern.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<p>```r # Review tidy_reviews tidy_reviews</p>
+<p># Review pos_neg pos_neg</p>
+<p># Create effort effort &lt;- tidy_reviews %&gt;% count(id)</p>
+<p># Inner join pos_neg_with_effort &lt;- inner_join(pos_neg, effort)</p>
+<p># Review pos_neg_with_effort</p>
+<p># Add pol pos_neg_pol &lt;- pos_neg_with_effort %&gt;% mutate( pol = ifelse( polarity &gt;= 0, “Positive”, “Negative” ) )</p>
+<p># Plot ggplot( pos_neg_pol, aes(polarity, n, color = pol) ) + geom_point(alpha = 0.25) + geom_smooth(method = “lm”, se = FALSE) + theme_gdocs() + ggtitle(“Relationship between word effort &amp; polarity”)</p>
+<p>```</p>
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><a href="%22download%20(13).png%22">resulted plot</a></p>
+</div>
+<div id="comparison-cloud" class="section level3">
+<h3>Comparison Cloud</h3>
+<p>This exercise will create a common visual for you to understand term frequency. Specifically, you will review the most frequent terms from among the positive and negative collapsed documents. Recall the TermDocumentMatrix all_tdm you created earlier. Instead of 1000 rental reviews the matrix contains 2 documents containing all reviews separated by the polarity() score.</p>
+<p>It’s usually easier to change the TDM to a matrix. From there you simply rename the columns. Remember that the colnames() function is called on the left side of the assignment operator as shown below.</p>
+<p>colnames(OBJECT) &lt;- c(“COLUMN_NAME1”, “COLUMN_NAME2”) Once done, you will reorder the matrix to see the most positive and negative words. Review these terms so you can answer the conclusion exercises!</p>
+<p>Lastly, you’ll visualize the terms using comparison.cloud().</p>
+<p>INSTRUCTIONS 100XP INSTRUCTIONS 100XP Change the pre-loaded all_tdm to a matrix called all_tdm_m using as.matrix(). Use colnames() on all_tdm_m to declare c(“positive”, “negative”). Apply order() to all_tdm_m[,1] and set decreasing = TRUE. Review the top 10 terms of the reordered TDM using pipe (%&gt;%) then head() with n = 10. Repeat the previous two steps with negative comments. Now you will order() by the second column, all_tdm_m[,2] and use decreasing = TRUE. Review the 10 most negative terms indexing all_tdm_m by order_by_neg. Pipe this to head() with n = 10. Call comparison.cloud() on all_tdm_m. Specify max.words equal to 20 and colors equal to “darkgreen” and “darkred”.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBNYXRyaXhcbmFsbF90ZG1fbSA8LSBhcy5tYXRyaXgoYWxsX3RkbSlcblxuIyBDb2x1bW4gbmFtZXNcbmNvbG5hbWVzKGFsbF90ZG1fbSkgPC0gYyhcInBvc2l0aXZlXCIsIFwibmVnYXRpdmVcIilcblxuIyBUb3AgcG9zIHdvcmRzXG5vcmRlcl9ieV9wb3MgPC0gb3JkZXIoYWxsX3RkbV9tWywgMV0sIGRlY3JlYXNpbmcgPSBUUlVFKVxuXG4jIFJldmlldyB0b3AgMTAgcG9zIHdvcmRzXG5hbGxfdGRtX21bb3JkZXJfYnlfcG9zLCBdICU+JSBoZWFkKDEwKVxuXG4jIFRvcCBuZWcgd29yZHNcbm9yZGVyX2J5X25lZyA8LSBvcmRlcihhbGxfdGRtX21bLCAyXSwgZGVjcmVhc2luZyA9IFRSVUUpXG5cbiMgUmV2aWV3IHRvcCAxMCBuZWcgd29yZHNcbmFsbF90ZG1fbVtvcmRlcl9ieV9uZWcsIF0gJT4lIGhlYWQoMTApXG5cbiMgQ29tcGFyaXNvbiBjbG91ZFxuY29tcGFyaXNvbi5jbG91ZChcbiAgYWxsX3RkbV9tLCBcbiAgbWF4LndvcmRzID0gMjAsIFxuICBjb2xvcnMgPSBjKFwiZGFya2dyZWVuXCIsIFwiZGFya3JlZFwiKVxuKVxuXG5gYGAifQ== -->
+<pre class="r"><code># Matrix
+all_tdm_m &lt;- as.matrix(all_tdm)
+
+# Column names
+colnames(all_tdm_m) &lt;- c(&quot;positive&quot;, &quot;negative&quot;)
+
+# Top pos words
+order_by_pos &lt;- order(all_tdm_m[, 1], decreasing = TRUE)
+
+# Review top 10 pos words
+all_tdm_m[order_by_pos, ] %&gt;% head(10)
+
+# Top neg words
+order_by_neg &lt;- order(all_tdm_m[, 2], decreasing = TRUE)
+
+# Review top 10 neg words
+all_tdm_m[order_by_neg, ] %&gt;% head(10)
+
+# Comparison cloud
+comparison.cloud(
+  all_tdm_m, 
+  max.words = 20, 
+  colors = c(&quot;darkgreen&quot;, &quot;darkred&quot;)
+)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><a href="%22download%20(14).png%22">resulted plot</a></p>
+</div>
+<div id="scaled-comparison-cloud" class="section level3">
+<h3>Scaled Comparison Cloud</h3>
+<p>Recall the “grade inflation” of polarity scores on the rental reviews? Sometimes, another way to uncover an insight is to scale the scores back to 0 then perform the corpus subset. This means some of the previously positive comments may become part of the negative subsection or vice versa since the mean is changed to 0. This exercise will help you scale the scores and then re-plot the comparison.cloud(). Removing the “grade inflation” can help provide additional insights.</p>
+<p>Previously you applied polarity() to the bos_reviews$comments and created a comparison.cloud(). In this exercise you will scale() the outcome before creating the comparison.cloud(). See if this shows something different in the visual!</p>
+<p>Since this is largely a review exercise, a lot of the code exists, just fill in the correct objects and parameters!</p>
+<p>INSTRUCTIONS 100XP INSTRUCTIONS 100XP Review a section of the pre-loaded bos_pol<span class="math inline">\(all while indexing [1:6,1:3]. Add a new column to called scaled_polarity with scale() applied to the polarity score column bos_pol\)</span>all<span class="math inline">\(polarity. For positive comments, subset() where the new column bos_reviews\)</span>scaled_polarity is greater than (&gt;) zero. For negative comments, subset() where the new column bos_reviews$scaled_polarity is less than (&lt;) zero. Create pos_terms using paste() on pos_comments. Now create neg_terms with paste() on neg_comments. Organize the collapsed documents, pos_terms and neg_terms documents into a single corpus called all_terms. Following the usual tm workflow by nesting VectorSource() inside VCorpus() applied to all_terms. Make the TermDocumentMatrix() using the all_corpus object. Note this is a TfIdf weighted TDM with basic cleaning functions. Change all_tdm to all_tdm_m using as.matrix(). Then rename the columns in the existing code to “positive” and “negative”. Finally! apply comparison.cloud() to the matrix object all_tdm_m. Take notice of the new most frequent negative words. Maybe it will uncover an unknown insight!</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBSZXZpZXdcbmJvc19wb2wkYWxsWzE6NiwxOjNdXG5cbiMgU2NhbGUvY2VudGVyICYgYXBwZW5kXG5ib3NfcmV2aWV3cyRzY2FsZWRfcG9sYXJpdHkgPC0gc2NhbGUoYm9zX3BvbCRhbGwkcG9sYXJpdHkpXG5cbiMgU3Vic2V0IHBvc2l0aXZlIGNvbW1lbnRzXG5wb3NfY29tbWVudHMgPC0gc3Vic2V0KGJvc19yZXZpZXdzJGNvbW1lbnRzLCBib3NfcmV2aWV3cyRzY2FsZWRfcG9sYXJpdHkgPiAwKVxuXG4jIFN1YnNldCBuZWdhdGl2ZSBjb21tZW50c1xubmVnX2NvbW1lbnRzIDwtIHN1YnNldChib3NfcmV2aWV3cyRjb21tZW50cywgYm9zX3Jldmlld3Mkc2NhbGVkX3BvbGFyaXR5IDwgMClcblxuIyBQYXN0ZSBhbmQgY29sbGFwc2UgdGhlIHBvc2l0aXZlIGNvbW1lbnRzXG5wb3NfdGVybXMgPC0gcGFzdGUocG9zX2NvbW1lbnRzLCBjb2xsYXBzZSA9IFwiIFwiKVxuXG4jIFBhc3RlIGFuZCBjb2xsYXBzZSB0aGUgbmVnYXRpdmUgY29tbWVudHNcbm5lZ190ZXJtcyA8LSBwYXN0ZShuZWdfY29tbWVudHMsIGNvbGxhcHNlID0gXCIgXCIpXG5cbiMgT3JnYW5pemVcbmFsbF90ZXJtcyA8LSBjKHBvc190ZXJtcyxuZWdfdGVybXMpXG5cbiMgVkNvcnB1c1xuYWxsX2NvcnB1cyA8LSBWQ29ycHVzKFZlY3RvclNvdXJjZShhbGxfdGVybXMpKVxuXG4jIFRETVxuYWxsX3RkbSA8LSBUZXJtRG9jdW1lbnRNYXRyaXgoXG4gIGFsbF9jb3JwdXMsIFxuICBjb250cm9sID0gbGlzdChcbiAgICB3ZWlnaHRpbmcgPSB3ZWlnaHRUZklkZixcbiAgICByZW1vdmVQdW5jdHVhdGlvbiA9IFRSVUUsIFxuICAgIHN0b3B3b3JkcyA9IHN0b3B3b3JkcyhraW5kID0gXCJlblwiKVxuICApXG4pXG5cbiMgQ29sdW1uIG5hbWVzXG5hbGxfdGRtX20gPC0gYXMubWF0cml4KGFsbF90ZG0pXG5jb2xuYW1lcyhhbGxfdGRtX20pIDwtIGMoXCJwb3NpdGl2ZVwiLCBcIm5lZ2F0aXZlXCIpXG5cbiMgQ29tcGFyaXNvbiBjbG91ZFxuY29tcGFyaXNvbi5jbG91ZChcbiAgYWxsX3RkbV9tLCBcbiAgbWF4LndvcmRzID0gMTAwLFxuICBjb2xvcnMgPSBjKFwiZGFya2dyZWVuXCIsIFwiZGFya3JlZFwiKVxuKVxuYGBgIn0= -->
+<pre class="r"><code># Review
+bos_pol$all[1:6,1:3]
+
+# Scale/center &amp; append
+bos_reviews$scaled_polarity &lt;- scale(bos_pol$all$polarity)
+
+# Subset positive comments
+pos_comments &lt;- subset(bos_reviews$comments, bos_reviews$scaled_polarity &gt; 0)
+
+# Subset negative comments
+neg_comments &lt;- subset(bos_reviews$comments, bos_reviews$scaled_polarity &lt; 0)
+
+# Paste and collapse the positive comments
+pos_terms &lt;- paste(pos_comments, collapse = &quot; &quot;)
+
+# Paste and collapse the negative comments
+neg_terms &lt;- paste(neg_comments, collapse = &quot; &quot;)
+
+# Organize
+all_terms &lt;- c(pos_terms,neg_terms)
+
+# VCorpus
+all_corpus &lt;- VCorpus(VectorSource(all_terms))
+
+# TDM
+all_tdm &lt;- TermDocumentMatrix(
+  all_corpus, 
+  control = list(
+    weighting = weightTfIdf,
+    removePunctuation = TRUE, 
+    stopwords = stopwords(kind = &quot;en&quot;)
+  )
+)
+
+# Column names
+all_tdm_m &lt;- as.matrix(all_tdm)
+colnames(all_tdm_m) &lt;- c(&quot;positive&quot;, &quot;negative&quot;)
+
+# Comparison cloud
+comparison.cloud(
+  all_tdm_m, 
+  max.words = 100,
+  colors = c(&quot;darkgreen&quot;, &quot;darkred&quot;)
+)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><a href="%22download%20(15).png%22">resulted plot</a></p>
 <!-- rnb-text-end -->
 </div>
+</div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIyBDaGFwdGVyIDMgVmlzdWFsaXphdGlvbg0KDQpJcyB5b3VyIHByb3BlcnR5IGEgZ29vZCByZW50YWw/IFdoYXQgZG8gcGVvcGxlIGxvb2sgZm9yIGluIGEgZ29vZCByZW50YWw/DQoNCg0KDQpbcmVzdWx0ZWQgcGxvdF0oImRvd25sb2FkICgxMSkucG5nIikNCg0KDQoNCg0KDQoNCg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIyBDaGFwdGVyIDMgVmlzdWFsaXphdGlvbg0KDQpJcyB5b3VyIHByb3BlcnR5IGEgZ29vZCByZW50YWw/IFdoYXQgZG8gcGVvcGxlIGxvb2sgZm9yIGluIGEgZ29vZCByZW50YWw/DQoNCiMjIyBTdGVwIDE6IFdoYXQgZG8geW91IHdhbnQgdG8ga25vdz8NCg0KVGhyb3VnaG91dCB0aGlzIGNoYXB0ZXIgeW91IHdpbGwgYW5hbHlzZSB0aGUgdGV4dCBvZiBhIGNvcnB1cyBvZiBBaXJibmIgaG91c2luZyByZW50YWwgcmV2aWV3cy4gV2hpY2ggb2YgdGhlIGZvbGxvd2luZyBxdWVzdGlvbnMgY2FuIHlvdSBhbnN3ZXIgdXNpbmcgYSBzZW50aW1lbnQgYW5hbHlzaXMgb2YgdGhlc2UgcmV2aWV3cz8NCg0KQU5TV0VSIFRIRSBRVUVTVElPTg0KNTBYUA0KUG9zc2libGUgQW5zd2Vycw0KV2hhdCBkb2N1bWVudCBjbHVzdGVycyBleGlzdCBpbiB0aGUgcmV2aWV3cz8NCnByZXNzIDENCkhvdyBtYW55IHdvcmRzIGFyZSBhc3NvY2lhdGVkIHdpdGggcmVudGFsIHJldmlld3M/DQpwcmVzcyAyDQotLT4gY29ycmVjdDogV2hhdCBwcm9wZXJ0eSBxdWFsaXRpZXMgYXJlIGxpc3RlZCBpbiBwb3NpdGl2ZSBvciBuZWdhdGl2ZSBjb21tZW50cz8NCnByZXNzIDMNCldoYXQgbmFtZWQgZW50aXRpZXMgYXJlIGluIHRoZSBkb2N1bWVudHM/DQoNCg0KDQojIyMgU3RlcCAyOiBJZGVudGlmeSBUZXh0IFNvdXJjZXMNCg0KSW4gdGhpcyBzaG9ydCBleGVyY2lzZSB5b3Ugd2lsbCBsb2FkIGFuZCBleGFtaW5lIGEgc21hbGwgY29ycHVzIG9mIHByb3BlcnR5IHJlbnRhbCByZXZpZXdzIGZyb20gYXJvdW5kIEJvc3Rvbi4gSG9wZWZ1bGx5IHlvdSBhbHJlYWR5IGtub3cgcmVhZC5jc3YoKSB3aGljaCBlbmFibGVzIHlvdSB0byBsb2FkIGEgY29tbWEgc2VwYXJhdGVkIGZpbGUuIEluIHRoaXMgZXhlcmNpc2UgeW91IHdpbGwgYWxzbyBuZWVkIHRvIHNwZWNpZnkgc3RyaW5nc0FzRmFjdG9ycyA9IEZBTFNFIHdoZW4gbG9hZGluZyB0aGUgY29ycHVzLiBUaGlzIGVuc3VyZXMgdGhlIHJldmlld3MgYXJlIGNoYXJhY3RlciBjbGFzc2VzLCBub3QgZmFjdG9ycy4gVGhpcyBtYXkgc2VlbSBtdW5kYW5lIGJ1dCB0aGUgcG9pbnQgb2YgdGhpcyBjaGFwdGVyIGlzIHRvIGdldCB5b3UgZG9pbmcgYW4gZW50aXJlIHdvcmtmbG93IGZyb20gc3RhcnQgdG8gZmluaXNoIHNvIGxldCdzIGJlZ2luIHdpdGggZGF0YSBpbmdlc3Rpb24hDQoNCk5leHQgeW91IHNpbXBseSBhcHBseSBzdHIoKSB0byByZXZpZXcgdGhlIGRhdGEgZnJhbWUncyBzdHJ1Y3R1cmUuIEl0IGlzIGEgY29udmVuaWVudCBmdW5jdGlvbiBmb3IgY29tcGFjdGx5IGRpc3BsYXlpbmcgaW5pdGlhbCB2YWx1ZXMgYW5kIGNsYXNzIHR5cGVzIGZvciB2ZWN0b3JzLg0KDQpMYXN0bHkgeW91IHdpbGwgYXBwbHkgZGltKCkgdG8gcHJpbnQgdGhlIGRpbWVuc2lvbnMgb2YgdGhlIGRhdGEgZnJhbWUuIEZvciBhIGRhdGEgZnJhbWUsIHlvdXIgY29uc29sZSB3aWxsIHByaW50IHRoZSBudW1iZXIgb2Ygcm93cyBhbmQgdGhlIG51bWJlciBvZiBjb2x1bW5zLg0KDQpPdGhlciBmdW5jdGlvbnMgbGlrZSBoZWFkKCksIHRhaWwoKSBvciBzdW1tYXJ5KCkgYXJlIG9mdGVuIHVzZWQgZm9yIGRhdGEgZXhwbG9yYXRpb24gYnV0IGluIHRoaXMgY2FzZSB3ZSBrZWVwIHRoZSBleGFtaW5hdGlvbiBzaG9ydCBzbyB5b3UgY2FuIGdldCB0byB0aGUgZnVuIHNlbnRpbWVudCBhbmFseXNpcyENCg0KSU5TVFJVQ1RJT05TDQoxMDBYUA0KSU5TVFJVQ1RJT05TDQoxMDBYUA0KVGhlIEJvc3RvbiBwcm9wZXJ0eSByZW50YWwgcmV2aWV3cyBhcmUgc3RvcmVkIGluIGEgQ1NWIGZpbGUgbG9jYXRlZCBieSB0aGUgcHJlZGVmaW5lZCB2YXJpYWJsZSBib3NfcmV2aWV3c19maWxlLg0KDQpMb2FkIHRoZSBwcm9wZXJ0eSByZXZpZXdzIGZyb20gYm9zX3Jldmlld3NfZmlsZSB3aXRoIHJlYWQuY3N2KCkuIENhbGwgdGhlIG9iamVjdCBib3NfcmV2aWV3cy4gQmUgc3VyZSB0byBwYXNzIGluIHRoZSBwYXJhbWV0ZXIgc3RyaW5nc0FzRmFjdG9ycyA9IEZBTFNFIHNvIHRoZSBjb21tZW50cyBhcmUgbm90IHVuaXF1ZSBmYWN0b3JzLg0KRXhhbWluZSB0aGUgc3RydWN0dXJlIG9mIHRoZSBkYXRhIGZyYW1lIHVzaW5nIHRoZSBiYXNlIHN0cigpIGZ1bmN0aW9uIGFwcGxpZWQgdG8gYm9zX3Jldmlld3MuDQpGaW5kIG91dCBob3cgbWFueSByZXZpZXdzIHlvdSBhcmUgd29ya2luZyB3aXRoIGJ5IGNhbGxpbmcgZGltKCkgb24gdGhlIGJvc19yZXZpZXdzLg0KDQoNCg0KDQpgYGB7cn0NCiMgYm9zX3Jldmlld3NfZmlsZSBoYXMgYmVlbiBwcmUtZGVmaW5lZA0KYm9zX3Jldmlld3NfZmlsZQ0KDQojIGxvYWQgcmF3IHRleHQNCmJvc19yZXZpZXdzIDwtIHJlYWQuY3N2KGJvc19yZXZpZXdzX2ZpbGUsIHN0cmluZ3NBc0ZhY3RvcnMgPSBGQUxTRSkNCg0KIyBTdHJ1Y3R1cmUNCnN0cihib3NfcmV2aWV3cykNCg0KIyBEaW1lbnNpb25zDQpkaW0oYm9zX3Jldmlld3MpDQpgYGANCj4gYm9zX3Jldmlld3NfZmlsZQ0KWzFdICIvdXNyL2xvY2FsL3NoYXJlL2RhdGFzZXRzL2Jvc19yZXZpZXdzLmNzdiINCg0KPiBzdHIoYm9zX3Jldmlld3MpDQonZGF0YS5mcmFtZSc6CTEwMDAgb2JzLiBvZiAgMiB2YXJpYWJsZXM6DQogJCBpZCAgICAgIDogaW50ICAxIDIgMyA0IDUgNiA3IDggOSAxMCAuLi4NCiAkIGNvbW1lbnRzOiBjaHIgICJNeSBkYXVnaHRlciBhbmQgSSBoYWQgYSB3b25kZXJmdWwgc3RheSB3aXRoIE1hdXJhLiBTaGUga2VwdCBpbiBjbG9zZSB0b3VjaCB3aXRoIHVzIHRocm91Z2hvdXQgdGhlIGRheSBhcyB3ZSB3ZXIifCBfX3RydW5jYXRlZF9fICJXZSBzdGF5IGF0IEVsaXphYmV0aCdzIHBsYWNlIGZvciAzIG5pZ2h0cyBpbiBPY3RvYmVyIDIwMTQuXG5UaGUgYXBhcnRtZW50IGlzIHJlYWxseSBhIGdyZWF0IHBsYWNlIHRvIHN0YXkuIFxuTG8ifCBfX3RydW5jYXRlZF9fICJJZiB5b3UncmUgc3RheWluZyBpbiBTb3V0aCBCb3N0b24sIHRoaXMgaXMgYSB0ZXJyaWZpYyBwbGFjZSB0byBjYW1wIG91dC4gVGhlIGFwYXJ0bWVudCBhbmQgYmVkcm9vbSBhcmUgbG92ZWx5LCAifCBfX3RydW5jYXRlZF9fICJEZXJpYW4gYW5kIEJyaWFuIHdlcmUgZ3JlYXQgYW5kIHByb21wdCB3aXRoIHRoZWlyIGNvbW11bmljYXRpb25zIHdpdGggdXMuIFRoZSByb29tIHdhcyBhcyBkZXNjcmliZWQ7IGl0IHdhcyBhIHMifCBfX3RydW5jYXRlZF9fIC4uLg0KPiANCj4gIyBEaW1lbnNpb25zDQo+IGRpbShib3NfcmV2aWV3cykNClsxXSAxMDAwICAgIDINCg0KDQojIyMgUXVpY2tseSBleGFtaW5lIHRoZSBiYXNpYyBwb2xhcml0eQ0KDQpXaGVuIHN0YXJ0aW5nIGEgc2VudGltZW50IHByb2plY3QsIHNvbWV0aW1lcyBhIHF1aWNrIHBvbGFyaXR5KCkgd2lsbCBoZWxwIHlvdSBzZXQgZXhwZWN0YXRpb25zIG9yIGxlYXJuIGFib3V0IHRoZSBwcm9ibGVtLiBJbiB0aGlzIGV4ZXJjaXNlICh0byBzYXZlIHRpbWUpLCB5b3Ugd2lsbCBhcHBseSBwb2xhcml0eSgpIHRvIGEgcG9ydGlvbiBvZiB0aGUgY29tbWVudHMgdmVjdG9yIHdoaWxlIHRoZSBsYXJnZXIgcG9sYXJpdHkgb2JqZWN0IGlzIGxvYWRlZCBpbiB0aGUgYmFja2dyb3VuZC4NCg0KVXNpbmcgYSBrZXJuZWwgZGVuc2l0eSBwbG90IHlvdSBzaG91bGQgbm90aWNlIHRoZSByZXZpZXdzIGRvIG5vdCBjZW50ZXIgb24gMC4gT2Z0ZW4gdGhlcmUgYXJlIHR3byBjYXVzZXMgZm9yIHRoaXMgc2VudGltZW50ICJncmFkZSBpbmZsYXRpb24uIiBGaXJzdCwgc29jaWFsIG5vcm1zIG1heSBsZWFkIHJlc3BvbmRlbnRzIHRvIGJlIHBsZWFzYW50IGluc3RlYWQgb2YgbmV1dHJhbC4gVGhpcywgb2YgY291cnNlLCBpcyBjaGFubmVsIHNwZWNpZmljLiBQYXJ0aWN1bGFybHkgc25hcmt5IGNoYW5uZWxzIGxpa2UgZS1zcG9ydHMgb3Igc29jaWFsIG1lZGlhIHBvc3RzIG1heSBza2V3IG5lZ2F0aXZlIGxlYWRpbmcgdG8gImRlZmxhdGlvbi4iIFRoZXNlIGNoYW5uZWxzIGhhdmUgZGlmZmVyZW50IGV4cGVjdGF0aW9ucy4gQSBzZWNvbmQgcG9zc2libGUgcmVhc29uIGNvdWxkIGJlICJmZWF0dXJlIGJhc2VkIHNlbnRpbWVudCIuIEluIHNvbWUgcmV2aWV3cyBhbiBhdXRob3IgbWF5IHdyaXRlICJ0aGUgYmVkIHdhcyBjb21mb3J0YWJsZSBhbmQgbmljZSBidXQgdGhlIGtpdGNoZW4gd2FzIGRpcnR5IGFuZCBncm9zcy4iIFRoZSBzZW50aW1lbnQgb2YgdGhpcyB0eXBlIG9mIHJldmlldyBlbmNvbXBhc3NlcyBtdWx0aXBsZSBmZWF0dXJlcyBzaW11bHRhbmVvdXNseSBhbmQgdGhlcmVmb3JlIGNvdWxkIG1ha2UgYW4gYXZlcmFnZSBzY29yZSBza2V3ZWQuDQoNCkluIGEgc3Vic2VxdWVudCBleGVyY2lzZSB5b3Ugd2lsbCBhZGp1c3QgdGhpcyAiZ3JhZGUgaW5mbGF0aW9uIiBidXQgaGVyZSBleHBsb3JlIHRoZSByZXZpZXdzIHdpdGhvdXQgYW55IGNoYW5nZS4NCg0KSU5TVFJVQ1RJT05TDQoxMDBYUA0KSU5TVFJVQ1RJT05TDQoxMDBYUA0KQ3JlYXRlIHByYWN0aWNlX3BvbCB1c2luZyBwb2xhcml0eSgpIG9uIHRoZSBmaXJzdCBzaXggcmV2aWV3cyBhcyBpbiBib3NfcmV2aWV3cyRjb21tZW50c1sxOjZdDQpSZXZpZXcgdGhlIHJldHVybmVkIHBvbGFyaXR5IG9iamVjdCBieSBjYWxsaW5nIHByYWN0aWNlX3BvbC4NCkNhbGwgc3VtbWFyeSgpIG9uIHByYWN0aWNlX3BvbCRhbGwkcG9sYXJpdHkgLSB0aGlzIHdpbGwgYWNjZXNzIHRoZSBvdmVyYWxsIHBvbGFyaXR5IGZvciBhbGwgNiBjb21tZW50cy4NCldlJ3ZlIGFsc28gbG9hZGVkIGEgbGFyZ2VyIHBvbGFyaXR5IG9iamVjdCBmb3IgYWxsIDEwMDAgY29tbWVudHMuIFRoaXMgbmV3IG9iamVjdCBpcyBjYWxsZWQgYm9zX3BvbC4gTm93IGFwcGx5IHN1bW1hcnkoKSB0byB0aGUgY29ycmVjdCBsaXN0IGVsZW1lbnQgdGhhdCByZXR1cm5zIGFsbCBwb2xhcml0eSBzY29yZXMgb2YgYm9zX3BvbC4NClRoZSBzYW1wbGUgY29kZSBoYXMgYSBiYXJwbG90IGFuZCBrZXJuZWwgZGVuc2l0eSBwbG90IGFsbW9zdCByZWFkeSB0byBwcmludC4gSG93ZXZlciwgeW91IG11c3QgZW50ZXIgdGhlIGRhdGEgZnJhbWUgcmVwcmVzZW50aW5nIGFsbCBzY29yZXMuIEhpbnQ6IGluIHRoZSBwcmV2aW91cyBzdGVwLCBwb2xhcml0eSByZXByZXNlbnRzIGEgY29sdW1uIG9mIHRoaXMgZGF0YSBmcmFtZS4NCg0KYGBge3J9DQojIFByYWN0aWNlIGFwcGx5IHBvbGFyaXR5IHRvIGZpcnN0IDYgcmV2aWV3cw0KcHJhY3RpY2VfcG9sIDwtIHBvbGFyaXR5KGJvc19yZXZpZXdzJGNvbW1lbnRzWzE6Nl0pDQoNCiMgUmV2aWV3IHRoZSBvYmplY3QNCnByYWN0aWNlX3BvbA0KDQojIENoZWNrIG91dCB0aGUgcHJhY3RpY2UgcG9sYXJpdHkNCnN1bW1hcnkocHJhY3RpY2VfcG9sJGFsbCRwb2xhcml0eSkNCg0KIyBTdW1tYXJ5IGZvciBhbGwgcmV2aWV3cw0Kc3VtbWFyeShib3NfcG9sJGFsbCRwb2xhcml0eSkNCg0KIyBQbG90IGl0DQpnZ3Bsb3QoYm9zX3BvbCRhbGwsIGFlcyh4ID0gcG9sYXJpdHksIHkgPSAuLmRlbnNpdHkuLikpICsNCiAgdGhlbWVfZ2RvY3MoKSArIA0KICBnZW9tX2hpc3RvZ3JhbShiaW53aWR0aCA9IDAuMjUsIGZpbGwgPSAiI2JhZGE1NSIsIGNvbG91ciA9ICJncmV5NjAiKSArDQogIGdlb21fZGVuc2l0eShzaXplID0gMC43NSkNCmBgYA0KDQpbcmVzdWx0ZWQgcGxvdF0oImRvd25sb2FkICgxMikucG5nIikNCg0KDQoNCiMjIyBDcmVhdGUgYSBQb2xhcml0eSBCYXNlZCBDb3Jwb3JhDQoNCkluIHRoaXMgZXhlcmNpc2UgeW91IHdpbGwgcGVyZm9ybSBTdGVwIDMgb2YgdGhlIHRleHQgbWluaW5nIHdvcmtmbG93LiBBbHRob3VnaCBxZGFwIGlzbid0IGEgdGlkeSBwYWNrYWdlIHlvdSB3aWxsIG11dGF0ZSgpIGEgbmV3IGNvbHVtbiBiYXNlZCBvbiB0aGUgcmV0dXJuZWQgcG9sYXJpdHkgbGlzdCByZXByZXNlbnRpbmcgYWxsIHBvbGFyaXR5ICh0aGF0J3MgYSBoaW50IEJUVykgc2NvcmVzLiBJbiBjaGFwdGVyIDMgd2UgdXNlZCBhIGN1c3RvbSBmdW5jdGlvbiBwb2xfc3Vic2VjdGlvbnMgd2hpY2ggdXNlcyBvbmx5IGJhc2UgUiBkZWNsYXJhdGlvbnMuIEhvd2V2ZXIsIGluIGZvbGxvd2luZyB0aGUgdGlkeSBwcmluY2lwbGVzIHRoaXMgZXhlcmNpc2UgdXNlcyBmaWx0ZXIoKSB0aGVuIGludHJvZHVjZXMgcHVsbCgpLiBUaGUgcHVsbCgpIGZ1bmN0aW9uIHdvcmtzIGxpa2Ugd29ya3MgbGlrZSBbWyB0byBleHRyYWN0IGEgc2luZ2xlIHZhcmlhYmxlLg0KDQpPbmNlIHNlZ3JlZ2F0ZWQgeW91IGNvbGxhcHNlIGFsbCB0aGUgcG9zaXRpdmUgYW5kIG5lZ2F0aXZlIGNvbW1lbnRzIGludG8gdHdvIGxhcmdlciBkb2N1bWVudHMgcmVwcmVzZW50aW5nIGFsbCB3b3JkcyBhbW9uZyB0aGUgcG9zaXRpdmUgYW5kIG5lZ2F0aXZlIHJlbnRhbCByZXZpZXdzLg0KDQpMYXN0bHksIHlvdSB3aWxsIGNyZWF0ZSBhIFRlcm0gRnJlcXVlbmN5IEludmVyc2UgRG9jdW1lbnQgRnJlcXVlbmN5IChURklERikgd2VpZ2h0ZWQgVGVybSBEb2N1bWVudCBNYXRyaXggKFRETSkuIFNpbmNlIHRoaXMgZXhlcmNpc2UgY29kZSBzdGFydHMgd2l0aCBhIHRpZHkgc3RydWN0dXJlLCBzb21lIG9mIHRoZSBmdW5jdGlvbnMgYm9ycm93ZWQgZnJvbSB0bSBhcmUgdXNlZCBhbG9uZyB3aXRoIHRoZSAlPiUgb3BlcmF0b3IgdG8ga2VlcCB0aGUgc3R5bGUgY29uc2lzdGVudC4gSWYgdGhlIGJhc2ljcyBvZiB0aGUgdG0gcGFja2FnZSBhcmVuJ3QgZmFtaWxpYXIgY2hlY2sgb3V0IHRoZSBUZXh0IE1pbmluZzogQmFnIG9mIFdvcmRzIGNvdXJzZS4gSW5zdGVhZCBvZiBjb3VudGluZyB0aGUgbnVtYmVyIG9mIHRpbWVzIGEgd29yZCBpcyB1c2VkIChmcmVxdWVuY3kpLCB0aGUgdmFsdWVzIGluIHRoZSBURE0gYXJlIHBlbmFsaXplZCBmb3Igb3ZlciB1c2VkIHRlcm1zLCB3aGljaCBoZWxwcyByZWR1Y2Ugbm9uLWluZm9ybWF0aXZlIHdvcmRzLg0KDQpJTlNUUlVDVElPTlMNCjEwMFhQDQpJTlNUUlVDVElPTlMNCjEwMFhQDQpSZXZpZXcgdGhlIHBvbGFyaXR5IGdyb3VwIHdpdGggYm9zX3BvbCRncm91cC4gTm90ZSB0aGUgYXZlcmFnZSBwb2xhcml0eSBzY29yZXMgYXJlIG5vdCBjZW50ZXJlZCBhdCAwLg0KRm9yd2FyZCBib3NfcmV2aWV3cyB0byBtdXRhdGUoKSBhbmQgY3JlYXRlIGEgbmV3IGNvbHVtbiBwb2xhcml0eSBlcXVhbCB0byBib3NfcG9sJGFsbCRwb2xhcml0eS4NCkZvcndhcmQgYm9zX3Jldmlld3Nfd2l0aF9wb2wgdG8gZmlsdGVyKCkgd2l0aCBwb2xhcml0eSA+IDAgYW5kIHRoZW4gcHVsbCgpIHRoZSBjb21tZW50cyBjb2x1bW4uIFRoZSBuZXcgb2JqZWN0LCBwb3NfY29tbWVudHMsIGNvbnRhaW5zIG9ubHkgcG9zaXRpdmUgY29tbWVudHMuDQpOb3cgY3JlYXRlIG5lZ19jb21tZW50cyBmb2xsb3dpbmcgdGhlIHByZXZpb3VzIHdvcmtmbG93IGJ1dCBjaGFuZ2UgcG9sYXJpdHkgPCAwLiBEb24ndCBmb3JnZXQgdG8gcHVsbCgpIHRoZSBjb21tZW50cyBjb2x1bW4uDQpVc2luZyBwYXN0ZSgpIHdpdGggcG9zX2NvbW1lbnRzIGFuZCB0aGUgYWRkaXRpb25hbCBwYXJhbWV0ZXIgY29sbGFwc2UgPSAiICIgd2lsbCBjb2xsYXBzZSBhbGwgdGhlIHBvc2l0aXZlIHJldmlld3MgaW50byBhIHNpbmdsZSBkb2N1bWVudC4NCk5vdyBtYWtlIG5lZ190ZXJtcyBhcyBhIHNpbmdsZSBkb2N1bWVudCBhZ2FpbiB1c2luZyBwYXN0ZSgpIG9uIG5lZ19jb21tZW50cyB3aXRoIGNvbGxhcHNlID0gIiAiLg0KQ3JlYXRlIGFsbF90ZXJtcyBieSBjb25jYXRlbmF0aW5nIHBvc190ZXJtcyBhbmQgbmVnX3Rlcm1zDQpGb3J3YXJkIGFsbF90ZXJtcyB0byBWZWN0b3JTb3VyY2UoKSBhbmQgVkNvcnB1cygpLg0KUGFzcyBhbGxfY29ycHVzIHRvIFRlcm1Eb2N1bWVudE1hdHJpeCgpIHdpdGggY29udHJvbCA9IGxpc3Qod2VpZ2h0aW5nID0gd2VpZ2h0VGZJZGYsIHJlbW92ZVB1bmN0dWF0aW9uID0gVFJVRSwgc3RvcHdvcmRzID0gc3RvcHdvcmRzKGtpbmQgPSAnZW4nKSkpLg0KUmV2aWV3IHRoZSBURE0gYnkgY2FsbGluZyBhbGxfdGRtLg0KDQpgYGB7cn0NCiMgUmV2aWV3DQpib3NfcG9sJGdyb3VwDQoNCiMgQWRkIHBvbGFyaXR5IGNvbHVtbg0KYm9zX3Jldmlld3Nfd2l0aF9wb2wgPC0gYm9zX3Jldmlld3MgJT4lDQogIG11dGF0ZShwb2xhcml0eSA9IGJvc19wb2wkYWxsJHBvbGFyaXR5KQ0KDQojIFN1YnNldCBwb3NpdGl2ZSBjb21tZW50cyANCnBvc19jb21tZW50cyA8LSBib3NfcmV2aWV3c193aXRoX3BvbCAlPiUNCiAgZmlsdGVyKHBvbGFyaXR5ID4gMCkgJT4lDQogIHB1bGwoY29tbWVudHMpDQoNCiMgU3Vic2V0IG5lZ2F0aXZlIGNvbW1lbnRzDQpuZWdfY29tbWVudHMgPC0gYm9zX3Jldmlld3Nfd2l0aF9wb2wgJT4lDQogIGZpbHRlcihwb2xhcml0eSA8IDApICU+JQ0KICBwdWxsKGNvbW1lbnRzKQ0KDQojIFBhc3RlIGFuZCBjb2xsYXBzZSB0aGUgcG9zaXRpdmUgY29tbWVudHMNCnBvc190ZXJtcyA8LSBwYXN0ZShwb3NfY29tbWVudHMsIGNvbGxhcHNlID0gIiAiKQ0KDQojIFBhc3RlIGFuZCBjb2xsYXBzZSB0aGUgbmVnYXRpdmUgY29tbWVudHMNCm5lZ190ZXJtcyA8LSBwYXN0ZShuZWdfY29tbWVudHMsIGNvbGxhcHNlID0gIiAiKQ0KDQojIENvbmNhdGVuYXRlIHRoZSB0ZXJtcw0KYWxsX3Rlcm1zIDwtIGMocG9zX3Rlcm1zLCBuZWdfdGVybXMpDQoNCiMgUGlwZSBhIFZlY3RvclNvdXJjZSBDb3JwdXMNCmFsbF9jb3JwdXMgPC0gYWxsX3Rlcm1zICU+JSANCiAgVmVjdG9yU291cmNlKCkgJT4lIA0KICBWQ29ycHVzKCkNCg0KIyBTaW1wbGUgVEZJREYgVERNDQphbGxfdGRtIDwtIFRlcm1Eb2N1bWVudE1hdHJpeCgNCiAgYWxsX2NvcnB1cywgDQogIGNvbnRyb2wgPSBsaXN0KA0KICAgIHdlaWdodGluZyA9IHdlaWdodFRmSWRmLCANCiAgICByZW1vdmVQdW5jdHVhdGlvbiA9IFRSVUUsIA0KICAgIHN0b3B3b3JkcyA9IHN0b3B3b3JkcyhraW5kID0gImVuIikNCiAgKQ0KKQ0KDQojIEV4YW1pbmUgdGhlIFRETQ0KYWxsX3RkbQ0KYGBgDQoNCj4gYm9zX3BvbCRncm91cA0KICBhbGwgdG90YWwuc2VudGVuY2VzIHRvdGFsLndvcmRzIGF2ZS5wb2xhcml0eSBzZC5wb2xhcml0eSBzdGFuLm1lYW4ucG9sYXJpdHkNCjEgYWxsICAgICAgICAgICAgMTAwMCAgICAgICA3MDQ4MSAgICAwLjkwMjE3MzUgICAwLjUwMTUzMTggICAgICAgICAgIDEuNzk4ODM2DQoNCj4gYWxsX3RkbQ0KPDxUZXJtRG9jdW1lbnRNYXRyaXggKHRlcm1zOiA0OTY5LCBkb2N1bWVudHM6IDIpPj4NCk5vbi0vc3BhcnNlIGVudHJpZXM6IDQzNTIvNTU4Ng0KU3BhcnNpdHkgICAgICAgICAgIDogNTYlDQpNYXhpbWFsIHRlcm0gbGVuZ3RoOiAxODYNCldlaWdodGluZyAgICAgICAgICA6IHRlcm0gZnJlcXVlbmN5IC0gaW52ZXJzZSBkb2N1bWVudCBmcmVxdWVuY3kgKG5vcm1hbGl6ZWQpICh0Zi1pZGYpDQoNCiMjIyBDcmVhdGUgYSBUaWR5IFRleHQgVGliYmxlIQ0KDQpTaW5jZSB5b3UgbGVhcm5lZCBhYm91dCB0aWR5IHByaW5jaXBsZXMgdGhpcyBjb2RlIGhlbHBzIHlvdSBvcmdhbml6ZSB5b3VyIGRhdGEgaW50byBhIHRpYmJsZSBzbyB5b3UgY2FuIHRoZW4gd29yayB3aXRoaW4gdGhlIHRpZHl2ZXJzZSENCg0KUHJldmlvdXNseSB5b3UgbGVhcm5lZCB0aGF0IGFwcGx5aW5nIHRpZHkoKSBvbiBhIFRlcm1Eb2N1bWVudE1hdHJpeCgpIG9iamVjdCB3aWxsIGNvbnZlcnQgdGhlIFRETSB0byBhIHRpYmJsZS4gSW4gdGhpcyBleGVyY2lzZSB5b3Ugd2lsbCBjcmVhdGUgdGhlIHdvcmQgZGF0YSBkaXJlY3RseSBmcm9tIHRoZSByZXZpZXcgY29sdW1uIGNhbGxlZCBjb21tZW50cy4NCg0KRmlyc3QgeW91IHVzZSB1bm5lc3RfdG9rZW5zKCkgdG8gbWFrZSB0aGUgdGV4dCBsb3dlcmNhc2UgYW5kIHRva2VuaXplIHRoZSByZXZpZXdzIGludG8gc2luZ2xlIHdvcmRzLg0KDQpTb21ldGltZXMgaXQgaXMgdXNlZnVsIHRvIGNhcHR1cmUgdGhlIG9yaWdpbmFsIHdvcmQgb3JkZXIgd2l0aGluIGVhY2ggZ3JvdXAgb2YgYSBjb3JwdXMuIFRvIGRvIHNvLCB1c2UgbXV0YXRlKCkuIEluIG11dGF0ZSgpIHlvdSB3aWxsIHVzZSBzZXFfYWxvbmcoKSB0byBjcmVhdGUgYSBzZXF1ZW5jZSBvZiBudW1iZXJzIGZyb20gMSB0byB0aGUgbGVuZ3RoIG9mIHRoZSBvYmplY3QuIFRoaXMgd2lsbCBjYXB0dXJlIHRoZSB3b3JkIG9yZGVyIGFzIGl0IHdhcyB3cml0dGVuLg0KDQpJbiB0aGUgdG0gcGFja2FnZSwgeW91IHdvdWxkIHVzZSByZW1vdmVXb3JkcygpIHRvIHJlbW92ZSBzdG9wd29yZHMuIEluIHRoZSB0aWR5dmVyc2UgeW91IGZpcnN0IG5lZWQgdG8gbG9hZCB0aGUgc3RvcCB3b3JkcyBsZXhpY29uIGFuZCB0aGVuIGFwcGx5IGFuIGFudGlfam9pbigpIGJldHdlZW4gdGhlIHRpZHkgdGV4dCBkYXRhIGZyYW1lIGFuZCB0aGUgc3RvcHdvcmRzLg0KDQpJTlNUUlVDVElPTlMNCjEwMFhQDQpJTlNUUlVDVElPTlMNCjEwMFhQDQpDcmVhdGUgdGlkeV9yZXZpZXdzIGJ5IHBpcGluZyAoJT4lKSB0aGUgb3JpZ2luYWwgcmV2aWV3cyBvYmplY3QgYm9zX3Jldmlld3MgdG8gdGhlIHVubmVzdF90b2tlbnMoKSBmdW5jdGlvbi4gUGFzcyBpbiBhIG5ldyBjb2x1bW4gbmFtZSwgd29yZCBhbmQgZGVjbGFyZSB0aGUgY29tbWVudHMgY29sdW1uLiBSZW1lbWJlciBpbiB0aGUgdGlkeXZlcnNlIHlvdSBkb24ndCBuZWVkIGEgJCBvciBxdW90ZXMuDQpDcmVhdGUgYSBuZXcgdmFyaWFibGUgdGhlIHRpZHkgd2F5ISBSZXdyaXRlIHRpZHlfcmV2aWV3cyBieSBwaXBpbmcgdGlkeV9yZXZpZXdzIHRvIGdyb3VwX2J5IHdpdGggdGhlIGNvbHVtbiBpZC4gVGhlbiAlPiUgaXQgYWdhaW4gdG8gbXV0YXRlKCkuIFdpdGhpbiBtdXRhdGUgY3JlYXRlIGEgbmV3IHZhcmlhYmxlIG9yaWdpbmFsX3dvcmRfb3JkZXIgZXF1YWwgdG8gc2VxX2Fsb25nKHdvcmQpLg0KUHJpbnQgb3V0IHRoZSB0aWJibGUsIHRpZHlfcmV2aWV3cy4NCkxvYWQgdGhlIHByZW1hZGUgIlNNQVJUIiBzdG9wd29yZHMgdG8geW91ciBSIHNlc3Npb24gd2l0aCBkYXRhKCJzdG9wX3dvcmRzIikuDQpPdmVyd3JpdGUgdGlkeV9yZXZpZXdzIGJ5IHBhc3NpbmcgdGhlIG9yaWdpbmFsIHRpZHlfcmV2aWV3cyB0byBhbnRpX2pvaW4oKSB3aXRoIGEgJT4lLiBXaXRoaW4gYW50aV9qb2luKCkgcGFzcyBpbiB0aGUgcHJlZGV0ZXJtaW5lZCBzdG9wX3dvcmRzIGxleGljb24uDQoNCmBgYHtyfQ0KIyBWZWN0b3IgdG8gdGliYmxlDQp0aWR5X3Jldmlld3MgPC0gYm9zX3Jldmlld3MgJT4lIA0KICB1bm5lc3RfdG9rZW5zKHdvcmQsIGNvbW1lbnRzKQ0KDQojIEdyb3VwIGJ5IGFuZCBtdXRhdGUNCnRpZHlfcmV2aWV3cyA8LSB0aWR5X3Jldmlld3MgJT4lIA0KICBncm91cF9ieShpZCkgJT4lIA0KICBtdXRhdGUob3JpZ2luYWxfd29yZF9vcmRlciA9IHNlcV9hbG9uZyh3b3JkKSkNCg0KIyBRdWljayByZXZpZXcNCnRpZHlfcmV2aWV3cw0KDQojIExvYWQgc3RvcHdvcmRzDQpkYXRhKCJzdG9wX3dvcmRzIikNCg0KIyBQZXJmb3JtIGFudGktam9pbg0KdGlkeV9yZXZpZXdzX3dpdGhvdXRfc3RvcHdvcmRzIDwtIHRpZHlfcmV2aWV3cyAlPiUgDQogIGFudGlfam9pbihzdG9wX3dvcmRzKQ0KYGBgDQoNCg0KDQoNCg0KDQojIyMgQ29tcGFyZSBUaWR5IFNlbnRpbWVudCB0byBRZGFwIFBvbGFyaXR5DQoNCkhlcmUgeW91IHdpbGwgbGVhcm4gdGhhdCBkaWZmZXJpbmcgc2VudGltZW50IG1ldGhvZHMgd2lsbCBjYXVzZSBkaWZmZXJlbnQgcmVzdWx0cy4gT2Z0ZW4geW91IHdpbGwgc2ltcGx5IG5lZWQgdG8gaGF2ZSByZXN1bHRzIGFsaWduIGRpcmVjdGlvbmFsbHkgYWx0aG91Z2ggdGhlIHNwZWNpZmljcyBtYXkgYmUgZGlmZmVyZW50LiBJbiB0aGUgbGFzdCBleGVyY2lzZSB5b3UgY3JlYXRlZCB0aWR5X3Jldmlld3Mgd2hpY2ggaXMgYSBkYXRhIGZyYW1lIG9mIHJlbnRhbCByZXZpZXdzIHdpdGhvdXQgc3RvcHdvcmRzLiBFYXJsaWVyIGluIHRoZSBjaGFwdGVyLCB5b3UgY2FsY3VsYXRlZCBhbmQgcGxvdHRlZCBxZGFwJ3MgYmFzaWMgcG9sYXJpdHkoKSBmdW5jdGlvbi4gVGhpcyBzaG93ZWQgeW91IHRoZSByZXZpZXdzIHRlbmQgdG8gYmUgcG9zaXRpdmUuDQoNCk5vdyBsZXQncyBwZXJmb3JtIGEgc2ltaWxhciBhbmFseXNpcyB0aGUgdGlkeXRleHQgd2F5ISBSZWNhbGwgZnJvbSBhbiBlYXJsaWVyIGNoYXB0ZXIgeW91IHdpbGwgcGVyZm9ybSBhbiBpbm5lcl9qb2luKCkgZm9sbG93ZWQgYnkgY291bnQoKSBhbmQgdGhlbiBhIHNwcmVhZCgpLg0KDQpMYXN0bHksIHlvdSB3aWxsIGNyZWF0ZSBhIG5ldyBjb2x1bW4gdXNpbmcgbXV0YXRlKCkgYW5kIHBhc3NpbmcgaW4gcG9zaXRpdmUgLSBuZWdhdGl2ZS4NCg0KSU5TVFJVQ1RJT05TDQoxMDBYUA0KVXNpbmcgdGhlIGdldF9zZW50aW1lbnRzKCkgZnVuY3Rpb24gd2l0aCAiYmluZyIgd2lsbCBhdXRvbWF0aWNhbGx5IGZpbHRlciB0aGUgdGlkeXRleHQgc2VudGltZW50cyBkYXRhLiBDYWxsIHRoZSBsZXhpY29uIGJpbmcuDQpTaW5jZSB5b3UgYWxyZWFkeSB3cm90ZSB0aGlzIGNvZGUgaW4gQ2hhcHRlciAyIHNpbXBseSBlbnRlciBpbiB0aGUgbGV4aWNvbiBvYmplY3QsIGJpbmcsIHRoZSBuZXcgY29sdW1uIG5hbWUgKHBvbGFyaXR5KSBhbmQgaXRzIGNhbGN1bGF0aW9uIHdpdGhpbiBtdXRhdGUoKS4NCkxhc3RseSBjYWxsIHN1bW1hcnkoKSBvbiB0aGUgbmV3IG9iamVjdCBwb3NfbmVnLiBBbHRob3VnaCB0aGUgdmFsdWVzIGFyZSBkaWZmZXJlbnQsIGFyZSBtb3N0IHJlbnRhbCByZXZpZXdzIHNpbWlsYXJseSBwb3NpdGl2ZSBjb21wYXJlZCB0byB1c2luZyBwb2xhcml0eSgpPyBEbyB5b3Ugc2VlICJncmFkZSBpbmZsYXRpb24/Ig0KDQoNCg0KDQoNCmBgYHtyfQ0KIyBHZXQgdGhlIGNvcnJlY3QgbGV4aWNvbg0KYmluZyA8LSBnZXRfc2VudGltZW50cygiYmluZyIpDQoNCiMgQ2FsY3VsYXRlIHBvbGFyaXR5IGZvciBlYWNoIHJldmlldw0KcG9zX25lZyA8LSB0aWR5X3Jldmlld3MgJT4lIA0KICBpbm5lcl9qb2luKGJpbmcpICU+JQ0KICBjb3VudChzZW50aW1lbnQpICU+JQ0KICBzcHJlYWQoc2VudGltZW50LCBuLCBmaWxsID0gMCkgJT4lIA0KICBtdXRhdGUocG9sYXJpdHkgPSBwb3NpdGl2ZSAtIG5lZ2F0aXZlKQ0KDQojIENoZWNrIG91dGNvbWUNCnN1bW1hcnkocG9zX25lZykNCmBgYA0KDQo+ICMgQ2hlY2sgb3V0Y29tZQ0KPiBzdW1tYXJ5KHBvc19uZWcpDQogICAgICAgaWQgICAgICAgICAgICBuZWdhdGl2ZSAgICAgICAgICBwb3NpdGl2ZSAgICAgICAgcG9sYXJpdHkgICAgICANCiBNaW4uICAgOiAgIDEuMCAgIE1pbi4gICA6IDAuMDAwMCAgIE1pbi4gICA6IDAuMDAgICBNaW4uICAgOi0xMS4wMDAgIA0KIDFzdCBRdS46IDI1My4wICAgMXN0IFF1LjogMC4wMDAwICAgMXN0IFF1LjogMy4wMCAgIDFzdCBRdS46ICAyLjAwMCAgDQogTWVkaWFuIDogNDk4LjAgICBNZWRpYW4gOiAwLjAwMDAgICBNZWRpYW4gOiA0LjAwICAgTWVkaWFuIDogIDQuMDAwICANCiBNZWFuICAgOiA1MDAuNCAgIE1lYW4gICA6IDAuNjEzOSAgIE1lYW4gICA6IDQuOTcgICBNZWFuICAgOiAgNC4zNTYgIA0KIDNyZCBRdS46IDc0OC4wICAgM3JkIFF1LjogMS4wMDAwICAgM3JkIFF1LjogNy4wMCAgIDNyZCBRdS46ICA2LjAwMCAgDQogTWF4LiAgIDoxMDAwLjAgICBNYXguICAgOjE0LjAwMDAgICBNYXguICAgOjI4LjAwICAgTWF4LiAgIDogMjYuMDAwDQogDQogDQojIyMgQXNzZXNzaW5nIGF1dGhvciBlZmZvcnQNCg0KT2Z0ZW4gYXV0aG9ycyB3aWxsIHVzZSBtb3JlIHdvcmRzIHdoZW4gdGhleSBhcmUgbW9yZSBwYXNzaW9uYXRlLiBGb3IgZXhhbXBsZSwgYSBtYWQgYWlybGluZSBwYXNzZW5nZXIgd2lsbCBsZWF2ZSBhIGxvbmdlciByZXZpZXcgdGhlIHdvcnNlICh0aGUgcGVyY2VpdmVkKSBzZXJ2aWNlLiBDb252ZXJzZWx5IGEgbGVzcyBpbXBhc3Npb25lZCBwYXNzZW5nZXIgbWF5IG5vdCBmZWVsIGNvbXBlbGxlZCB0byBzcGVuZCBhIGxvdCBvZiB0aW1lIHdyaXRpbmcgYSByZXZpZXcuIExlbmd0aHkgcmV2aWV3cyBtYXkgaW5mbGF0ZSBvdmVyYWxsIHNlbnRpbWVudCBzaW5jZSB0aGUgcmV2aWV3cyB3aWxsIGluaGVyZW50bHkgY29udGFpbiBtb3JlIHBvc2l0aXZlIG9yIG5lZ2F0aXZlIGxhbmd1YWdlIGFzIHRoZSByZXZpZXcgbGVuZ3RoZW5zLiBUaGlzIGNvZGluZyBleGVyY2lzZSBoZWxwcyB0byBleGFtaW5lIGVmZm9ydCBhbmQgc2VudGltZW50Lg0KDQpJbiB0aGlzIGV4ZXJjaXNlIHlvdSB3aWxsIHZpc3VhbGl6ZSB0aGUgcmVsYXRpb25zaGlwIGJldHdlZW4gZWZmb3J0IGFuZCBzZW50aW1lbnQuIFJlY2FsbCB5b3VyIHJlbnRhbCByZXZpZXcgdGliYmxlIGNvbnRhaW5zIGFuIGlkIGFuZCB0aGF0IGEgd29yZCBpcyByZXByZXNlbnRlZCBpbiBlYWNoIHJvdy4gQXMgYSByZXN1bHQgYSBzaW1wbGUgY291bnQoKSBvZiB0aGUgaWQgd2lsbCBjYXB0dXJlIHRoZSBudW1iZXIgb2Ygd29yZHMgdXNlZCBpbiBlYWNoIHJldmlldy4gVGhlbiB5b3Ugd2lsbCBqb2luIHRoaXMgc3VtbWFyeSB0byB0aGUgcG9zaXRpdmUgYW5kIG5lZ2F0aXZlIGRhdGEuIFVsdGltYXRlbHkgeW91IHdpbGwgY3JlYXRlIGEgc2NhdHRlciBwbG90IHRoYXQgd2lsbCB2aXN1YWxpemUgYXV0aG9yIHJldmlldyBsZW5ndGggYW5kIGl0cyByZWxhdGlvbnNoaXAgdG8gcG9sYXJpdHkuDQoNCklOU1RSVUNUSU9OUw0KMTAwWFANCklOU1RSVUNUSU9OUw0KMTAwWFANCnRpZHlfcmV2aWV3cyBhbmQgcG9zX25lZyBmcm9tIHRoZSBwcmV2aW91cyBleGVyY2lzZXMgYXJlIGF2YWlsYWJsZSBpbiB5b3VyIHdvcmtzcGFjZS4NCg0KQ3JlYXRlIGVmZm9ydCB1c2luZyB0aWR5X3Jldmlld3MgYW5kIHBpcGluZyAlPiUgdGhlIG9iamVjdCB0byBjb3VudCgpLiBXaXRoaW4gY291bnQoKSBwYXNzIGluIHRoZSB2ZWN0b3IgaWQuDQpQZXJmb3JtIGFuIGlubmVyX2pvaW4oKSB1c2luZyBwb3NfbmVnIGFuZCBlZmZvcnQuIENhbGwgdGhlIG9iamVjdCBwb3NfbmVnX3dpdGhfZWZmb3J0Lg0KUmV2aWV3IHBvc19uZWdfd2l0aF9lZmZvcnQuDQpDcmVhdGUgcG9zX25lZ19wb2wgYnkgcGFzc2luZyBwb3NfbmVnX3dpdGhfZWZmb3J0IHRvIG11dGF0ZSgpLiBEZWZpbmUgcG9sIHdpdGggYW4gaWZlbHNlKCkgZnVuY3Rpb24uIFRoaXMgZnVuY3Rpb24gd2lsbCBsYWJlbCBpdGVtcyBhcyAiUG9zaXRpdmUiIGlmIHBvbGFyaXR5ID49IDAgZWxzZSBpdCB3aWxsIGxhYmVsIHRoZW0gYXMgIk5lZ2F0aXZlIi4NCkNvbnN0cnVjdCBhIHZpc3VhbCB3aXRoIGFlcyBhcyBwb2xhcml0eSwgbiwgY29sb3IgPSBwb2wuIEFmdGVyIHRoZSBleGFtcGxlIGNvZGUgbGF5ZXIgY29udGFpbmluZyBnZW9tX3BvaW50KGFscGhhID0gMC4yNSkgYWRkIGFub3RoZXIgbGF5ZXIgdXNpbmcgZ2VvbV9zbW9vdGggdG8gYWlkIHlvdSBpbiBzZWVpbmcgdGhlIHBhdHRlcm4uDQogDQogDQogDQogDQogDQogDQogYGBge3J9DQojIFJldmlldyB0aWR5X3Jldmlld3MNCnRpZHlfcmV2aWV3cw0KDQojIFJldmlldyBwb3NfbmVnDQpwb3NfbmVnDQoNCiMgQ3JlYXRlIGVmZm9ydA0KZWZmb3J0IDwtIHRpZHlfcmV2aWV3cyAlPiUgY291bnQoaWQpDQoNCiMgSW5uZXIgam9pbg0KcG9zX25lZ193aXRoX2VmZm9ydCA8LSBpbm5lcl9qb2luKHBvc19uZWcsIGVmZm9ydCkgDQoNCiMgUmV2aWV3IA0KcG9zX25lZ193aXRoX2VmZm9ydA0KDQojIEFkZCBwb2wNCnBvc19uZWdfcG9sIDwtIHBvc19uZWdfd2l0aF9lZmZvcnQgJT4lDQogIG11dGF0ZSgNCiAgICBwb2wgPSBpZmVsc2UoDQogICAgICBwb2xhcml0eSA+PSAwLCANCiAgICAgICJQb3NpdGl2ZSIsIA0KICAgICAgIk5lZ2F0aXZlIg0KICAgICkNCiAgKQ0KDQojIFBsb3QNCmdncGxvdCgNCiAgcG9zX25lZ19wb2wsIA0KICBhZXMocG9sYXJpdHksIG4sIGNvbG9yID0gcG9sKQ0KKSArIA0KICBnZW9tX3BvaW50KGFscGhhID0gMC4yNSkgKw0KICBnZW9tX3Ntb290aChtZXRob2QgPSAibG0iLCBzZSA9IEZBTFNFKSArDQogIHRoZW1lX2dkb2NzKCkgKw0KICBnZ3RpdGxlKCJSZWxhdGlvbnNoaXAgYmV0d2VlbiB3b3JkIGVmZm9ydCAmIHBvbGFyaXR5IikNCg0KYGBgDQoNCltyZXN1bHRlZCBwbG90XSgiZG93bmxvYWQgKDEzKS5wbmciKQ0KDQojIyMgQ29tcGFyaXNvbiBDbG91ZA0KDQpUaGlzIGV4ZXJjaXNlIHdpbGwgY3JlYXRlIGEgY29tbW9uIHZpc3VhbCBmb3IgeW91IHRvIHVuZGVyc3RhbmQgdGVybSBmcmVxdWVuY3kuIFNwZWNpZmljYWxseSwgeW91IHdpbGwgcmV2aWV3IHRoZSBtb3N0IGZyZXF1ZW50IHRlcm1zIGZyb20gYW1vbmcgdGhlIHBvc2l0aXZlIGFuZCBuZWdhdGl2ZSBjb2xsYXBzZWQgZG9jdW1lbnRzLiBSZWNhbGwgdGhlIFRlcm1Eb2N1bWVudE1hdHJpeCBhbGxfdGRtIHlvdSBjcmVhdGVkIGVhcmxpZXIuIEluc3RlYWQgb2YgMTAwMCByZW50YWwgcmV2aWV3cyB0aGUgbWF0cml4IGNvbnRhaW5zIDIgZG9jdW1lbnRzIGNvbnRhaW5pbmcgYWxsIHJldmlld3Mgc2VwYXJhdGVkIGJ5IHRoZSBwb2xhcml0eSgpIHNjb3JlLg0KDQpJdCdzIHVzdWFsbHkgZWFzaWVyIHRvIGNoYW5nZSB0aGUgVERNIHRvIGEgbWF0cml4LiBGcm9tIHRoZXJlIHlvdSBzaW1wbHkgcmVuYW1lIHRoZSBjb2x1bW5zLiBSZW1lbWJlciB0aGF0IHRoZSBjb2xuYW1lcygpIGZ1bmN0aW9uIGlzIGNhbGxlZCBvbiB0aGUgbGVmdCBzaWRlIG9mIHRoZSBhc3NpZ25tZW50IG9wZXJhdG9yIGFzIHNob3duIGJlbG93Lg0KDQpjb2xuYW1lcyhPQkpFQ1QpIDwtIGMoIkNPTFVNTl9OQU1FMSIsICJDT0xVTU5fTkFNRTIiKQ0KT25jZSBkb25lLCB5b3Ugd2lsbCByZW9yZGVyIHRoZSBtYXRyaXggdG8gc2VlIHRoZSBtb3N0IHBvc2l0aXZlIGFuZCBuZWdhdGl2ZSB3b3Jkcy4gUmV2aWV3IHRoZXNlIHRlcm1zIHNvIHlvdSBjYW4gYW5zd2VyIHRoZSBjb25jbHVzaW9uIGV4ZXJjaXNlcyENCg0KTGFzdGx5LCB5b3UnbGwgdmlzdWFsaXplIHRoZSB0ZXJtcyB1c2luZyBjb21wYXJpc29uLmNsb3VkKCkuDQoNCklOU1RSVUNUSU9OUw0KMTAwWFANCklOU1RSVUNUSU9OUw0KMTAwWFANCkNoYW5nZSB0aGUgcHJlLWxvYWRlZCBhbGxfdGRtIHRvIGEgbWF0cml4IGNhbGxlZCBhbGxfdGRtX20gdXNpbmcgYXMubWF0cml4KCkuDQpVc2UgY29sbmFtZXMoKSBvbiBhbGxfdGRtX20gdG8gZGVjbGFyZSBjKCJwb3NpdGl2ZSIsICJuZWdhdGl2ZSIpLg0KQXBwbHkgb3JkZXIoKSB0byBhbGxfdGRtX21bLDFdIGFuZCBzZXQgZGVjcmVhc2luZyA9IFRSVUUuDQpSZXZpZXcgdGhlIHRvcCAxMCB0ZXJtcyBvZiB0aGUgcmVvcmRlcmVkIFRETSB1c2luZyBwaXBlICglPiUpIHRoZW4gaGVhZCgpIHdpdGggbiA9IDEwLg0KUmVwZWF0IHRoZSBwcmV2aW91cyB0d28gc3RlcHMgd2l0aCBuZWdhdGl2ZSBjb21tZW50cy4gTm93IHlvdSB3aWxsIG9yZGVyKCkgYnkgdGhlIHNlY29uZCBjb2x1bW4sIGFsbF90ZG1fbVssMl0gYW5kIHVzZSBkZWNyZWFzaW5nID0gVFJVRS4NClJldmlldyB0aGUgMTAgbW9zdCBuZWdhdGl2ZSB0ZXJtcyBpbmRleGluZyBhbGxfdGRtX20gYnkgb3JkZXJfYnlfbmVnLiBQaXBlIHRoaXMgdG8gaGVhZCgpIHdpdGggbiA9IDEwLg0KQ2FsbCBjb21wYXJpc29uLmNsb3VkKCkgb24gYWxsX3RkbV9tLiBTcGVjaWZ5IG1heC53b3JkcyBlcXVhbCB0byAyMCBhbmQgY29sb3JzIGVxdWFsIHRvICJkYXJrZ3JlZW4iIGFuZCAiZGFya3JlZCIuDQoNCg0KYGBge3J9DQojIE1hdHJpeA0KYWxsX3RkbV9tIDwtIGFzLm1hdHJpeChhbGxfdGRtKQ0KDQojIENvbHVtbiBuYW1lcw0KY29sbmFtZXMoYWxsX3RkbV9tKSA8LSBjKCJwb3NpdGl2ZSIsICJuZWdhdGl2ZSIpDQoNCiMgVG9wIHBvcyB3b3Jkcw0Kb3JkZXJfYnlfcG9zIDwtIG9yZGVyKGFsbF90ZG1fbVssIDFdLCBkZWNyZWFzaW5nID0gVFJVRSkNCg0KIyBSZXZpZXcgdG9wIDEwIHBvcyB3b3Jkcw0KYWxsX3RkbV9tW29yZGVyX2J5X3BvcywgXSAlPiUgaGVhZCgxMCkNCg0KIyBUb3AgbmVnIHdvcmRzDQpvcmRlcl9ieV9uZWcgPC0gb3JkZXIoYWxsX3RkbV9tWywgMl0sIGRlY3JlYXNpbmcgPSBUUlVFKQ0KDQojIFJldmlldyB0b3AgMTAgbmVnIHdvcmRzDQphbGxfdGRtX21bb3JkZXJfYnlfbmVnLCBdICU+JSBoZWFkKDEwKQ0KDQojIENvbXBhcmlzb24gY2xvdWQNCmNvbXBhcmlzb24uY2xvdWQoDQogIGFsbF90ZG1fbSwgDQogIG1heC53b3JkcyA9IDIwLCANCiAgY29sb3JzID0gYygiZGFya2dyZWVuIiwgImRhcmtyZWQiKQ0KKQ0KDQpgYGANCg0KW3Jlc3VsdGVkIHBsb3RdKCJkb3dubG9hZCAoMTQpLnBuZyIpDQoNCg0KIyMjIFNjYWxlZCBDb21wYXJpc29uIENsb3VkDQoNClJlY2FsbCB0aGUgImdyYWRlIGluZmxhdGlvbiIgb2YgcG9sYXJpdHkgc2NvcmVzIG9uIHRoZSByZW50YWwgcmV2aWV3cz8gU29tZXRpbWVzLCBhbm90aGVyIHdheSB0byB1bmNvdmVyIGFuIGluc2lnaHQgaXMgdG8gc2NhbGUgdGhlIHNjb3JlcyBiYWNrIHRvIDAgdGhlbiBwZXJmb3JtIHRoZSBjb3JwdXMgc3Vic2V0LiBUaGlzIG1lYW5zIHNvbWUgb2YgdGhlIHByZXZpb3VzbHkgcG9zaXRpdmUgY29tbWVudHMgbWF5IGJlY29tZSBwYXJ0IG9mIHRoZSBuZWdhdGl2ZSBzdWJzZWN0aW9uIG9yIHZpY2UgdmVyc2Egc2luY2UgdGhlIG1lYW4gaXMgY2hhbmdlZCB0byAwLiBUaGlzIGV4ZXJjaXNlIHdpbGwgaGVscCB5b3Ugc2NhbGUgdGhlIHNjb3JlcyBhbmQgdGhlbiByZS1wbG90IHRoZSBjb21wYXJpc29uLmNsb3VkKCkuIFJlbW92aW5nIHRoZSAiZ3JhZGUgaW5mbGF0aW9uIiBjYW4gaGVscCBwcm92aWRlIGFkZGl0aW9uYWwgaW5zaWdodHMuDQoNClByZXZpb3VzbHkgeW91IGFwcGxpZWQgcG9sYXJpdHkoKSB0byB0aGUgYm9zX3Jldmlld3MkY29tbWVudHMgYW5kIGNyZWF0ZWQgYSBjb21wYXJpc29uLmNsb3VkKCkuIEluIHRoaXMgZXhlcmNpc2UgeW91IHdpbGwgc2NhbGUoKSB0aGUgb3V0Y29tZSBiZWZvcmUgY3JlYXRpbmcgdGhlIGNvbXBhcmlzb24uY2xvdWQoKS4gU2VlIGlmIHRoaXMgc2hvd3Mgc29tZXRoaW5nIGRpZmZlcmVudCBpbiB0aGUgdmlzdWFsIQ0KDQpTaW5jZSB0aGlzIGlzIGxhcmdlbHkgYSByZXZpZXcgZXhlcmNpc2UsIGEgbG90IG9mIHRoZSBjb2RlIGV4aXN0cywganVzdCBmaWxsIGluIHRoZSBjb3JyZWN0IG9iamVjdHMgYW5kIHBhcmFtZXRlcnMhDQoNCklOU1RSVUNUSU9OUw0KMTAwWFANCklOU1RSVUNUSU9OUw0KMTAwWFANClJldmlldyBhIHNlY3Rpb24gb2YgdGhlIHByZS1sb2FkZWQgYm9zX3BvbCRhbGwgd2hpbGUgaW5kZXhpbmcgWzE6NiwxOjNdLg0KQWRkIGEgbmV3IGNvbHVtbiB0byBjYWxsZWQgc2NhbGVkX3BvbGFyaXR5IHdpdGggc2NhbGUoKSBhcHBsaWVkIHRvIHRoZSBwb2xhcml0eSBzY29yZSBjb2x1bW4gYm9zX3BvbCRhbGwkcG9sYXJpdHkuDQpGb3IgcG9zaXRpdmUgY29tbWVudHMsIHN1YnNldCgpIHdoZXJlIHRoZSBuZXcgY29sdW1uIGJvc19yZXZpZXdzJHNjYWxlZF9wb2xhcml0eSBpcyBncmVhdGVyIHRoYW4gKD4pIHplcm8uDQpGb3IgbmVnYXRpdmUgY29tbWVudHMsIHN1YnNldCgpIHdoZXJlIHRoZSBuZXcgY29sdW1uIGJvc19yZXZpZXdzJHNjYWxlZF9wb2xhcml0eSBpcyBsZXNzIHRoYW4gKDwpIHplcm8uDQpDcmVhdGUgcG9zX3Rlcm1zIHVzaW5nIHBhc3RlKCkgb24gcG9zX2NvbW1lbnRzLg0KTm93IGNyZWF0ZSBuZWdfdGVybXMgd2l0aCBwYXN0ZSgpIG9uIG5lZ19jb21tZW50cy4NCk9yZ2FuaXplIHRoZSBjb2xsYXBzZWQgZG9jdW1lbnRzLCBwb3NfdGVybXMgYW5kIG5lZ190ZXJtcyBkb2N1bWVudHMgaW50byBhIHNpbmdsZSBjb3JwdXMgY2FsbGVkIGFsbF90ZXJtcy4NCkZvbGxvd2luZyB0aGUgdXN1YWwgdG0gd29ya2Zsb3cgYnkgbmVzdGluZyBWZWN0b3JTb3VyY2UoKSBpbnNpZGUgVkNvcnB1cygpIGFwcGxpZWQgdG8gYWxsX3Rlcm1zLg0KTWFrZSB0aGUgVGVybURvY3VtZW50TWF0cml4KCkgdXNpbmcgdGhlIGFsbF9jb3JwdXMgb2JqZWN0LiBOb3RlIHRoaXMgaXMgYSBUZklkZiB3ZWlnaHRlZCBURE0gd2l0aCBiYXNpYyBjbGVhbmluZyBmdW5jdGlvbnMuDQpDaGFuZ2UgYWxsX3RkbSB0byBhbGxfdGRtX20gdXNpbmcgYXMubWF0cml4KCkuIFRoZW4gcmVuYW1lIHRoZSBjb2x1bW5zIGluIHRoZSBleGlzdGluZyBjb2RlIHRvICJwb3NpdGl2ZSIgYW5kICJuZWdhdGl2ZSIuDQpGaW5hbGx5ISBhcHBseSBjb21wYXJpc29uLmNsb3VkKCkgdG8gdGhlIG1hdHJpeCBvYmplY3QgYWxsX3RkbV9tLiBUYWtlIG5vdGljZSBvZiB0aGUgbmV3IG1vc3QgZnJlcXVlbnQgbmVnYXRpdmUgd29yZHMuIE1heWJlIGl0IHdpbGwgdW5jb3ZlciBhbiB1bmtub3duIGluc2lnaHQhDQoNCg0KDQpgYGB7cn0NCiMgUmV2aWV3DQpib3NfcG9sJGFsbFsxOjYsMTozXQ0KDQojIFNjYWxlL2NlbnRlciAmIGFwcGVuZA0KYm9zX3Jldmlld3Mkc2NhbGVkX3BvbGFyaXR5IDwtIHNjYWxlKGJvc19wb2wkYWxsJHBvbGFyaXR5KQ0KDQojIFN1YnNldCBwb3NpdGl2ZSBjb21tZW50cw0KcG9zX2NvbW1lbnRzIDwtIHN1YnNldChib3NfcmV2aWV3cyRjb21tZW50cywgYm9zX3Jldmlld3Mkc2NhbGVkX3BvbGFyaXR5ID4gMCkNCg0KIyBTdWJzZXQgbmVnYXRpdmUgY29tbWVudHMNCm5lZ19jb21tZW50cyA8LSBzdWJzZXQoYm9zX3Jldmlld3MkY29tbWVudHMsIGJvc19yZXZpZXdzJHNjYWxlZF9wb2xhcml0eSA8IDApDQoNCiMgUGFzdGUgYW5kIGNvbGxhcHNlIHRoZSBwb3NpdGl2ZSBjb21tZW50cw0KcG9zX3Rlcm1zIDwtIHBhc3RlKHBvc19jb21tZW50cywgY29sbGFwc2UgPSAiICIpDQoNCiMgUGFzdGUgYW5kIGNvbGxhcHNlIHRoZSBuZWdhdGl2ZSBjb21tZW50cw0KbmVnX3Rlcm1zIDwtIHBhc3RlKG5lZ19jb21tZW50cywgY29sbGFwc2UgPSAiICIpDQoNCiMgT3JnYW5pemUNCmFsbF90ZXJtcyA8LSBjKHBvc190ZXJtcyxuZWdfdGVybXMpDQoNCiMgVkNvcnB1cw0KYWxsX2NvcnB1cyA8LSBWQ29ycHVzKFZlY3RvclNvdXJjZShhbGxfdGVybXMpKQ0KDQojIFRETQ0KYWxsX3RkbSA8LSBUZXJtRG9jdW1lbnRNYXRyaXgoDQogIGFsbF9jb3JwdXMsIA0KICBjb250cm9sID0gbGlzdCgNCiAgICB3ZWlnaHRpbmcgPSB3ZWlnaHRUZklkZiwNCiAgICByZW1vdmVQdW5jdHVhdGlvbiA9IFRSVUUsIA0KICAgIHN0b3B3b3JkcyA9IHN0b3B3b3JkcyhraW5kID0gImVuIikNCiAgKQ0KKQ0KDQojIENvbHVtbiBuYW1lcw0KYWxsX3RkbV9tIDwtIGFzLm1hdHJpeChhbGxfdGRtKQ0KY29sbmFtZXMoYWxsX3RkbV9tKSA8LSBjKCJwb3NpdGl2ZSIsICJuZWdhdGl2ZSIpDQoNCiMgQ29tcGFyaXNvbiBjbG91ZA0KY29tcGFyaXNvbi5jbG91ZCgNCiAgYWxsX3RkbV9tLCANCiAgbWF4LndvcmRzID0gMTAwLA0KICBjb2xvcnMgPSBjKCJkYXJrZ3JlZW4iLCAiZGFya3JlZCIpDQopDQpgYGANCg0KDQpbcmVzdWx0ZWQgcGxvdF0oImRvd25sb2FkICgxNSkucG5nIikNCg0KDQoNCg==</div>
 
 
 
